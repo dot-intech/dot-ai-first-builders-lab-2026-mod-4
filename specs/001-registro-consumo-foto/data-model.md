@@ -43,7 +43,7 @@ carga manual tras error de procesamiento).
 | `id`                  | `uuid` (PK, default gen)     | — |
 | `usuario_id`          | `uuid NOT NULL` (FK → `usuarios.id`) | Dueño exclusivo (FR-035) |
 | `fecha_hora`          | `timestamptz NOT NULL default now()` | Momento del registro; usado para el tablero del día y el historial |
-| `descripcion`         | `text NOT NULL`              | Breve y concisa, no vacía (FR-017); incluye bebida si aplica |
+| `descripcion`         | `text NOT NULL CHECK (char_length(descripcion) <= 120)` | Breve y concisa, no vacía, hasta 120 caracteres (FR-017); mismo límite se aplica venga del modelo, de carga manual o de edición del usuario (FR-023, FR-024); incluye bebida si aplica |
 | `calorias`            | `numeric NOT NULL CHECK (calorias >= 0)` | Estimadas o editadas, siempre ≥ 0 (FR-024) |
 | `pct_carbohidratos`   | `smallint NOT NULL`          | Entero 0–100 |
 | `pct_proteinas`       | `smallint NOT NULL`          | Entero 0–100 |

@@ -84,7 +84,10 @@ fase.
 - [ ] T009 [P] Test unitario en `tests/unit/nutricion.test.ts` para
       `lib/consumos/nutricion.ts`: desglose que suma 100% pasa, que no
       suma 100% falla, calorías negativas rechazadas, calorías ≥ 0
-      aceptadas (FR-010, FR-023, FR-024) — escribir y ver fallar primero
+      aceptadas, descripción vacía rechazada, descripción de más de 120
+      caracteres rechazada (FR-010, FR-017, FR-023, FR-024) — sin
+      distinguir si la descripción vino del modelo, de carga manual o de
+      edición del usuario — escribir y ver fallar primero
 - [ ] T010 [P] Implementar `lib/consumos/nutricion.ts` para pasar T009
 
 ### Agregados del tablero
@@ -185,7 +188,8 @@ verificar que se ve el tablero con saludo, dona en cero y las 3 acciones
       `tests/contract/auth-logout.test.ts` (200, limpia cookie y sesión)
 - [ ] T028 [P] [US1] Contract test `GET /api/resumen-dia` en
       `tests/contract/resumen-dia.test.ts` (200 con ceros si no hay
-      consumos, 401 sin sesión)
+      consumos para el `?fecha=` recibido, agregados correctos con
+      consumos en esa fecha, 400 si falta `fecha`, 401 sin sesión)
 - [ ] T029 [US1] Test de integración en
       `tests/integration/auth-dashboard.test.ts` cubriendo los
       acceptance scenarios 1-9 de US1 en `spec.md`: redirección sin
@@ -202,7 +206,8 @@ verificar que se ve el tablero con saludo, dona en cero y las 3 acciones
       `lib/auth/magic-link.ts` + `lib/auth/session.ts` para pasar T026
 - [ ] T032 [US1] Implementar `app/api/auth/logout/route.ts` (POST) usando
       `lib/auth/session.ts` + `lib/auth/guard.ts` para pasar T027
-- [ ] T033 [US1] Implementar `app/api/resumen-dia/route.ts` (GET) usando
+- [ ] T033 [US1] Implementar `app/api/resumen-dia/route.ts` (GET,
+      requiere `?fecha=YYYY-MM-DD`, 400 si falta o es inválida) usando
       `lib/consumos/agregados.ts` + `lib/auth/guard.ts` para pasar T028
 - [ ] T034 [P] [US1] Implementar `app/login/page.tsx` (RF-02: sólo
       nombre/logo de la app y "Obtener link de acceso")
@@ -212,7 +217,8 @@ verificar que se ve el tablero con saludo, dona en cero y las 3 acciones
       ([Nuevo, Historial, Cerrar Sesión], con confirmación al cerrar
       sesión — FR-007)
 - [ ] T037 [US1] Implementar `app/tablero/page.tsx` (saludo de bienvenida,
-      consume `GET /api/resumen-dia`, usa `DonaNutricional` y
+      calcula la fecha local del dispositivo y consume `GET
+      /api/resumen-dia?fecha=...`, usa `DonaNutricional` y
       `AccionesTablero`) — depende de T033, T035, T036
 - [ ] T038 [US1] Implementar `app/page.tsx` raíz: redirige a `/tablero` o
       `/login` según haya sesión vigente (FR-001) — depende de T020
@@ -243,8 +249,9 @@ consumo, sin que la imagen quede persistida.
       modelo de visión (FR-020)
 - [ ] T040 [P] [US2] Contract test `POST /api/consumos` en
       `tests/contract/consumos-post.test.ts` (201 al guardar, 400 si
-      calorías negativas o desglose no suma 100 — FR-023/FR-024, 500
-      simulando fallo de guardado)
+      calorías negativas, desglose no suma 100, descripción vacía o de
+      más de 120 caracteres — FR-017/FR-023/FR-024, 500 simulando fallo
+      de guardado)
 - [ ] T041 [US2] Test de integración en
       `tests/integration/nuevo-consumo.test.ts` cubriendo los acceptance
       scenarios 1-11 de US2: indicador de procesamiento, nota de "puede
@@ -277,15 +284,19 @@ consumo, sin que la imagen quede persistida.
 - [ ] T045 [P] [US2] Implementar `components/CapturaImagen.tsx` (input de
       cámara `capture="environment"`, envío a `/api/consumos/analizar`,
       indicador de procesamiento)
-- [ ] T046 [P] [US2] Implementar `components/RevisionConsumo.tsx`
-      (edición de descripción/calorías/desglose, validación cliente de
-      suma 100%/no-negativo, aviso de baja confianza con opción de
-      recargar imagen, nota de inexactitud, reintento de guardado sin
-      perder los datos en pantalla ante error 500)
+- [ ] T046 [P] [US2] Implementar `components/RevisionConsumo.tsx` en dos
+      modos: (a) **prellenado**, tras un análisis exitoso (estimación del
+      modelo cargada en los campos), y (b) **vacío**, tras un error o
+      timeout de análisis (carga manual — FR-023); ambos comparten la
+      misma validación cliente (descripción no vacía y ≤120 caracteres —
+      FR-017, suma 100%/no-negativo — FR-024), aviso de baja confianza
+      con opción de recargar imagen (sólo aplica al modo prellenado),
+      nota de inexactitud, y reintento de guardado sin perder los datos
+      en pantalla ante error 500 (FR-024a)
 - [ ] T047 [US2] Implementar `app/nuevo/page.tsx` orquestando
-      captura → procesando → revisión/edición → guardar/cancelar,
-      redirigiendo al tablero al confirmar (FR-025) — depende de T043,
-      T044, T045, T046
+      captura → procesando → (éxito: revisión prellenada | error/timeout:
+      carga manual vacía) → guardar/cancelar, redirigiendo al tablero al
+      confirmar (FR-025) — depende de T043, T044, T045, T046
 
 **Checkpoint**: User Stories 1 y 2 funcionan de forma independiente — MVP
 completo del flujo central del producto.
@@ -402,7 +413,10 @@ independiente.
       para el Escenario 2 (US2), repetir la captura al menos 10 veces con
       throttling de red 4G (DevTools) y registrar el p95 del tiempo entre
       captura y estimación mostrada, comparándolo contra el umbral de 10s
-      (FR-022/SC-001)
+      (FR-022/SC-001); además revisar que todo el texto de la interfaz
+      (botones, labels, mensajes de error) esté en Español LatAm (FR-036
+      — el lado del modelo de visión ya queda cubierto por el test
+      unitario T021; el de la UI se verifica sólo aquí, manualmente)
 - [ ] T060 Verificar que `npm test` (Vitest, unit+integration+contract)
       pasa en verde en su totalidad (Principio I / Flujo de Desarrollo)
 - [ ] T061 Revisar el diff completo de la feature contra los 5 principios

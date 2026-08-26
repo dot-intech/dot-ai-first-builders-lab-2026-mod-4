@@ -132,7 +132,7 @@ components/
 ├── DonaNutricional.tsx            # gráfico SVG/CSS propio (research.md §7)
 ├── AccionesTablero.tsx
 ├── CapturaImagen.tsx              # inputs de cámara/galería (research.md §8)
-├── RevisionConsumo.tsx            # edición pre-guardado + aviso de baja confianza
+├── RevisionConsumo.tsx            # edición pre-guardado, modo prellenado (éxito) y vacío (carga manual), + aviso de baja confianza
 └── HistorialLista.tsx             # agrupamiento cliente por semana/mes/año
 
 tests/

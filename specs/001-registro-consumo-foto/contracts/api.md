@@ -37,8 +37,13 @@ UI antes de llamar a este endpoint.
 ### `GET /api/resumen-dia`
 Agregado de consumos del día actual del usuario autenticado (FR-009).
 
-- **Query**: `?fecha=YYYY-MM-DD` (fecha local del dispositivo del cliente;
-  ver [[../research.md]] §9).
+- **Query** (obligatorio): `?fecha=YYYY-MM-DD` — la fecha de "hoy" según
+  el dispositivo del cliente, no un rango arbitrario: el servidor no
+  conoce la zona horaria del usuario, así que el cliente calcula su
+  propio "hoy" local y lo envía en cada llamada (mismo criterio de
+  timezone que el historial — ver [[../research.md]] §9). FR-009 sólo
+  exige agregados del día actual; este endpoint no sirve para consultar
+  otras fechas.
 - **200**:
   ```json
   {
@@ -48,6 +53,7 @@ Agregado de consumos del día actual del usuario autenticado (FR-009).
   ```
   Todo en cero si no hay consumos ese día (acceptance scenario US1 #9).
   El desglose siempre suma exactamente 100 cuando `totalCalorias > 0`.
+- **400**: falta `fecha` o no tiene formato `YYYY-MM-DD`.
 
 ## Análisis de imagen (sin persistencia — RNF-07)
 
@@ -83,14 +89,16 @@ Guarda un consumo ya revisado/confirmado (FR-015, FR-024).
 - **Body**:
   ```json
   {
-    "descripcion": "string no vacía",
+    "descripcion": "string no vacía, hasta 120 caracteres",
     "calorias": 0,
     "desglose": { "carbohidratos": 0, "proteinas": 0, "grasas": 0, "otrosNutrientes": 0 }
   }
   ```
 - **201**: `{ "id": "uuid", "fechaHora": "ISO-8601" }`.
-- **400**: `calorias < 0`, desglose no entero, o desglose que no suma 100
-  (FR-023, FR-024; reforzado por el `CHECK` de `data-model.md`).
+- **400**: `descripcion` vacía o de más de 120 caracteres (FR-017,
+  aplicable igual si vino del modelo, de carga manual o de edición del
+  usuario — FR-023, FR-024), `calorias < 0`, desglose no entero, o
+  desglose que no suma 100 (reforzado por el `CHECK` de `data-model.md`).
 - **500**: error de guardado (red/DB) — cliente conserva los datos en
   pantalla y puede reintentar el mismo POST sin perder la revisión/edición
   (FR-024a, User Story 2 escenario 11).
@@ -102,8 +110,12 @@ edita (FR-034a).
 Lista los consumos propios del usuario autenticado, para el historial
 (FR-032, FR-033).
 
-- **Query opcional**: `?desde=YYYY-MM-DD&hasta=YYYY-MM-DD` (paginación por
-  rango, si se necesita en la UI para historiales largos).
+- **Sin query params**: devuelve siempre el listado completo del usuario;
+  no hay paginación por rango de fechas (no lo exige ningún FR — SC-005
+  sólo pide poder ubicar un consumo de los últimos 12 meses navegando el
+  agrupamiento jerárquico, no un buscador ni un filtro). Si en el futuro
+  se necesita paginar historiales muy largos, eso requiere primero
+  actualizar `spec.md` (Principio V — Disciplina de Alcance).
 - **200**: `{ "consumos": [ { "id", "fechaHora", "descripcion", "calorias" } ] }`
   ordenados por `fechaHora` descendente. El agrupamiento jerárquico
   semana/mes/año se arma en el cliente. Array vacío si no hay consumos

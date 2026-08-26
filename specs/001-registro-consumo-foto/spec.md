@@ -344,14 +344,17 @@ no se contabiliza en el tablero del día correspondiente.
   bajo condiciones normales de red 4G. (RNF-02)
 - **FR-023**: Ante un error de procesamiento, el sistema MUST permitir al
   usuario hacer una carga manual de la descripción, cantidad de calorías y
-  desglose nutricional del consumo; el desglose cargado manualmente MUST
-  sumar exactamente 100% en las 4 categorías, igual que uno generado por el
-  modelo. (RF-21)
+  desglose nutricional del consumo; la descripción cargada manualmente
+  MUST cumplir el mismo límite que una generada por el modelo (no vacía,
+  hasta 120 caracteres — ver FR-017), y el desglose cargado manualmente
+  MUST sumar exactamente 100% en las 4 categorías, igual que uno generado
+  por el modelo. (RF-21)
 - **FR-024**: El sistema MUST permitir al usuario editar la descripción, las
-  calorías y el desglose obtenidos antes de guardar el consumo. Las calorías
-  (estimadas o editadas) MUST ser un número no negativo, y el desglose
-  nutricional editado MUST seguir sumando exactamente 100% en sus 4
-  categorías. (RF-22)
+  calorías y el desglose obtenidos antes de guardar el consumo. La
+  descripción editada MUST seguir siendo no vacía y de hasta 120
+  caracteres (ver FR-017); las calorías (estimadas o editadas) MUST ser un
+  número no negativo, y el desglose nutricional editado MUST seguir
+  sumando exactamente 100% en sus 4 categorías. (RF-22)
 - **FR-024a**: Si el guardado de un consumo ya confirmado por el usuario
   falla (p. ej. error de red o de base de datos), el sistema MUST mostrar
   un mensaje de error y MUST permitir reintentar el guardado sin que el

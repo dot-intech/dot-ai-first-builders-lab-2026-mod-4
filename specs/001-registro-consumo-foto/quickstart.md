@@ -69,6 +69,13 @@ npm test                    # suite Vitest (unit + integration + contract)
    calorías (FR-028, FR-029).
 6. Cancelar en cualquier paso del flujo → **esperado**: vuelve al tablero,
    sin ninguna fila nueva en `consumos` (FR-030).
+7. Forzar un error o timeout de análisis (p. ej. apagando la red antes del
+   paso 2, o con un doble de prueba de `lib/ai/vision.ts` que falle) →
+   **esperado**: mensaje de error, y un formulario de carga manual
+   **vacío** (no prellenado) para descripción, calorías y desglose
+   (FR-023); se guarda igual que una estimación revisada, con la misma
+   validación (no vacía, ≤120 caracteres, desglose suma 100%, calorías
+   ≥ 0).
 
 ## Escenario 3 — Cero persistencia de imágenes (RNF-07 / SC-002)
 
