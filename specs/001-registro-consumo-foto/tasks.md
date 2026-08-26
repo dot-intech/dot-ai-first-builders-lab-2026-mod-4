@@ -38,19 +38,19 @@ Proyecto único Next.js 15 (App Router) fullstack, tal como fija
 
 **Purpose**: Inicialización del proyecto Next.js y herramientas base.
 
-- [ ] T001 Crear el proyecto Next.js 15 (App Router, TypeScript) en la raíz
+- [X] T001 Crear el proyecto Next.js 15 (App Router, TypeScript) en la raíz
       del repo: `package.json`, `tsconfig.json`, `next.config.ts`,
       `app/layout.tsx` mínimo — según la estructura de `plan.md`
-- [ ] T002 Agregar dependencias de producción en `package.json`: `next`,
+- [X] T002 Agregar dependencias de producción en `package.json`: `next`,
       `react`, `react-dom`, `pg`, `resend`, `@google/generative-ai`
-- [ ] T003 [P] Agregar dependencias de desarrollo en `package.json` y
+- [X] T003 [P] Agregar dependencias de desarrollo en `package.json` y
       configurar `vitest.config.ts` con proyectos separados para
       `tests/unit`, `tests/integration`, `tests/contract`
-- [ ] T004 [P] Configurar ESLint + TypeScript estricto (`tsconfig.json`
+- [X] T004 [P] Configurar ESLint + TypeScript estricto (`tsconfig.json`
       `strict: true`, `.eslintrc`) por sobre el scaffold de Next.js
-- [ ] T005 [P] Crear `docker-compose.yml` con el servicio de PostgreSQL de
+- [X] T005 [P] Crear `docker-compose.yml` con el servicio de PostgreSQL de
       desarrollo (según "Cómo correr" de `AGENTS.md`)
-- [ ] T006 [P] Crear `.env.local.example` con placeholders de
+- [X] T006 [P] Crear `.env.local.example` con placeholders de
       `DATABASE_URL`, `GOOGLE_AI_API_KEY`, `RESEND_API_KEY`, `EMAIL_FROM`
       (Principio IV — nunca valores reales)
 
@@ -71,94 +71,94 @@ fase.
 
 ### Esquema de base de datos
 
-- [ ] T007 Escribir la migración `lib/db/migrations/0001_init.sql` con las
+- [X] T007 Escribir la migración `lib/db/migrations/0001_init.sql` con las
       tablas `usuarios` y `consumos`, columnas y `CHECK` constraints
       exactos de `data-model.md` (incluye el `CHECK` de que el desglose
       suma 100 y de `calorias >= 0`), más el índice
       `consumos(usuario_id, fecha_hora DESC)`
-- [ ] T008 Implementar `lib/db/pool.ts` (cliente `pg.Pool` leyendo
+- [X] T008 Implementar `lib/db/pool.ts` (cliente `pg.Pool` leyendo
       `DATABASE_URL`)
 
 ### Lógica de negocio pura (nutrición)
 
-- [ ] T009 [P] Test unitario en `tests/unit/nutricion.test.ts` para
+- [X] T009 [P] Test unitario en `tests/unit/nutricion.test.ts` para
       `lib/consumos/nutricion.ts`: desglose que suma 100% pasa, que no
       suma 100% falla, calorías negativas rechazadas, calorías ≥ 0
       aceptadas, descripción vacía rechazada, descripción de más de 120
       caracteres rechazada (FR-010, FR-017, FR-023, FR-024) — sin
       distinguir si la descripción vino del modelo, de carga manual o de
       edición del usuario — escribir y ver fallar primero
-- [ ] T010 [P] Implementar `lib/consumos/nutricion.ts` para pasar T009
+- [X] T010 [P] Implementar `lib/consumos/nutricion.ts` para pasar T009
 
 ### Agregados del tablero
 
-- [ ] T011 [P] Test unitario en `tests/unit/agregados.test.ts` para
+- [X] T011 [P] Test unitario en `tests/unit/agregados.test.ts` para
       `lib/consumos/agregados.ts`: suma correcta de calorías/desglose de
       una lista de consumos, y resultado en cero con lista vacía (FR-009,
       escenario US1 #9) — escribir y ver fallar primero
-- [ ] T012 [P] Implementar `lib/consumos/agregados.ts` para pasar T011
+- [X] T012 [P] Implementar `lib/consumos/agregados.ts` para pasar T011
 
 ### Magic link — helpers puros
 
-- [ ] T013 [P] Test unitario en `tests/unit/magic-link.test.ts` para las
+- [X] T013 [P] Test unitario en `tests/unit/magic-link.test.ts` para las
       funciones puras de `lib/auth/magic-link.ts` (generación de token
       aleatorio, hash SHA-256, cálculo de expiración a 15 min) — escribir
       y ver fallar primero
-- [ ] T014 Implementar las funciones puras de `lib/auth/magic-link.ts`
+- [X] T014 Implementar las funciones puras de `lib/auth/magic-link.ts`
       para pasar T013
 
 ### Magic link — persistencia (depende de T007, T008, T014)
 
-- [ ] T015 Test de integración en `tests/integration/magic-link.test.ts`
+- [X] T015 Test de integración en `tests/integration/magic-link.test.ts`
       contra la base Dockerizada: emitir un link crea/reutiliza el
       `Usuario` (FR-003a), invalida automáticamente el link previo no
       usado al reemitir (FR-004a), un link usado no vuelve a aceptarse
       (FR-004), un link expirado (>15 min) se rechaza (FR-005) — escribir
       y ver fallar primero
-- [ ] T016 Implementar las funciones de persistencia de
+- [X] T016 Implementar las funciones de persistencia de
       `lib/auth/magic-link.ts` (crear/validar/invalidar contra
       `usuarios`) para pasar T015
 
 ### Sesión — helpers puros
 
-- [ ] T017 [P] Test unitario en `tests/unit/session.test.ts` para las
+- [X] T017 [P] Test unitario en `tests/unit/session.test.ts` para las
       funciones puras de `lib/auth/session.ts` (generación/hash de token
       de sesión, cálculo de inactividad ≥ 8h) — escribir y ver fallar
       primero
-- [ ] T018 Implementar las funciones puras de `lib/auth/session.ts` para
+- [X] T018 Implementar las funciones puras de `lib/auth/session.ts` para
       pasar T017
 
 ### Sesión — persistencia y guard (depende de T007, T008, T018)
 
-- [ ] T019 Test de integración en `tests/integration/session.test.ts`:
+- [X] T019 Test de integración en `tests/integration/session.test.ts`:
       validar un magic link crea una sesión activa, la sesión expira tras
       8h de inactividad (FR-006), logout limpia la sesión (FR-007), y un
       request sin sesión válida es rechazado — escribir y ver fallar
       primero
-- [ ] T020 Implementar las funciones de persistencia de
+- [X] T020 Implementar las funciones de persistencia de
       `lib/auth/session.ts` y el helper `lib/auth/guard.ts` (exige sesión
       vigente y expone el `usuario_id` a las rutas protegidas — base de
       FR-001 y FR-035) para pasar T019
 
 ### Módulo de IA aislado (Principio II)
 
-- [ ] T021 [P] Test unitario en `tests/unit/vision.test.ts` para
+- [X] T021 [P] Test unitario en `tests/unit/vision.test.ts` para
       `lib/ai/vision.ts` con el SDK de Google AI Studio mockeado: el
       prompt exige respuesta en Español LatAm (FR-036), el parsing arma
       `{descripcion, calorias, desglose, confianza}`, `descripcion` no
       vacía y de hasta 120 caracteres (FR-017), y un alimento no
       identificado por el modelo se reporta explícitamente en vez de
       inventarse (Principio III) — escribir y ver fallar primero
-- [ ] T022 Implementar `lib/ai/vision.ts` (único punto de contacto con
+- [X] T022 Implementar `lib/ai/vision.ts` (único punto de contacto con
       `@google/generative-ai` en todo el proyecto) para pasar T021
 
 ### Email transaccional
 
-- [ ] T023 [P] Test unitario en `tests/unit/send-magic-link.test.ts` para
+- [X] T023 [P] Test unitario en `tests/unit/send-magic-link.test.ts` para
       `lib/email/send-magic-link.ts` con el SDK de Resend mockeado
       (arma el email con el link correcto, usa `EMAIL_FROM`) — escribir y
       ver fallar primero
-- [ ] T024 [P] Implementar `lib/email/send-magic-link.ts` para pasar T023
+- [X] T024 [P] Implementar `lib/email/send-magic-link.ts` para pasar T023
 
 **Checkpoint**: Fundación lista — infraestructura de datos, sesión, magic
 link, IA y email disponibles y testeadas. Las historias de usuario pueden
@@ -178,19 +178,19 @@ verificar que se ve el tablero con saludo, dona en cero y las 3 acciones
 
 ### Tests para User Story 1 ⚠️
 
-- [ ] T025 [P] [US1] Contract test `POST /api/auth/magic-link` en
+- [X] T025 [P] [US1] Contract test `POST /api/auth/magic-link` en
       `tests/contract/auth-magic-link.test.ts` (200 con email válido, 400
       sin email o formato inválido) — ver `contracts/api.md`
-- [ ] T026 [P] [US1] Contract test `GET /api/auth/verify` en
+- [X] T026 [P] [US1] Contract test `GET /api/auth/verify` en
       `tests/contract/auth-verify.test.ts` (200 + cookie de sesión con
       token vigente, 401 con token usado/expirado/inexistente)
-- [ ] T027 [P] [US1] Contract test `POST /api/auth/logout` en
+- [X] T027 [P] [US1] Contract test `POST /api/auth/logout` en
       `tests/contract/auth-logout.test.ts` (200, limpia cookie y sesión)
-- [ ] T028 [P] [US1] Contract test `GET /api/resumen-dia` en
+- [X] T028 [P] [US1] Contract test `GET /api/resumen-dia` en
       `tests/contract/resumen-dia.test.ts` (200 con ceros si no hay
       consumos para el `?fecha=` recibido, agregados correctos con
       consumos en esa fecha, 400 si falta `fecha`, 401 sin sesión)
-- [ ] T029 [US1] Test de integración en
+- [X] T029 [US1] Test de integración en
       `tests/integration/auth-dashboard.test.ts` cubriendo los
       acceptance scenarios 1-9 de US1 en `spec.md`: redirección sin
       sesión, alta automática de usuario nuevo (FR-003a), rechazo de link
@@ -199,28 +199,28 @@ verificar que se ve el tablero con saludo, dona en cero y las 3 acciones
 
 ### Implementación para User Story 1
 
-- [ ] T030 [US1] Implementar `app/api/auth/magic-link/route.ts` (POST)
+- [X] T030 [US1] Implementar `app/api/auth/magic-link/route.ts` (POST)
       usando `lib/auth/magic-link.ts` + `lib/email/send-magic-link.ts`
       para pasar T025
-- [ ] T031 [US1] Implementar `app/api/auth/verify/route.ts` (GET) usando
+- [X] T031 [US1] Implementar `app/api/auth/verify/route.ts` (GET) usando
       `lib/auth/magic-link.ts` + `lib/auth/session.ts` para pasar T026
-- [ ] T032 [US1] Implementar `app/api/auth/logout/route.ts` (POST) usando
+- [X] T032 [US1] Implementar `app/api/auth/logout/route.ts` (POST) usando
       `lib/auth/session.ts` + `lib/auth/guard.ts` para pasar T027
-- [ ] T033 [US1] Implementar `app/api/resumen-dia/route.ts` (GET,
+- [X] T033 [US1] Implementar `app/api/resumen-dia/route.ts` (GET,
       requiere `?fecha=YYYY-MM-DD`, 400 si falta o es inválida) usando
       `lib/consumos/agregados.ts` + `lib/auth/guard.ts` para pasar T028
-- [ ] T034 [P] [US1] Implementar `app/login/page.tsx` (RF-02: sólo
+- [X] T034 [P] [US1] Implementar `app/login/page.tsx` (RF-02: sólo
       nombre/logo de la app y "Obtener link de acceso")
-- [ ] T035 [P] [US1] Implementar `components/DonaNutricional.tsx` (SVG/CSS
+- [X] T035 [P] [US1] Implementar `components/DonaNutricional.tsx` (SVG/CSS
       propio, 4 categorías — ver `research.md` §7)
-- [ ] T036 [P] [US1] Implementar `components/AccionesTablero.tsx`
+- [X] T036 [P] [US1] Implementar `components/AccionesTablero.tsx`
       ([Nuevo, Historial, Cerrar Sesión], con confirmación al cerrar
       sesión — FR-007)
-- [ ] T037 [US1] Implementar `app/tablero/page.tsx` (saludo de bienvenida,
+- [X] T037 [US1] Implementar `app/tablero/page.tsx` (saludo de bienvenida,
       calcula la fecha local del dispositivo y consume `GET
       /api/resumen-dia?fecha=...`, usa `DonaNutricional` y
       `AccionesTablero`) — depende de T033, T035, T036
-- [ ] T038 [US1] Implementar `app/page.tsx` raíz: redirige a `/tablero` o
+- [X] T038 [US1] Implementar `app/page.tsx` raíz: redirige a `/tablero` o
       `/login` según haya sesión vigente (FR-001) — depende de T020
 
 **Checkpoint**: User Story 1 completamente funcional y testeable de forma
@@ -240,19 +240,19 @@ consumo, sin que la imagen quede persistida.
 
 ### Tests para User Story 2 ⚠️
 
-- [ ] T039 [P] [US2] Contract test `POST /api/consumos/analizar` en
+- [X] T039 [P] [US2] Contract test `POST /api/consumos/analizar` en
       `tests/contract/consumos-analizar.test.ts` (200 con estimación,
       400 formato no soportado o >10MB — FR-015a, 422 sin alimentos
       identificados, 504 si supera 30s — FR-021), con `lib/ai/vision.ts`
       mockeado; ADEMÁS asertar que el body de la respuesta 200 no
       contiene ningún campo con endpoint, payload crudo o nombre del
       modelo de visión (FR-020)
-- [ ] T040 [P] [US2] Contract test `POST /api/consumos` en
+- [X] T040 [P] [US2] Contract test `POST /api/consumos` en
       `tests/contract/consumos-post.test.ts` (201 al guardar, 400 si
       calorías negativas, desglose no suma 100, descripción vacía o de
       más de 120 caracteres — FR-017/FR-023/FR-024, 500 simulando fallo
       de guardado)
-- [ ] T041 [US2] Test de integración en
+- [X] T041 [US2] Test de integración en
       `tests/integration/nuevo-consumo.test.ts` cubriendo los acceptance
       scenarios 1-11 de US2: indicador de procesamiento, nota de "puede
       ser inexacta" (FR-026), estimación de baja confianza (≤70%) exige
@@ -264,7 +264,7 @@ consumo, sin que la imagen quede persistida.
       envío de la imagen y la respuesta con la estimación mostrada, y
       asertar que quede por debajo de los 10s (FR-022/SC-001) con un
       `lib/ai/vision.ts` mockeado con latencia simulada representativa
-- [ ] T042 [US2] Test de integración en
+- [X] T042 [US2] Test de integración en
       `tests/integration/cero-persistencia-imagen.test.ts` (RNF-07 /
       SC-002): tras `POST /api/consumos/analizar` con una imagen de
       prueba, verificar que no aparece ningún archivo nuevo en el
@@ -274,17 +274,17 @@ consumo, sin que la imagen quede persistida.
 
 ### Implementación para User Story 2
 
-- [ ] T043 [US2] Implementar `app/api/consumos/analizar/route.ts` (POST,
+- [X] T043 [US2] Implementar `app/api/consumos/analizar/route.ts` (POST,
       `multipart/form-data`, valida formato/tamaño antes de invocar
       `lib/ai/vision.ts`, nunca escribe la imagen a disco/DB/logs) para
       pasar T039 y T042
-- [ ] T044 [US2] Implementar el handler `POST` de `app/api/consumos/route.ts`
+- [X] T044 [US2] Implementar el handler `POST` de `app/api/consumos/route.ts`
       (valida con `lib/consumos/nutricion.ts`, inserta en `consumos`
       filtrando por `usuario_id` de la sesión) para pasar T040
-- [ ] T045 [P] [US2] Implementar `components/CapturaImagen.tsx` (input de
+- [X] T045 [P] [US2] Implementar `components/CapturaImagen.tsx` (input de
       cámara `capture="environment"`, envío a `/api/consumos/analizar`,
       indicador de procesamiento)
-- [ ] T046 [P] [US2] Implementar `components/RevisionConsumo.tsx` en dos
+- [X] T046 [P] [US2] Implementar `components/RevisionConsumo.tsx` en dos
       modos: (a) **prellenado**, tras un análisis exitoso (estimación del
       modelo cargada en los campos), y (b) **vacío**, tras un error o
       timeout de análisis (carga manual — FR-023); ambos comparten la
@@ -293,7 +293,7 @@ consumo, sin que la imagen quede persistida.
       con opción de recargar imagen (sólo aplica al modo prellenado),
       nota de inexactitud, y reintento de guardado sin perder los datos
       en pantalla ante error 500 (FR-024a)
-- [ ] T047 [US2] Implementar `app/nuevo/page.tsx` orquestando
+- [X] T047 [US2] Implementar `app/nuevo/page.tsx` orquestando
       captura → procesando → (éxito: revisión prellenada | error/timeout:
       carga manual vacía) → guardar/cancelar, redirigiendo al tablero al
       confirmar (FR-025) — depende de T043, T044, T045, T046
@@ -315,7 +315,7 @@ existente, y verificar que el flujo se comporta igual que con cámara (ver
 
 ### Tests para User Story 3 ⚠️
 
-- [ ] T048 [US3] Test de integración en
+- [X] T048 [US3] Test de integración en
       `tests/integration/nuevo-consumo-galeria.test.ts` cubriendo los
       acceptance scenarios 1-2 de US3: seleccionar imagen de galería
       sigue el mismo análisis/revisión/guardado que US2, y el consumo
@@ -323,7 +323,7 @@ existente, y verificar que el flujo se comporta igual que con cámara (ver
 
 ### Implementación para User Story 3
 
-- [ ] T049 [US3] Extender `components/CapturaImagen.tsx` con la opción de
+- [X] T049 [US3] Extender `components/CapturaImagen.tsx` con la opción de
       galería (`<input type="file" accept="image/*">` sin `capture`) y
       un selector cámara/galería, reutilizando el resto del flujo de
       `app/nuevo/page.tsx` (T043-T047) para pasar T048
@@ -344,10 +344,10 @@ a "Historial" y verificar el listado propio, ordenado y agrupado (ver
 
 ### Tests para User Story 4 ⚠️
 
-- [ ] T050 [P] [US4] Contract test `GET /api/consumos` en
+- [X] T050 [P] [US4] Contract test `GET /api/consumos` en
       `tests/contract/consumos-get.test.ts` (200 con lista propia
       ordenada descendente, array vacío sin consumos, 401 sin sesión)
-- [ ] T051 [US4] Test de integración en `tests/integration/historial.test.ts`
+- [X] T051 [US4] Test de integración en `tests/integration/historial.test.ts`
       cubriendo los acceptance scenarios 1-5 de US4: sólo consumos
       propios (nunca de otro usuario — FR-035), orden descendente,
       intento de acceder a un consumo ajeno devuelve 404 sin distinguir
@@ -356,14 +356,14 @@ a "Historial" y verificar el listado propio, ordenado y agrupado (ver
 
 ### Implementación para User Story 4
 
-- [ ] T052 [US4] Implementar el handler `GET` de `app/api/consumos/route.ts`
+- [X] T052 [US4] Implementar el handler `GET` de `app/api/consumos/route.ts`
       (lista filtrada por `usuario_id` de la sesión, orden
       `fecha_hora DESC`) para pasar T050
-- [ ] T053 [P] [US4] Implementar `components/HistorialLista.tsx`
+- [X] T053 [P] [US4] Implementar `components/HistorialLista.tsx`
       (agrupamiento por semana/mes/año en el cliente usando la zona
       horaria del dispositivo — `research.md` §9 —, mensaje explícito de
       estado vacío, sin opción de editar)
-- [ ] T054 [US4] Implementar `app/historial/page.tsx` consumiendo
+- [X] T054 [US4] Implementar `app/historial/page.tsx` consumiendo
       `GET /api/consumos` y `HistorialLista` — depende de T052, T053
 
 **Checkpoint**: User Stories 1-4 funcionan de forma independiente.
@@ -381,10 +381,10 @@ correspondiente (ver `quickstart.md` Escenario 6).
 
 ### Tests para User Story 5 ⚠️
 
-- [ ] T055 [P] [US5] Contract test `DELETE /api/consumos/:id` en
+- [X] T055 [P] [US5] Contract test `DELETE /api/consumos/:id` en
       `tests/contract/consumos-delete.test.ts` (200 al eliminar un
       consumo propio, 404 si no existe o pertenece a otro usuario)
-- [ ] T056 [US5] Test de integración en
+- [X] T056 [US5] Test de integración en
       `tests/integration/eliminar-consumo.test.ts` cubriendo los
       acceptance scenarios 1-2 de US5: pide confirmación, advierte que es
       irreversible, y sólo elimina si se confirma; tras eliminar, el
@@ -393,9 +393,9 @@ correspondiente (ver `quickstart.md` Escenario 6).
 
 ### Implementación para User Story 5
 
-- [ ] T057 [US5] Implementar `app/api/consumos/[id]/route.ts` (DELETE,
+- [X] T057 [US5] Implementar `app/api/consumos/[id]/route.ts` (DELETE,
       filtra por `usuario_id` de la sesión) para pasar T055
-- [ ] T058 [US5] Agregar la acción de eliminar con confirmación
+- [X] T058 [US5] Agregar la acción de eliminar con confirmación
       (advertencia de irreversibilidad) en `components/HistorialLista.tsx`
       — depende de T053, T057
 
@@ -417,14 +417,25 @@ independiente.
       (botones, labels, mensajes de error) esté en Español LatAm (FR-036
       — el lado del modelo de visión ya queda cubierto por el test
       unitario T021; el de la UI se verifica sólo aquí, manualmente)
-- [ ] T060 Verificar que `npm test` (Vitest, unit+integration+contract)
+      **PENDIENTE**: no ejecutable en este entorno (sin dispositivo/cámara
+      real ni `GOOGLE_AI_API_KEY` real). Se hizo en su lugar un smoke
+      test con el server de dev real (curl + inserts directos a la DB de
+      prueba) para Escenarios 1, 5 y 6 — login→verify→tablero,
+      historial agrupado, texto de la UI en Español LatAm — pendiente
+      cámara/galería real y la medición de p95 bajo 4G.
+- [X] T060 Verificar que `npm test` (Vitest, unit+integration+contract)
       pasa en verde en su totalidad (Principio I / Flujo de Desarrollo)
-- [ ] T061 Revisar el diff completo de la feature contra los 5 principios
+      — 98/98 tests, typecheck y `eslint` limpios.
+- [X] T061 Revisar el diff completo de la feature contra los 5 principios
       de la constitución antes de dar por cerrada la implementación
       (aislamiento de IA, cero invención de datos, sin secretos
       commiteados, disciplina de alcance)
-- [ ] T062 [P] Confirmar que `.env.local` está en `.gitignore` y que
+      — verificado: único import de `@google/generative-ai` en
+      `lib/ai/vision.ts`; sin secretos hardcodeados; esquema limitado a
+      `usuarios`/`consumos`; sin funcionalidad fuera de alcance.
+- [X] T062 [P] Confirmar que `.env.local` está en `.gitignore` y que
       `.env.local.example` no contiene ningún valor real (Principio IV)
+      — confirmado.
 
 ---
 
