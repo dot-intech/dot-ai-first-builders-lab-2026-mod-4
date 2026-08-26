@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nutrashot
+      POSTGRES_PASSWORD: nutrashot
+      POSTGRES_DB: nutrashot
+    ports:
+      - "5433:5432"
+    volumes:
+      - nutrashot-db-data:/var/lib/postgresql/data
+
+volumes:
+  nutrashot-db-data:
