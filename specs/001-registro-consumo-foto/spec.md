@@ -120,7 +120,7 @@ tablero se actualiza al instante.
 4. **Given** una estimación mostrada al usuario, **When** se despliega,
    **Then** el sistema incluye una nota recordando que la información puede
    ser inexacta.
-5. **Given** una estimación con confianza menor al 70%, **When** se muestra al
+5. **Given** una estimación con confianza menor o igual al 70%, **When** se muestra al
    usuario, **Then** el sistema advierte que es una estimación de baja
    confianza, ofrece la opción de cargar una nueva imagen, y exige al usuario
    editar manualmente la descripción y las calorías antes de poder guardar.
@@ -243,7 +243,7 @@ no se contabiliza en el tablero del día correspondiente.
 - ¿Qué pasa si el análisis de imagen falla internamente o supera los 30
   segundos? El sistema muestra un error y ofrece carga manual (User Story 2,
   escenario 7).
-- ¿Qué pasa si la estimación resulta de baja confianza (< 70%)? El sistema
+- ¿Qué pasa si la estimación resulta de baja confianza (≤ 70%)? El sistema
   advierte, ofrece recargar imagen, y exige edición manual antes de guardar
   (User Story 2, escenario 5).
 - ¿Qué pasa si el link de acceso expira (> 15 min) o ya fue usado? El sistema
@@ -327,8 +327,8 @@ no se contabiliza en el tablero del día correspondiente.
   internamente un modelo de visión a través de la API de Google AI Studio,
   enviando la imagen y un prompt con los datos a extraer. (RF-11)
 - **FR-017**: El sistema MUST mostrar una descripción amigable, breve y
-  concisa (no vacía y sin prosa extensa) de los alimentos identificados,
-  mencionando la bebida si está presente. (RF-12)
+  concisa (no vacía, de hasta 120 caracteres, sin prosa extensa) de los
+  alimentos identificados, mencionando la bebida si está presente. (RF-12)
 - **FR-018**: El sistema MUST mostrar la cantidad de calorías estimada a
   partir del análisis de la imagen. (RF-13)
 - **FR-019**: Mientras se procesa la imagen, el sistema MUST mostrar un
@@ -352,6 +352,11 @@ no se contabiliza en el tablero del día correspondiente.
   (estimadas o editadas) MUST ser un número no negativo, y el desglose
   nutricional editado MUST seguir sumando exactamente 100% en sus 4
   categorías. (RF-22)
+- **FR-024a**: Si el guardado de un consumo ya confirmado por el usuario
+  falla (p. ej. error de red o de base de datos), el sistema MUST mostrar
+  un mensaje de error y MUST permitir reintentar el guardado sin que el
+  usuario pierda la descripción, calorías y desglose ya revisados o
+  editados en pantalla (ver User Story 2, escenario 11).
 - **FR-025**: Al guardar un nuevo consumo, el sistema MUST redirigir al
   usuario al tablero principal. (RF-23)
 - **FR-026**: El sistema MUST recordar al usuario, junto a cada estimación,

@@ -142,7 +142,8 @@ fase.
 - [ ] T021 [P] Test unitario en `tests/unit/vision.test.ts` para
       `lib/ai/vision.ts` con el SDK de Google AI Studio mockeado: el
       prompt exige respuesta en Español LatAm (FR-036), el parsing arma
-      `{descripcion, calorias, desglose, confianza}`, y un alimento no
+      `{descripcion, calorias, desglose, confianza}`, `descripcion` no
+      vacía y de hasta 120 caracteres (FR-017), y un alimento no
       identificado por el modelo se reporta explícitamente en vez de
       inventarse (Principio III) — escribir y ver fallar primero
 - [ ] T022 Implementar `lib/ai/vision.ts` (único punto de contacto con
@@ -237,7 +238,9 @@ consumo, sin que la imagen quede persistida.
       `tests/contract/consumos-analizar.test.ts` (200 con estimación,
       400 formato no soportado o >10MB — FR-015a, 422 sin alimentos
       identificados, 504 si supera 30s — FR-021), con `lib/ai/vision.ts`
-      mockeado
+      mockeado; ADEMÁS asertar que el body de la respuesta 200 no
+      contiene ningún campo con endpoint, payload crudo o nombre del
+      modelo de visión (FR-020)
 - [ ] T040 [P] [US2] Contract test `POST /api/consumos` en
       `tests/contract/consumos-post.test.ts` (201 al guardar, 400 si
       calorías negativas o desglose no suma 100 — FR-023/FR-024, 500
@@ -245,12 +248,15 @@ consumo, sin que la imagen quede persistida.
 - [ ] T041 [US2] Test de integración en
       `tests/integration/nuevo-consumo.test.ts` cubriendo los acceptance
       scenarios 1-11 de US2: indicador de procesamiento, nota de "puede
-      ser inexacta" (FR-026), estimación de baja confianza (<70%) exige
+      ser inexacta" (FR-026), estimación de baja confianza (≤70%) exige
       edición manual antes de guardar (FR-028/FR-029), error/timeout
       ofrece carga manual (FR-021/FR-023), guardado actualiza el tablero
       al instante (FR-012), cancelar en cualquier paso no persiste nada
       (FR-030), y reintento de guardado tras fallo sin perder los datos
-      revisados (escenario 11)
+      revisados (FR-024a, escenario 11); ADEMÁS medir el tiempo entre el
+      envío de la imagen y la respuesta con la estimación mostrada, y
+      asertar que quede por debajo de los 10s (FR-022/SC-001) con un
+      `lib/ai/vision.ts` mockeado con latencia simulada representativa
 - [ ] T042 [US2] Test de integración en
       `tests/integration/cero-persistencia-imagen.test.ts` (RNF-07 /
       SC-002): tras `POST /api/consumos/analizar` con una imagen de
@@ -392,7 +398,11 @@ independiente.
 **Purpose**: Validación final transversal a todas las historias.
 
 - [ ] T059 [P] Ejecutar manualmente los pasos con cámara/galería reales de
-      `quickstart.md` (Escenarios 1-7) y documentar cualquier desvío
+      `quickstart.md` (Escenarios 1-7) y documentar cualquier desvío;
+      para el Escenario 2 (US2), repetir la captura al menos 10 veces con
+      throttling de red 4G (DevTools) y registrar el p95 del tiempo entre
+      captura y estimación mostrada, comparándolo contra el umbral de 10s
+      (FR-022/SC-001)
 - [ ] T060 Verificar que `npm test` (Vitest, unit+integration+contract)
       pasa en verde en su totalidad (Principio I / Flujo de Desarrollo)
 - [ ] T061 Revisar el diff completo de la feature contra los 5 principios

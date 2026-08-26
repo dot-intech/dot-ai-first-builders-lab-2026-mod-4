@@ -67,7 +67,7 @@ devuelve la estimación. Nunca persiste la imagen (FR-031).
   }
   ```
   `confianza` es un valor 0–1 agregado por imagen (FR-027), usado sólo en
-  el cliente para decidir si exigir edición manual (< 0.70) — no se
+  el cliente para decidir si exigir edición manual (≤ 0.70) — no se
   reenvía al guardar (no se persiste, ver `data-model.md`).
 - **400**: imagen ausente, formato no soportado, o > 10MB.
 - **422**: el modelo no pudo identificar alimentos (Principio III: sin
@@ -93,7 +93,7 @@ Guarda un consumo ya revisado/confirmado (FR-015, FR-024).
   (FR-023, FR-024; reforzado por el `CHECK` de `data-model.md`).
 - **500**: error de guardado (red/DB) — cliente conserva los datos en
   pantalla y puede reintentar el mismo POST sin perder la revisión/edición
-  (FR-011 del User Story 2, escenario 11).
+  (FR-024a, User Story 2 escenario 11).
 
 No existe `PUT`/`PATCH /api/consumos/:id` — un consumo guardado no se
 edita (FR-034a).

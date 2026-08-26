@@ -62,7 +62,7 @@ npm test                    # suite Vitest (unit + integration + contract)
 4. Confirmar guardado → **esperado**: `POST /api/consumos` responde `201`,
    redirige al tablero, y la dona se actualiza al instante con el nuevo
    consumo incluido (FR-012).
-5. Repetir con una imagen que produzca confianza < 70% (o forzarlo con un
+5. Repetir con una imagen que produzca confianza ≤ 70% (o forzarlo con un
    doble de prueba del módulo de IA en un test de integración) →
    **esperado**: aviso de baja confianza, opción de recargar imagen, y el
    botón de guardar deshabilitado hasta editar manualmente descripción y
@@ -90,8 +90,10 @@ Repetir el Escenario 2 eligiendo "Nuevo" → galería en vez de cámara →
    "Historial" → **esperado**: sólo los consumos propios, orden
    descendente, agrupados por semana/mes/año.
 2. Intentar acceder (manipulando el `id` en la URL/API) a un consumo de
-   otro usuario → **esperado**: `404` de `GET /api/consumos/:id` o
-   equivalente, sin distinguir "no existe" de "no es tuyo" (FR-035).
+   otro usuario, por ejemplo con `DELETE /api/consumos/:id` usando el
+   `id` de un consumo ajeno → **esperado**: `404`, sin distinguir "no
+   existe" de "no es tuyo" (FR-035); el listado de `GET /api/consumos`
+   tampoco lo incluye por estar filtrado por sesión.
 3. Un usuario sin consumos → **esperado**: mensaje explícito de estado
    vacío, no una lista en blanco.
 4. Ver el detalle de un consumo guardado → **esperado**: no hay opción de
