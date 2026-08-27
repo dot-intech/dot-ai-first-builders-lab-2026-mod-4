@@ -51,13 +51,24 @@ export async function analizarImagen(buffer: Buffer, mimeType: string): Promise<
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
-  const result = await model.generateContent([
-    { text: PROMPT },
-    { inlineData: { data: buffer.toString("base64"), mimeType } },
-  ]);
+  let texto: string;
+  try {
+    const result = await model.generateContent([
+      { text: PROMPT },
+      { inlineData: { data: buffer.toString("base64"), mimeType } },
+    ]);
+    texto = result.response.text();
+  } catch (error) {
+    console.error("[lib/ai/vision] Error del SDK de Gemini:", error);
+    throw new Error("El modelo de visión no respondió correctamente", { cause: error });
+  }
 
-  const texto = result.response.text();
-  return parsearRespuesta(texto);
+  try {
+    return parsearRespuesta(texto);
+  } catch (error) {
+    console.error("[lib/ai/vision] Respuesta del modelo no es JSON válido:", texto, error);
+    throw new Error("El modelo de visión devolvió una respuesta inesperada", { cause: error });
+  }
 }
 
 function parsearRespuesta(texto: string): AnalisisImagen {
