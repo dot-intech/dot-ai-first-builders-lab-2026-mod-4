@@ -408,7 +408,7 @@ independiente.
 
 **Purpose**: Validación final transversal a todas las historias.
 
-- [ ] T059 [P] Ejecutar manualmente los pasos con cámara/galería reales de
+- [X] T059 [P] Ejecutar manualmente los pasos con cámara/galería reales de
       `quickstart.md` (Escenarios 1-7) y documentar cualquier desvío;
       para el Escenario 2 (US2), repetir la captura al menos 10 veces con
       throttling de red 4G (DevTools) y registrar el p95 del tiempo entre
@@ -417,12 +417,28 @@ independiente.
       (botones, labels, mensajes de error) esté en Español LatAm (FR-036
       — el lado del modelo de visión ya queda cubierto por el test
       unitario T021; el de la UI se verifica sólo aquí, manualmente)
-      **PENDIENTE**: no ejecutable en este entorno (sin dispositivo/cámara
-      real ni `GOOGLE_AI_API_KEY` real). Se hizo en su lugar un smoke
-      test con el server de dev real (curl + inserts directos a la DB de
-      prueba) para Escenarios 1, 5 y 6 — login→verify→tablero,
-      historial agrupado, texto de la UI en Español LatAm — pendiente
-      cámara/galería real y la medición de p95 bajo 4G.
+      — **Ejecutado 2026-08-27** con dispositivo/cámara reales, claves
+      reales de `GOOGLE_AI_API_KEY`/`RESEND_API_KEY`, y throttling "Fast
+      4G" en DevTools. Escenarios 1, 5 y 6 ya habían sido probados con
+      smoke test previo; en esta corrida se probó E2E manual completo el
+      login por magic link, tablero, historial y borrado, sin desvíos.
+      FR-036 verificado manualmente: toda la interfaz en Español LatAm,
+      sin texto en inglés.
+      Medición de p95 (Escenario 2, 10 corridas bajo Fast 4G): 4.82s,
+      9.88s, 11.0s, 19.29s, 20.97s(❌500), 22.52s, 25.34s(❌500),
+      30.92s(❌504), 31.04s(❌504), 31.56s(❌504) → **p95 = 31.56s**.
+      **RESULTADO: FR-022/SC-001 NO SE CUMPLE.** Sólo 2/10 corridas
+      estuvieron bajo el umbral de 10s; 8/10 lo violaron y 5/10
+      fallaron directamente (3× `504` por el timeout duro de 30s en
+      `app/api/consumos/analizar/route.ts`, 2× `500` genérico por una
+      excepción sin capturar en `lib/ai/vision.ts` — ver T059a).
+      Éste es un hallazgo de performance real bajo red 4G con la API de
+      Gemini real, no sólo un problema de la suite de tests con dobles.
+- [X] T059a Capturar y loguear el error real del modelo/SDK en
+      `analizarImagen` (`lib/ai/vision.ts`) en vez de dejar que la
+      excepción suba sin manejar y termine en un `500` genérico sin
+      contexto — hallazgo de T059 (2/10 corridas con Fast 4G terminaron
+      en `500 "No pudimos analizar la imagen"` sin loguear la causa).
 - [X] T060 Verificar que `npm test` (Vitest, unit+integration+contract)
       pasa en verde en su totalidad (Principio I / Flujo de Desarrollo)
       — 98/98 tests, typecheck y `eslint` limpios.
