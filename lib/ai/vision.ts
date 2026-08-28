@@ -1,8 +1,24 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import type { GenerationConfig } from "@google/generative-ai";
 import type { DesgloseNutricional } from "@/lib/consumos/nutricion";
 
 const MODEL_NAME = "gemini-3.1-flash-lite";
 const DESCRIPCION_MAX_LENGTH = 120;
+
+/**
+ * thinkingBudget en 0 desactiva el razonamiento extendido del modelo: sin
+ * esto, la API usa un presupuesto por default que resultó ser la causa
+ * principal de la latencia observada en T059 (p95 de 31.56s bajo 4G, con
+ * imágenes de sólo ~500KB). Si la calidad de las estimaciones se degrada
+ * demasiado, subir a un budget chico (p. ej. 512) en vez de volver a 0.
+ */
+interface GenerationConfigConThinking extends GenerationConfig {
+  thinkingConfig?: { thinkingBudget: number };
+}
+
+const GENERATION_CONFIG: GenerationConfigConThinking = {
+  thinkingConfig: { thinkingBudget: 0 },
+};
 
 export type AnalisisImagen =
   | {
@@ -49,7 +65,7 @@ export async function analizarImagen(buffer: Buffer, mimeType: string): Promise<
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+  const model = genAI.getGenerativeModel({ model: MODEL_NAME, generationConfig: GENERATION_CONFIG });
 
   let texto: string;
   try {
