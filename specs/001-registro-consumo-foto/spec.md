@@ -471,6 +471,13 @@ no se contabiliza en el tablero del día correspondiente.
   mediante el prompt enviado al modelo de visión, como responsabilidad del
   módulo de IA aislado; no existe un mecanismo de traducción de respaldo si
   el modelo no lo respetara.
+- **FR-022/SC-001 no se cumple actualmente**: la medición real de T059
+  (`tasks.md`) dio un p95 de 31.56s bajo throttling 4G, muy por encima del
+  umbral de 10s, con imágenes livianas (≤500KB) — la causa raíz de la
+  latencia no está identificada (se descartó tamaño de imagen; se probó
+  deshabilitar el razonamiento extendido del modelo sin mejora
+  significativa, ver `research.md` §5). Queda como deuda técnica abierta
+  en `BACKLOG.md`, no como una revisión pendiente del requisito.
 - No se exige cumplimiento formal de un estándar de accesibilidad (p. ej.
   WCAG) en esta versión; se espera HTML semántico razonable, pero sin
   auditoría de accesibilidad como criterio de aceptación.

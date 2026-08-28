@@ -99,6 +99,21 @@ rutas de API ni UI.
 **Alternatives considered**: Ninguna — es un principio no negociable de la
 constitución, no una decisión de diseño abierta.
 
+**Actualización 2026-08-28** (post-implementación, durante la
+investigación de performance de T059): se agregó
+`generationConfig.thinkingConfig.thinkingBudget = 0` a la llamada a
+`getGenerativeModel` en `lib/ai/vision.ts`, para deshabilitar el
+razonamiento extendido del modelo — hipótesis de que la latencia
+medida en T059 (p95 de 31.56s con imágenes de ~500KB, ver
+`tasks.md` T059/T059b) venía de un presupuesto de "thinking" alto por
+default. Probado empíricamente: la calidad de las estimaciones se
+mantuvo igual, pero **no hubo mejora significativa de latencia** — la
+causa raíz de la lentitud sigue sin identificarse (ver `BACKLOG.md`).
+Se dejó el cambio igual, por ser una configuración razonable por
+default para este caso de uso (no se necesita razonamiento extendido
+para clasificar comida en una foto) aunque no haya resuelto el
+problema.
+
 ## 6. Garantía de cero persistencia de imágenes (RNF-07)
 
 **Decision**: La imagen se recibe en el handler de

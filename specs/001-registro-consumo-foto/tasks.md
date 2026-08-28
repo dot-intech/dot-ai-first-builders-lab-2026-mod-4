@@ -439,6 +439,14 @@ independiente.
       excepción suba sin manejar y termine en un `500` genérico sin
       contexto — hallazgo de T059 (2/10 corridas con Fast 4G terminaron
       en `500 "No pudimos analizar la imagen"` sin loguear la causa).
+- [X] T059b Deshabilitar el razonamiento extendido del modelo
+      (`generationConfig.thinkingConfig.thinkingBudget = 0` en
+      `lib/ai/vision.ts`) como hipótesis para la latencia de T059 —
+      probado con pruebas manuales sueltas tras el cambio: **sin mejora
+      significativa** de latencia, calidad de estimaciones sin cambios
+      perceptibles. Se dejó el cambio (config razonable por default)
+      pero la causa raíz de la lentitud sigue abierta — ver
+      `BACKLOG.md`.
 - [X] T060 Verificar que `npm test` (Vitest, unit+integration+contract)
       pasa en verde en su totalidad (Principio I / Flujo de Desarrollo)
       — 98/98 tests, typecheck y `eslint` limpios.
