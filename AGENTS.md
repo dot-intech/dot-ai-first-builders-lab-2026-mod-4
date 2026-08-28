@@ -27,6 +27,20 @@ Requiere `GOOGLE_AI_API_KEY` definida en `.env.local` para el análisis de imág
 apunte `.env.test` en cada corrida — nunca debe apuntar a la base de
 desarrollo.
 
+## Backlog
+Las mejoras identificadas fuera del alcance de una spec cerrada viven en
+dos archivos:
+- `BACKLOG.md` — ítems abiertos, pendientes de hacer.
+- `BACKLOG-HISTORICO.md` — ítems ya cerrados, con fecha, qué se hizo y
+  por qué se resolvió así (incluye intentos descartados, no sólo los que
+  funcionaron).
+
+Cuando se cierra un ítem, **se saca de `BACKLOG.md` y se agrega como
+entrada nueva en `BACKLOG-HISTORICO.md`** (más reciente arriba) — no se
+deja tildado `[X]` en `BACKLOG.md`. El objetivo es que `BACKLOG.md`
+siempre muestre sólo lo pendiente, y que el historial de decisiones quede
+consultable aparte.
+
 ## Qué NO hacer
 - No persistir imágenes provistas por el usuario en el backend bajo ninguna circunstancia (RNF-07: 0 persistencia de imágenes, por privacidad).
 - No implementar login/registro por contraseña: la autenticación es exclusivamente vía magic link enviado por email (RF-03).

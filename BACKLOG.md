@@ -5,24 +5,9 @@ Mejoras identificadas pero fuera del alcance de `tasks.md` de
 decidir con el usuario si ameritan actualizar el PRD/spec o si se
 tratan como deuda técnica suelta.
 
-## Infraestructura de desarrollo — los tests borran datos reales de dev
-
-- [ ] **Separar la base de datos de tests de la de desarrollo.** Hoy
-  `vitest.config.ts` carga el mismo `.env.local` que usa `npm run dev`
-  (mismo `DATABASE_URL`, puerto 5433), y los tests de
-  integration/contract hacen `DELETE FROM consumos` / `DELETE FROM
-  usuarios` en `beforeEach`/`beforeAll` (ver por ejemplo
-  `tests/integration/auth-dashboard.test.ts:11-12`, mismo patrón en el
-  resto) — comparten una única base Postgres real a propósito (según
-  el comentario del propio `vitest.config.ts` y `research.md §10`).
-  **Consecuencia real ya sufrida:** correr `npm test` mientras hay
-  datos reales cargados en la base de dev (usuario logueado, consumos
-  guardados) los borra sin aviso — pasó en esta sesión (2026-08-27/28):
-  se corrió `npm test` para validar el fix de T059a y eso vació
-  `usuarios`/`consumos`, cerrando la sesión real del usuario sin que
-  hubiera expirado por inactividad. Solución: un `DATABASE_URL` de test
-  separado (otra base o un segundo servicio en `docker-compose.yml`),
-  para que correr la suite nunca toque los datos de desarrollo.
+Los ítems cerrados **no** quedan tildados acá — se sacan y se archivan
+en `BACKLOG-HISTORICO.md` con el detalle de qué se hizo y por qué. Ver
+`AGENTS.md` § Backlog.
 
 ## Performance — FR-022/SC-001 no se cumple (p95 real: 31.56s vs. umbral 10s)
 
@@ -30,17 +15,10 @@ Medido en T059 (`specs/001-registro-consumo-foto/tasks.md`) con throttling
 Fast 4G real: 8/10 corridas violaron el umbral de 10s, 5/10 fallaron
 directamente (504/500). Las imágenes de prueba pesaban ≤500KB, así que
 **la subida de la imagen no es la causa principal** — descartada la
-hipótesis inicial de tamaño de imagen sin comprimir.
+hipótesis inicial de tamaño de imagen sin comprimir. Ya se probó y
+descartó deshabilitar el razonamiento extendido del modelo (`thinkingBudget
+= 0`) — ver `BACKLOG-HISTORICO.md`.
 
-- [X] ~~Deshabilitar el razonamiento extendido del modelo~~ — **probado
-  2026-08-28, sin mejora significativa.** Se agregó
-  `generationConfig.thinkingConfig.thinkingBudget = 0` en
-  `lib/ai/vision.ts` (T059b en `tasks.md`) bajo la hipótesis de que el
-  presupuesto de "thinking" por default explicaba la latencia. La
-  calidad de las estimaciones se mantuvo igual, pero la latencia no
-  mejoró de forma perceptible en pruebas manuales sueltas. Se dejó el
-  cambio (config razonable por default), pero la causa raíz sigue sin
-  identificarse.
 - [ ] **Investigar la causa raíz real de la latencia.** Instrumentar
   `app/api/consumos/analizar/route.ts` y `lib/ai/vision.ts` con logs de
   tiempo (marca de tiempo antes/después de `model.generateContent`) para
