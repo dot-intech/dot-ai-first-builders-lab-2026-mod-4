@@ -140,8 +140,9 @@ tests/
 ├── integration/                   # rutas API con DB de prueba + doble de lib/ai
 └── contract/                      # valida request/response de cada ruta contra contracts/api.md
 
-docker-compose.yml                  # PostgreSQL de desarrollo
+docker-compose.yml                  # PostgreSQL de desarrollo + PostgreSQL de test (bases separadas)
 .env.local.example                  # placeholders de las variables de research.md §4 y AGENTS.md
+.env.test.example                   # placeholder de DATABASE_URL para `npm test` (base separada)
 ```
 
 **Structure Decision**: Proyecto único Next.js (App Router) tal como fija

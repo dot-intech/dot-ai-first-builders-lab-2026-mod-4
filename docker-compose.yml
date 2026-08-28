@@ -11,5 +11,21 @@ services:
     volumes:
       - nutrashot-db-data:/var/lib/postgresql/data
 
+  # Base separada para `npm test` — los tests de integration/contract
+  # vacían las tablas en cada corrida (ver vitest.config.ts), así que no
+  # puede ser la misma base que usa `npm run dev`.
+  db-test:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nutrashot
+      POSTGRES_PASSWORD: nutrashot
+      POSTGRES_DB: nutrashot_test
+    ports:
+      - "5434:5432"
+    volumes:
+      - nutrashot-db-test-data:/var/lib/postgresql/data
+
 volumes:
   nutrashot-db-data:
+  nutrashot-db-test-data:

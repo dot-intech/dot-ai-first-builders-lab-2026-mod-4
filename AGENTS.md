@@ -6,18 +6,26 @@ NutraShot es una app web que permite registrar el consumo dietario diario a part
 ## Stack
 - Next.js 15 (App Router) — fullstack, frontend + backend en un solo proyecto.
 - Node.js 20 LTS, npm como gestor de paquetes.
-- PostgreSQL, levantada vía Docker Compose en desarrollo (tablas: usuarios, consumos).
+- PostgreSQL, levantada vía Docker Compose en desarrollo (tablas: usuarios, consumos). `npm test` usa una segunda base Postgres separada (también en `docker-compose.yml`), nunca la de desarrollo.
 - Vitest para tests.
 - Google AI Studio, modelo `gemini-3.1-flash-lite`, para el análisis de imágenes.
 
 ## Cómo correr
 ```bash
 npm install
-docker compose up -d        # levanta PostgreSQL
+docker compose up -d        # levanta PostgreSQL de dev (5433) y de test (5434)
 npm run dev                 # levanta la app en modo desarrollo
 npm test                    # corre la suite de tests con Vitest
 ```
 Requiere `GOOGLE_AI_API_KEY` definida en `.env.local` para el análisis de imágenes.
+
+`.env.local` (DB de dev, puerto 5433) y `.env.test` (DB de test, puerto
+5434) son archivos separados — copiar `.env.local.example` y
+`.env.test.example` respectivamente. Aplicar
+`lib/db/migrations/0001_init.sql` contra **ambas** bases antes de
+`npm run dev`/`npm test`. `npm test` vacía las tablas de la base que
+apunte `.env.test` en cada corrida — nunca debe apuntar a la base de
+desarrollo.
 
 ## Qué NO hacer
 - No persistir imágenes provistas por el usuario en el backend bajo ninguna circunstancia (RNF-07: 0 persistencia de imágenes, por privacidad).

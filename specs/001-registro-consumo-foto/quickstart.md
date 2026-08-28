@@ -11,20 +11,29 @@ pieza.
 
 ```bash
 npm install
-docker compose up -d        # levanta PostgreSQL
+docker compose up -d        # levanta PostgreSQL de dev (5433) y de test (5434)
 ```
 
-Variables requeridas en `.env.local` (ninguna se commitea — Principio IV):
+Variables requeridas en `.env.local`, para `npm run dev` (ninguna se
+commitea — Principio IV):
 
 ```
-DATABASE_URL=postgres://...
+DATABASE_URL=postgres://...   # base de dev, puerto 5433
 GOOGLE_AI_API_KEY=...
 RESEND_API_KEY=...
 EMAIL_FROM=...
 ```
 
-Aplicar la migración inicial (`lib/db/migrations/0001_init.sql`) contra la
-base levantada por Docker Compose antes de continuar.
+Y en `.env.test`, sólo para `npm test` (base separada, puerto 5434 — nunca
+la misma que `.env.local`, porque los tests de integration/contract vacían
+las tablas en cada corrida):
+
+```
+DATABASE_URL=postgres://...   # base de test, puerto 5434
+```
+
+Aplicar la migración inicial (`lib/db/migrations/0001_init.sql`) contra
+**ambas** bases levantadas por Docker Compose antes de continuar.
 
 ```bash
 npm run dev                 # app en http://localhost:3000
