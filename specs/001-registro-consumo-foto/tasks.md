@@ -548,30 +548,30 @@ FR-017/FR-023/FR-024 (amend de spec, ítem de `BACKLOG.md` "subir el límite
 de la descripción de 120 a 200 caracteres") — sin cobertura de tarea
 todavía: código, migración y tests siguen fijando el límite en 120.
 
-- [ ] T069 [US2] Crear migración `lib/db/migrations/0002_ampliar_limite_descripcion.sql`
+- [X] T069 [US2] Crear migración `lib/db/migrations/0002_ampliar_limite_descripcion.sql`
       que reemplace el `CHECK` de `descripcion` en la tabla `consumos`
       (actualmente `<= 120` en `0001_init.sql:18`) por `<= 200`, y
       aplicarla contra la DB de dev (puerto 5433) y la de test (puerto
       5434), para pasar FR-017/FR-023/FR-024 (missing).
-- [ ] T070 [US2] Cambiar la constante `DESCRIPCION_MAX_LENGTH` de 120 a 200
+- [X] T070 [US2] Cambiar la constante `DESCRIPCION_MAX_LENGTH` de 120 a 200
       en `lib/ai/vision.ts:6`, para pasar FR-017 (missing).
-- [ ] T071 [US2] Cambiar la constante `DESCRIPCION_MAX_LENGTH` de 120 a 200
+- [X] T071 [US2] Cambiar la constante `DESCRIPCION_MAX_LENGTH` de 120 a 200
       en `lib/consumos/nutricion.ts:21` (valida la carga manual y la
       edición de la descripción), para pasar FR-023/FR-024 (missing).
-- [ ] T072 [US2] Cambiar `maxLength={120}` a `maxLength={200}` en el
+- [X] T072 [US2] Cambiar `maxLength={120}` a `maxLength={200}` en el
       `<textarea>` de la descripción en `components/RevisionConsumo.tsx:100`,
       para pasar FR-024 (missing).
-- [ ] T073 [US2] Actualizar `tests/unit/vision.test.ts` (test "trunca la
+- [X] T073 [US2] Actualizar `tests/unit/vision.test.ts` (test "trunca la
       descripción a 120 caracteres (FR-017)", líneas ~62-76) para truncar
       y afirmar 200 caracteres en vez de 120, para pasar FR-017 (partial).
-- [ ] T074 [US2] Actualizar `tests/unit/nutricion.test.ts` (tests "rechaza
+- [X] T074 [US2] Actualizar `tests/unit/nutricion.test.ts` (tests "rechaza
       descripción de más de 120 caracteres" y "acepta descripción de
       exactamente 120 caracteres", líneas ~57-68) para usar el límite de
       200 caracteres, para pasar FR-023/FR-024 (partial).
-- [ ] T075 [US2] Actualizar `tests/contract/consumos-post.test.ts` (test
+- [X] T075 [US2] Actualizar `tests/contract/consumos-post.test.ts` (test
       "400 si la descripción supera los 120 caracteres", línea ~82) para
       usar el límite de 200 caracteres, para pasar FR-017/FR-023 (partial).
-- [ ] T076 [US2] Correr `npm test` (unit+integration+contract) y confirmar
+- [X] T076 [US2] Correr `npm test` (unit+integration+contract) y confirmar
       que la suite completa está en verde tras T069-T075, para verificar
       FR-017/FR-023/FR-024 (missing).
 

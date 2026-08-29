@@ -97,7 +97,7 @@ export default function RevisionConsumo({ inicial, imagenUrl, onCancelar, onGuar
         Descripción
         <textarea
           value={descripcion}
-          maxLength={120}
+          maxLength={200}
           rows={3}
           style={{ display: "block", width: "100%", boxSizing: "border-box" }}
           onChange={(e) => {

@@ -3,7 +3,7 @@ import type { GenerationConfig } from "@google/generative-ai";
 import type { DesgloseNutricional } from "@/lib/consumos/nutricion";
 
 const MODEL_NAME = "gemini-3.1-flash-lite";
-const DESCRIPCION_MAX_LENGTH = 120;
+const DESCRIPCION_MAX_LENGTH = 200;
 
 /**
  * thinkingBudget en 0 desactiva el razonamiento extendido del modelo: sin

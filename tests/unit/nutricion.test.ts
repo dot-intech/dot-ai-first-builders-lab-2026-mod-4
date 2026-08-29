@@ -54,18 +54,18 @@ describe("validarConsumo", () => {
     expect(errores).toContain("descripcion_vacia");
   });
 
-  it("rechaza descripción de más de 120 caracteres", () => {
+  it("rechaza descripción de más de 200 caracteres", () => {
     const errores = validarConsumo({
-      descripcion: "a".repeat(121),
+      descripcion: "a".repeat(201),
       calorias: 100,
       desglose: desgloseValido,
     });
     expect(errores).toContain("descripcion_muy_larga");
   });
 
-  it("acepta descripción de exactamente 120 caracteres", () => {
+  it("acepta descripción de exactamente 200 caracteres", () => {
     const errores = validarConsumo({
-      descripcion: "a".repeat(120),
+      descripcion: "a".repeat(200),
       calorias: 100,
       desglose: desgloseValido,
     });

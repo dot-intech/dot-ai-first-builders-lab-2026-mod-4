@@ -59,10 +59,10 @@ describe("analizarImagen", () => {
     expect(textoPrompt.toLowerCase()).toContain("español");
   });
 
-  it("trunca la descripción a 120 caracteres (FR-017)", async () => {
+  it("trunca la descripción a 200 caracteres (FR-017)", async () => {
     mockRespuesta({
       identificado: true,
-      descripcion: "a".repeat(200),
+      descripcion: "a".repeat(300),
       calorias: 300,
       desglose: { carbohidratos: 25, proteinas: 25, grasas: 25, otrosNutrientes: 25 },
       confianza: 0.6,
@@ -73,7 +73,7 @@ describe("analizarImagen", () => {
 
     expect(resultado.identificado).toBe(true);
     if (resultado.identificado) {
-      expect(resultado.descripcion.length).toBe(120);
+      expect(resultado.descripcion.length).toBe(200);
     }
   });
 

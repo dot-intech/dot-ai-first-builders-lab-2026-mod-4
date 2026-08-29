@@ -79,11 +79,11 @@ describe("POST /api/consumos", () => {
     expect(response.status).toBe(400);
   });
 
-  it("400 si la descripción supera los 120 caracteres", async () => {
+  it("400 si la descripción supera los 200 caracteres", async () => {
     const { token } = await crearSesionDePrueba("descripcion-larga@example.com");
     const { POST } = await import("@/app/api/consumos/route");
     const response = await POST(
-      requestPost({ descripcion: "a".repeat(121), calorias: 100, desglose: desgloseValido }, token)
+      requestPost({ descripcion: "a".repeat(201), calorias: 100, desglose: desgloseValido }, token)
     );
     expect(response.status).toBe(400);
   });

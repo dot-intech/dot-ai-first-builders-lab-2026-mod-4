@@ -18,7 +18,7 @@ export type ErrorValidacionConsumo =
   | "desglose_no_entero"
   | "desglose_no_suma_100";
 
-const DESCRIPCION_MAX_LENGTH = 120;
+const DESCRIPCION_MAX_LENGTH = 200;
 
 export function validarConsumo(input: ConsumoInput): ErrorValidacionConsumo[] {
   const errores: ErrorValidacionConsumo[] = [];
