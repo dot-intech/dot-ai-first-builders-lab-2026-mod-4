@@ -61,10 +61,13 @@ npm test                    # suite Vitest (unit + integration + contract)
 
 1. Desde el tablero, elegir "Nuevo" → cámara, capturar una foto de un
    plato de comida real → **esperado**: indicador de procesamiento visible
-   mientras `POST /api/consumos/analizar` está en curso.
+   mientras `POST /api/consumos/analizar` está en curso, junto con una
+   miniatura de tamaño fijo (sin zoom) de la foto recién capturada
+   (FR-019a).
 2. Al completar (< 10s p95 en red normal) → **esperado**: se muestra
    descripción breve no vacía, calorías estimadas, desglose en 4
-   categorías sumando 100%, y la nota de "puede ser inexacta" (FR-026).
+   categorías sumando 100%, la nota de "puede ser inexacta" (FR-026), y
+   la misma miniatura junto a los campos editables (FR-019a).
 3. Editar la descripción, calorías y desglose antes de guardar →
    **esperado**: los cambios se reflejan en pantalla; el desglose sigue
    validándose para sumar 100% y las calorías no admiten negativos.
@@ -75,16 +78,19 @@ npm test                    # suite Vitest (unit + integration + contract)
    doble de prueba del módulo de IA en un test de integración) →
    **esperado**: aviso de baja confianza, opción de recargar imagen, y el
    botón de guardar deshabilitado hasta editar manualmente descripción y
-   calorías (FR-028, FR-029).
+   calorías (FR-028, FR-029). Usar "Cargar otra imagen" y capturar una
+   nueva foto → **esperado**: la miniatura mostrada se reemplaza por la
+   nueva selección, sin convivir con la anterior (FR-019a).
 6. Cancelar en cualquier paso del flujo → **esperado**: vuelve al tablero,
    sin ninguna fila nueva en `consumos` (FR-030).
 7. Forzar un error o timeout de análisis (p. ej. apagando la red antes del
    paso 2, o con un doble de prueba de `lib/ai/vision.ts` que falle) →
    **esperado**: mensaje de error, y un formulario de carga manual
    **vacío** (no prellenado) para descripción, calorías y desglose
-   (FR-023); se guarda igual que una estimación revisada, con la misma
-   validación (no vacía, ≤120 caracteres, desglose suma 100%, calorías
-   ≥ 0).
+   (FR-023), mostrando igual la miniatura de la foto que falló al
+   analizarse (FR-019a); se guarda igual que una estimación revisada, con
+   la misma validación (no vacía, ≤120 caracteres, desglose suma 100%,
+   calorías ≥ 0).
 
 ## Escenario 3 — Cero persistencia de imágenes (RNF-07 / SC-002)
 

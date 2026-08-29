@@ -131,8 +131,8 @@ lib/
 components/
 ├── DonaNutricional.tsx            # gráfico SVG/CSS propio (research.md §7)
 ├── AccionesTablero.tsx
-├── CapturaImagen.tsx              # inputs de cámara/galería (research.md §8)
-├── RevisionConsumo.tsx            # edición pre-guardado, modo prellenado (éxito) y vacío (carga manual), + aviso de baja confianza
+├── CapturaImagen.tsx              # inputs de cámara/galería (research.md §8); miniatura de la imagen cargada mientras procesa (FR-019a)
+├── RevisionConsumo.tsx            # edición pre-guardado, modo prellenado (éxito) y vacío (carga manual), + aviso de baja confianza + miniatura de la imagen que originó la estimación o que falló al analizarse (FR-019a)
 └── HistorialLista.tsx             # agrupamiento cliente por semana/mes/año
 
 tests/

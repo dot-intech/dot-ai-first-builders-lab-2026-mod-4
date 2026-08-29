@@ -34,6 +34,12 @@
 - Q: ¿El indicador de "baja confianza" se conserva y se muestra en el consumo ya guardado / en el Historial? → A: No, es sólo una guía transitoria durante la carga; una vez guardado el consumo, no se conserva ni se muestra.
 - Q: ¿Puede editarse un consumo después de guardado? → A: No, sólo puede eliminarse desde el Historial; la edición sólo existe antes de confirmar el guardado.
 
+### Session 2026-08-29 (mostrar la imagen cargada durante el análisis y la revisión)
+
+- Q: Cuando el análisis de imagen falla (FR-021/FR-023) y el usuario pasa a cargar los datos manualmente, ¿el sistema también debe mostrarle la foto que subió (la que falló al analizarse)? → A: Sí, mostrarla también — misma imagen ya disponible en el cliente, sin persistencia en backend.
+- Q: ¿La imagen mostrada debe poder ampliarse/verse en zoom? → A: No, alcanza con un tamaño fijo (thumbnail), sin zoom ni lightbox.
+- Q: Al usar "Cargar otra imagen" (FR-028) tras una estimación de baja confianza, ¿la imagen mostrada se reemplaza por la nueva selección? → A: Sí, se reemplaza inmediatamente; no convive con la anterior.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Autenticarse y ver el tablero principal (Priority: P1)
@@ -108,6 +114,9 @@ tablero se actualiza al instante.
 1. **Given** un usuario en el tablero principal, **When** elige "Nuevo" y toma
    una foto con la cámara del dispositivo, **Then** el sistema muestra un
    indicador de procesamiento mientras analiza la imagen.
+1a. **Given** una imagen recién capturada o seleccionada de la galería,
+   **When** el sistema la está procesando, **Then** muestra, además del
+   indicador de procesamiento, la imagen que el usuario cargó.
 2. **Given** una imagen recién capturada, **When** el sistema la analiza,
    **Then** consulta internamente un modelo de visión vía la API de Google AI
    Studio (imagen + prompt), sin exponer en la interfaz detalles técnicos de
@@ -127,9 +136,15 @@ tablero se actualiza al instante.
 6. **Given** una estimación mostrada (de cualquier nivel de confianza),
    **When** el usuario la revisa, **Then** puede editar la descripción, las
    calorías y el desglose antes de guardar el consumo.
+6a. **Given** una estimación mostrada en el formulario de revisión, **When**
+   el usuario la revisa, **Then** ve, junto a los campos editables, la
+   imagen que originó esa estimación.
 7. **Given** un análisis que falla o tarda más de 30 segundos, **When** ocurre,
    **Then** el sistema muestra un mensaje de error y permite al usuario cargar
    manualmente la descripción y las calorías del consumo.
+7a. **Given** un análisis que falló, **When** el usuario pasa al formulario de
+   carga manual, **Then** ve la imagen que había cargado (la que falló al
+   analizarse), junto con los campos a completar a mano.
 8. **Given** un usuario que confirma y guarda un nuevo consumo, **When** el
    guardado se completa, **Then** el sistema lo redirige al tablero principal
    y actualiza el gráfico de dona instantáneamente con el consumo incluido.
@@ -333,6 +348,16 @@ no se contabiliza en el tablero del día correspondiente.
   partir del análisis de la imagen. (RF-13)
 - **FR-019**: Mientras se procesa la imagen, el sistema MUST mostrar un
   indicador gráfico de procesamiento. (RF-18)
+- **FR-019a**: Mientras se procesa la imagen, y luego tanto en el formulario
+  de revisión de la estimación (ver FR-024) como en el de carga manual tras
+  un error de procesamiento (ver FR-023), el sistema MUST mostrar al
+  usuario la imagen que cargó (tomada con cámara o elegida de galería),
+  para que pueda verificar qué plato fotografió sin perderla de vista, en
+  un tamaño fijo (miniatura), sin funcionalidad de ampliar/zoom. Esta
+  visualización MUST ser puramente del lado del cliente, sin implicar
+  ninguna persistencia adicional en el backend (ver FR-031). Si el
+  usuario carga una nueva imagen (ver FR-028), la imagen mostrada MUST
+  reemplazarse por la nueva selección.
 - **FR-020**: El sistema MUST ocultar en la interfaz los detalles técnicos de
   la consulta al modelo de visión (endpoint, payload, nombre del modelo).
   (RF-19)
