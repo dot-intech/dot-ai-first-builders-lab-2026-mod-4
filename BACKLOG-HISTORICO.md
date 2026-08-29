@@ -10,6 +10,17 @@ puntero al commit. Ver `AGENTS.md` § Backlog.
 
 ---
 
+## 2026-08-29 — Spinner visual durante el procesamiento de la imagen
+
+Sin amend de spec (FR-019/RF-18 ya exigía "indicador gráfico de
+procesamiento"; era un refinamiento de la implementación existente, sin
+infraestructura de tests para componentes React en el proyecto, por lo
+que no aplica TDD aquí — sólo CSS + JSX).
+
+**Commit:** `0abf925`.
+
+---
+
 ## 2026-08-29 — Agrandar el campo de la descripción para que se lea completa
 
 Sin amend de spec (no agrega ni modifica ningún FR). Ver T068 en
