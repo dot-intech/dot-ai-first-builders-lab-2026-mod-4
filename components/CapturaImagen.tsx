@@ -55,7 +55,10 @@ export default function CapturaImagen({ onExito, onError }: CapturaImagenProps) 
   if (procesando) {
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "center" }}>
-        <p role="status">Analizando tu foto…</p>
+        <p role="status">
+          <span className="spinner" aria-hidden="true" style={{ display: "inline-block", verticalAlign: "middle", marginRight: 8 }} />
+          Analizando tu foto…
+        </p>
         {imagenUrl && (
           <img
             src={imagenUrl}
