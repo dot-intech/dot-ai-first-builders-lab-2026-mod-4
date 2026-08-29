@@ -516,6 +516,22 @@ durante el análisis y la revisión") — sin cobertura de tarea todavía.
 
 ---
 
+## Phase 11: Convergence
+
+**Purpose**: Cerrar ítem de `BACKLOG.md` "agrandar el campo de la
+descripción para que se lea completa" — sin amend de spec: no agrega ni
+modifica ningún FR, FR-024 ya permite editar la descripción sin mandatar
+el tipo de control; es un cambio de presentación dentro de un flujo ya
+especificado.
+
+- [ ] T068 [US2] Cambiar en `components/RevisionConsumo.tsx` el `<input>`
+      de la descripción por un `<textarea>` (mismo `value`/`onChange`,
+      mismo `maxLength={120}`), para que el texto se lea completo sin
+      necesidad de editar — sin cambios en FR-017/FR-024 (límite y
+      edición no cambian, sólo el control).
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
