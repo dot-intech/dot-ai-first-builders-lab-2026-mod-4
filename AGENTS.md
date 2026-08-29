@@ -31,8 +31,10 @@ desarrollo.
 Las mejoras identificadas fuera del alcance de una spec cerrada viven en
 dos archivos:
 - `BACKLOG.md` — ítems abiertos, pendientes de hacer.
-- `BACKLOG-HISTORICO.md` — ítems ya cerrados, con fecha, qué se hizo y
-  por qué se resolvió así (incluye intentos descartados, no sólo los que
+- `BACKLOG-HISTORICO.md` — decisiones de proyecto que no viven en ningún
+  otro documento (ni en el `spec.md`/`research.md` de una feature
+  puntual, ni en la constitución), con fecha, la decisión tomada, y el
+  motivo si no es obvio (incluye intentos descartados, no sólo los que
   funcionaron).
 
 Cuando se cierra un ítem, **se saca de `BACKLOG.md` y se agrega como
@@ -41,6 +43,12 @@ deja tildado `[X]` en `BACKLOG.md`. El objetivo es que `BACKLOG.md`
 siempre muestre sólo lo pendiente, y que el historial de decisiones quede
 consultable aparte. Un ítem se cierra recién cuando el código está
 implementado y sus tests pasan (ver flujo abajo) — nunca antes.
+
+Cada entrada de `BACKLOG-HISTORICO.md` va **resumida**: la decisión y el
+motivo (si no es obvio), no el paso a paso — el detalle narrativo (qué
+se tocó, en qué orden) ya vive en el mensaje del/los commit(s)
+referenciados, no hace falta duplicarlo acá. Cerrar con un puntero a
+esos commits.
 
 ## Flujo para tomar un ítem del backlog
 

@@ -1,157 +1,95 @@
 # Backlog histórico — NutraShot
 
-Registro de los ítems de `BACKLOG.md` ya cerrados: qué se hizo, por qué
-se resolvió así (o por qué se descartó una hipótesis), y cuándo. Sirve
-para no volver a discutir desde cero algo ya decidido, y para que quede
-constancia de intentos que **no** funcionaron (no sólo de los que sí).
-
-Cuando un ítem de `BACKLOG.md` se cierra, se saca de ahí y se agrega acá
-como entrada nueva (más reciente arriba) — no se deja tildado `[X]` en
-`BACKLOG.md`. Ver `AGENTS.md` § Backlog.
-
----
-
-## 2026-08-29 — Mostrar la imagen cargada durante el análisis y la revisión
-
-**Problema:** `CapturaImagen.tsx` sólo mostraba el texto "Analizando tu
-foto…" mientras se procesaba, y `RevisionConsumo.tsx` no mostraba la foto
-en ningún momento (ni en la revisión de una estimación exitosa, ni en la
-carga manual tras un error) — el usuario perdía de vista qué plato había
-fotografiado.
-
-**Resolución:** segundo ítem tomado con el flujo formal de `AGENTS.md`
-§ "Flujo para tomar un ítem del backlog" (modificar spec existente): se
-agregó **FR-019a** a `spec.md` junto con los escenarios **1a, 6a y 7a**
-de User Story 2, se corrió `/speckit-clarify` (2 preguntas: sí mostrar
-también en la carga manual tras error; sin ampliar/zoom, tamaño fijo; la
-imagen se reemplaza al recargar), `/speckit-checklist` (checklist nuevo
-`imagen-cargada.md`, 7 ítems — 2 resueltos de forma interactiva con el
-usuario, 5 por consistencia directa con el resto del spec), se
-actualizaron a mano `quickstart.md` (Escenario 2) y `plan.md`
-(estructura de `components/`), `/speckit-analyze` no encontró
-bloqueantes de constitución (sólo el gap esperado de cobertura de tarea),
-y `/speckit-converge` agregó **T064–T067** a `tasks.md` (Phase 10:
-Convergence). Implementado levantando un `object URL`
-(`URL.createObjectURL`) en `CapturaImagen.tsx` al seleccionar el
-archivo, expuesto hacia `app/nuevo/page.tsx` a través de los callbacks
-`onExito`/`onError`, pasado como prop `imagenUrl` a `RevisionConsumo.tsx`
-(cubre tanto el modo revisión como el de carga manual), y
-`URL.revokeObjectURL` en la página al reemplazar, cancelar, guardar o
-desmontar. Sin test automatizado dedicado — mismo patrón que
-T053/T054/T063 (el proyecto no tiene RTL/jsdom). 98/98 tests, typecheck y
-`eslint` en verde (sólo 2 warnings esperados por usar `<img>` con `blob:`
-URLs en vez de `next/image`) tras el cambio; verificación manual del
-flujo completo (cámara/galería, baja confianza + recargar imagen, error
-+ carga manual) confirmada por el usuario en los 4 momentos.
-
-**Por qué así (no otra alternativa):** no se creó una spec nueva porque
-el cambio refina un área ya declarada (User Story 2, FR-019/FR-024/
-FR-023) sin introducir una capacidad nueva del producto; no se tocó
-`research.md`/`data-model.md`/`contracts/api.md` porque es una
-visualización puramente de cliente, sin endpoint ni columna nueva
-(consistente con FR-031, cero persistencia de imágenes).
+Registro **resumido** de decisiones de proyecto que no viven en ningún
+otro documento (ni en un `spec.md`/`research.md` de una feature puntual,
+ni en la constitución) y que ayudan a no volver a discutir algo ya
+resuelto — incluye intentos descartados, no sólo los que funcionaron. El
+detalle narrativo (qué se tocó, paso a paso) queda en el mensaje de cada
+commit referenciado; acá sólo la decisión, el motivo si no es obvio, y el
+puntero al commit. Ver `AGENTS.md` § Backlog.
 
 ---
 
-## 2026-08-29 — Agregar una forma de volver al tablero desde el historial
+## 2026-08-29 — FR-019a: mostrar la imagen cargada durante el análisis y la revisión
 
-**Problema:** `app/historial/page.tsx` no tenía ningún link/botón de
-vuelta al tablero — la única forma de salir era el botón "atrás" del
-navegador.
+Amend de spec vía flujo `AGENTS.md` (no spec nueva: refina User Story 2
+existente). Decisiones resueltas en checklist: miniatura de tamaño fijo,
+sin zoom; se reemplaza (no convive) al recargar imagen con "Cargar otra
+imagen"; se muestra también en la carga manual tras error de análisis,
+no sólo en la revisión de una estimación exitosa. Implementado con
+`URL.createObjectURL` en el cliente, sin persistencia en backend
+(FR-031).
 
-**Resolución:** primer ítem tomado con el flujo formal de `AGENTS.md`
-§ "Flujo para tomar un ítem del backlog" (modificar spec existente, no
-spec nueva): se agregó **FR-034b** a `spec.md` ("el Historial MUST
-ofrecer una opción visible, sin scroll adicional, para volver al
-tablero principal, sin depender del botón 'atrás'"), se corrió
-`/speckit-clarify` (0 preguntas — sin ambigüedades de alto impacto) y
-`/speckit-checklist` (checklist nuevo `navegacion-historial.md`, 5
-ítems, resueltos de forma interactiva con el usuario), se agregó el
-paso 5 al Escenario 5 de `quickstart.md`, `/speckit-analyze` no
-encontró problemas críticos, y `/speckit-converge` agregó **T063** a
-`tasks.md` (Phase 9: Convergence). Implementado con `<Link
-href="/tablero">` de Next.js directo en `app/historial/page.tsx`
-(server component, sin necesidad de lógica de cliente). Sin test
-automatizado dedicado — mismo patrón que T053/T054 (el proyecto no
-tiene RTL/jsdom, sólo tests de integración a nivel API/DB) —
-verificado manualmente vía el paso agregado en `quickstart.md`. 98/98
-tests, typecheck y `eslint` en verde tras el cambio.
+**Commits:** `969f8e5` (spec/checklist/tasks), `3ac810d` (implementación).
 
-**Por qué así (no otra alternativa):** no se creó una spec nueva
-porque el cambio refina un área ya declarada (Historial, FR-032/FR-033)
-sin introducir una capacidad nueva del producto; no se tocó
-`research.md`/`data-model.md`/`contracts/api.md` porque es navegación
-pura sobre datos que la pantalla ya obtiene (`GET /api/consumos`), sin
-endpoint ni columna nueva.
+---
 
-**Nota de proceso:** primera vez que se usa el flujo completo
-documentado en `AGENTS.md` de punta a punta — alcanzó sin tener que
-volver a preguntarle al usuario cómo proceder en ningún paso del
-pipeline de Spec Kit (sólo se consultaron decisiones de contenido del
-checklist, como está previsto).
+## 2026-08-29 — FR-034b: volver al tablero desde el historial
+
+Amend de spec vía flujo `AGENTS.md`. Decisión: opción de navegación
+visible, sin scroll adicional, sólo en Historial (no se generalizó a
+otras pantallas). Resuelto con `<Link>` de Next.js, sin lógica de
+cliente. Primera vez que se corrió el flujo de punta a punta — validó
+que `AGENTS.md` alcanza sin tener que volver a preguntar el proceso.
+
+**Commits:** `5cd0a14` (spec/checklist/tasks), `0535387` (implementación).
 
 ---
 
 ## 2026-08-28 — Separar la base de datos de tests de la de desarrollo
 
-**Problema:** `vitest.config.ts` cargaba el mismo `.env.local` que usa
-`npm run dev` (mismo `DATABASE_URL`, puerto 5433), y los tests de
-integration/contract hacen `DELETE FROM consumos` / `DELETE FROM
-usuarios` en `beforeEach`/`beforeAll` (ver por ejemplo
-`tests/integration/auth-dashboard.test.ts:11-12`, mismo patrón en el
-resto). **Consecuencia real ya sufrida:** correr `npm test` mientras
-había datos reales cargados en la base de dev (usuario logueado,
-consumos guardados) los borró sin aviso — pasó en la sesión
-2026-08-27/28: se corrió `npm test` para validar el fix de T059a y eso
-vació `usuarios`/`consumos`, cerrando la sesión real del usuario sin que
-hubiera expirado por inactividad.
+**Por qué:** `npm test` compartía la DB de dev (mismo `.env.local`,
+puerto 5433) y los tests hacen `DELETE FROM` en cada corrida — vació la
+sesión real del usuario en un momento real, no fue un riesgo hipotético.
 
-**Resolución:** segundo servicio `db-test` en `docker-compose.yml`
-(Postgres separado, puerto 5434, base `nutrashot_test`, volumen propio),
-`.env.test.example` nuevo (committeado, sólo placeholder de
-`DATABASE_URL`), y `vitest.config.ts` ahora carga `.env.test` en vez de
-`.env.local`. Documentado en `AGENTS.md`, `quickstart.md` y `plan.md`
-(aplicar la migración inicial contra ambas bases). Verificado: con la
-base de test caída, `npm test` falla con `ECONNREFUSED` en el puerto
-5434 sin tocar la base de dev (puerto 5433 confirmado arriba después de
-la corrida); una vez que el usuario levantó `docker compose up -d` y
-aplicó la migración a `nutrashot_test`, la suite completa pasó en verde
-contra la base nueva.
+**Decisión:** segundo servicio Postgres en `docker-compose.yml` (puerto
+5434, `.env.test` separado) en vez de una DB en memoria o un contenedor
+efímero por corrida — se descartó por no ser coherente con la decisión
+de `research.md` de no sumar infraestructura de testing adicional a la
+ya elegida (Postgres vía Docker Compose, sin ORM).
 
-**Por qué así (no otra alternativa):** se mantuvo el mismo patrón que ya
-usa el proyecto (Postgres vía Docker Compose, migraciones SQL planas
-aplicadas a mano, sin test-runner de migraciones) en vez de introducir
-una herramienta nueva (por ejemplo una base en memoria o un contenedor
-efímero por corrida) — coherente con la decisión de `research.md` de no
-usar ORM ni infraestructura de testing adicional a la ya elegida.
+**Commit:** `2ce5418`.
 
 ---
 
-## 2026-08-28 — Deshabilitar el razonamiento extendido del modelo de visión (intento de fix de performance)
+## 2026-08-28 — Descartado: thinkingBudget=0 como fix de performance (FR-022/SC-001)
 
-**Contexto:** FR-022/SC-001 (p95 ≤10s del análisis de foto) medido en
-T059 con throttling Fast 4G real: 8/10 corridas violaron el umbral,
-5/10 fallaron directamente (504/500). Imágenes de prueba ≤500KB, así
-que la subida de la imagen se descartó como causa principal.
+**Hipótesis:** el modelo `gemini-3.1-flash-lite` podía estar usando un
+presupuesto de "thinking" alto por default, explicando el p95 de 31.56s
+medido en T059 (vs. umbral de 10s).
 
-**Hipótesis probada:** el SDK `@google/generative-ai` no fijaba ningún
-`generationConfig`, así que el modelo `gemini-3.1-flash-lite` podía estar
-usando un presupuesto de "thinking"/razonamiento alto por default,
-explicando la latencia.
+**Resultado:** se probó `generationConfig.thinkingConfig.thinkingBudget
+= 0` en `lib/ai/vision.ts` — **sin mejora significativa** de latencia.
+Se dejó el cambio (config razonable, no hace daño) pero **la causa raíz
+sigue sin identificarse** — no volver a probar esta hipótesis sin
+evidencia nueva. Ver `BACKLOG.md` § Performance para las hipótesis
+pendientes.
 
-**Qué se hizo:** se agregó `generationConfig.thinkingConfig.thinkingBudget
-= 0` en `lib/ai/vision.ts` (tarea T059b en `tasks.md`), con un tipo
-`GenerationConfigConThinking` local porque el SDK `^0.24.1` instalado no
-tipa ese campo pero lo pasa igual en el body de la request.
+**Commits:** `3cb9bbe`, `44cfc8c`.
 
-**Resultado — hipótesis descartada:** sin mejora significativa de
-latencia en pruebas manuales sueltas; calidad de las estimaciones sin
-cambios. Se dejó el cambio igual (config razonable por default, no hace
-daño), pero **no resuelve el problema real**. La causa raíz de la
-latencia sigue sin identificarse — ver `BACKLOG.md` § Performance para
-las hipótesis pendientes de probar (instrumentar tiempos, revisar
-cuota/tier de la API key, confirmar el modelo, investigar los 500
-intermitentes).
+---
 
-**Commits:** `3cb9bbe` (docs: research/spec/tasks documentando el
-intento), `44cfc8c` (perf: el cambio de código en `vision.ts`).
+## 2026-08-26 — Seis hallazgos de la tercera vuelta de `/speckit-analyze`, dejados sin resolver a propósito
+
+**Decisión:** tras revisarlos uno por uno con el usuario, se dejaron sin
+resolver explícitamente ("no, basta, eso los dejamos así") — no se
+perdieron ni se descartaron por omisión. No re-plantearlos como
+hallazgos nuevos en una futura vuelta de `/speckit-analyze` sin revisar
+antes esta entrada.
+
+- **G1** — falta test de que la descripción (FR-017/US2#3) mencione la
+  bebida si está presente.
+- **G2** — la agregación del tablero de varios desgloses ya redondeados
+  a 100% puede no cerrar en 100% exacto; falta algoritmo de redondeo
+  definido y test.
+- **A1** — FR-029 no define qué cuenta como "editar manualmente" antes
+  de guardar con confianza ≤70%.
+- **I1** — `contracts/api.md` describe `GET /api/auth/verify` como 200
+  pero en la misma línea dice que redirige con 302 (contradictorio).
+- **I2** — diseño de una sola sesión activa por usuario (loguearse en un
+  segundo dispositivo invalida la del primero en silencio) sólo
+  documentado en `research.md`, nunca como supuesto visible en
+  `spec.md`.
+- **U1** — T041 llama "p95" a una medición de una sola corrida
+  mockeada, no es un p95 real (cosmético, ya cubierto correctamente por
+  T059).
