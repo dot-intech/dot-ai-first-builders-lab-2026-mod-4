@@ -51,18 +51,6 @@ descartó deshabilitar el razonamiento extendido del modelo (`thinkingBudget
 
 ## UX
 
-- [ ] **Mostrar la imagen cargada por el usuario durante el análisis y
-  junto a la estimación devuelta.** Hoy `CapturaImagen.tsx` sólo muestra
-  el texto "Analizando tu foto…" mientras se procesa, y el formulario de
-  revisión (`RevisionConsumo.tsx`) no muestra la foto en ningún momento
-  — el usuario pierde de vista qué plato fotografió. Se puede lograr
-  con `URL.createObjectURL(file)` en el cliente, sin persistir ni
-  enviar la imagen a ningún lado nuevo — sigue siendo 100% cliente, no
-  viola RNF-07 (cero persistencia de imágenes; la imagen ya viaja al
-  server para el análisis, esto sólo la muestra también en pantalla).
-  Recordar liberar el object URL (`URL.revokeObjectURL`) al desmontar o
-  reemplazar la imagen para no filtrar memoria.
-
 - [ ] **Agrandar el campo de la descripción para que se lea completa.**
   Hoy `RevisionConsumo.tsx:89-90` muestra la descripción devuelta por
   el modelo en un `<input>` de una sola línea — queda feo y corta el

@@ -1,21 +1,41 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CapturaImagen, { type EstimacionAnalisis } from "@/components/CapturaImagen";
 import RevisionConsumo from "@/components/RevisionConsumo";
 
 type Paso =
   | { tipo: "captura" }
-  | { tipo: "revision"; estimacion: EstimacionAnalisis }
-  | { tipo: "manual"; mensajeError: string };
+  | { tipo: "revision"; estimacion: EstimacionAnalisis; imagenUrl: string }
+  | { tipo: "manual"; mensajeError: string; imagenUrl: string };
 
 export default function NuevoConsumoPage() {
   const router = useRouter();
   const [paso, setPaso] = useState<Paso>({ tipo: "captura" });
+  const imagenUrlActualRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (imagenUrlActualRef.current) URL.revokeObjectURL(imagenUrlActualRef.current);
+    };
+  }, []);
+
+  function reemplazarImagenUrl(nuevaUrl: string | null) {
+    if (imagenUrlActualRef.current && imagenUrlActualRef.current !== nuevaUrl) {
+      URL.revokeObjectURL(imagenUrlActualRef.current);
+    }
+    imagenUrlActualRef.current = nuevaUrl;
+  }
 
   function irAlTablero() {
+    reemplazarImagenUrl(null);
     router.push("/tablero");
+  }
+
+  function volverACaptura() {
+    reemplazarImagenUrl(null);
+    setPaso({ tipo: "captura" });
   }
 
   return (
@@ -25,8 +45,14 @@ export default function NuevoConsumoPage() {
       {paso.tipo === "captura" && (
         <>
           <CapturaImagen
-            onExito={(estimacion) => setPaso({ tipo: "revision", estimacion })}
-            onError={(mensaje) => setPaso({ tipo: "manual", mensajeError: mensaje })}
+            onExito={(estimacion, imagenUrl) => {
+              reemplazarImagenUrl(imagenUrl);
+              setPaso({ tipo: "revision", estimacion, imagenUrl });
+            }}
+            onError={(mensaje, imagenUrl) => {
+              reemplazarImagenUrl(imagenUrl);
+              setPaso({ tipo: "manual", mensajeError: mensaje, imagenUrl });
+            }}
           />
           <button type="button" onClick={irAlTablero}>
             Cancelar
@@ -37,16 +63,17 @@ export default function NuevoConsumoPage() {
       {paso.tipo === "revision" && (
         <RevisionConsumo
           inicial={paso.estimacion}
+          imagenUrl={paso.imagenUrl}
           onCancelar={irAlTablero}
           onGuardado={irAlTablero}
-          onRecargarImagen={() => setPaso({ tipo: "captura" })}
+          onRecargarImagen={volverACaptura}
         />
       )}
 
       {paso.tipo === "manual" && (
         <>
           <p role="alert">{paso.mensajeError} — completá los datos manualmente.</p>
-          <RevisionConsumo inicial={null} onCancelar={irAlTablero} onGuardado={irAlTablero} />
+          <RevisionConsumo inicial={null} imagenUrl={paso.imagenUrl} onCancelar={irAlTablero} onGuardado={irAlTablero} />
         </>
       )}
     </main>

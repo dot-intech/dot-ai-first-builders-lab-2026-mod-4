@@ -11,6 +11,48 @@ como entrada nueva (más reciente arriba) — no se deja tildado `[X]` en
 
 ---
 
+## 2026-08-29 — Mostrar la imagen cargada durante el análisis y la revisión
+
+**Problema:** `CapturaImagen.tsx` sólo mostraba el texto "Analizando tu
+foto…" mientras se procesaba, y `RevisionConsumo.tsx` no mostraba la foto
+en ningún momento (ni en la revisión de una estimación exitosa, ni en la
+carga manual tras un error) — el usuario perdía de vista qué plato había
+fotografiado.
+
+**Resolución:** segundo ítem tomado con el flujo formal de `AGENTS.md`
+§ "Flujo para tomar un ítem del backlog" (modificar spec existente): se
+agregó **FR-019a** a `spec.md` junto con los escenarios **1a, 6a y 7a**
+de User Story 2, se corrió `/speckit-clarify` (2 preguntas: sí mostrar
+también en la carga manual tras error; sin ampliar/zoom, tamaño fijo; la
+imagen se reemplaza al recargar), `/speckit-checklist` (checklist nuevo
+`imagen-cargada.md`, 7 ítems — 2 resueltos de forma interactiva con el
+usuario, 5 por consistencia directa con el resto del spec), se
+actualizaron a mano `quickstart.md` (Escenario 2) y `plan.md`
+(estructura de `components/`), `/speckit-analyze` no encontró
+bloqueantes de constitución (sólo el gap esperado de cobertura de tarea),
+y `/speckit-converge` agregó **T064–T067** a `tasks.md` (Phase 10:
+Convergence). Implementado levantando un `object URL`
+(`URL.createObjectURL`) en `CapturaImagen.tsx` al seleccionar el
+archivo, expuesto hacia `app/nuevo/page.tsx` a través de los callbacks
+`onExito`/`onError`, pasado como prop `imagenUrl` a `RevisionConsumo.tsx`
+(cubre tanto el modo revisión como el de carga manual), y
+`URL.revokeObjectURL` en la página al reemplazar, cancelar, guardar o
+desmontar. Sin test automatizado dedicado — mismo patrón que
+T053/T054/T063 (el proyecto no tiene RTL/jsdom). 98/98 tests, typecheck y
+`eslint` en verde (sólo 2 warnings esperados por usar `<img>` con `blob:`
+URLs en vez de `next/image`) tras el cambio; verificación manual del
+flujo completo (cámara/galería, baja confianza + recargar imagen, error
++ carga manual) confirmada por el usuario en los 4 momentos.
+
+**Por qué así (no otra alternativa):** no se creó una spec nueva porque
+el cambio refina un área ya declarada (User Story 2, FR-019/FR-024/
+FR-023) sin introducir una capacidad nueva del producto; no se tocó
+`research.md`/`data-model.md`/`contracts/api.md` porque es una
+visualización puramente de cliente, sin endpoint ni columna nueva
+(consistente con FR-031, cero persistencia de imágenes).
+
+---
+
 ## 2026-08-29 — Agregar una forma de volver al tablero desde el historial
 
 **Problema:** `app/historial/page.tsx` no tenía ningún link/botón de

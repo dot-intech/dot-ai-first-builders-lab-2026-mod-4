@@ -485,29 +485,34 @@ historial") — sin cobertura de tarea todavía.
 FR-019a (amend de spec, ítem de `BACKLOG.md` "mostrar la imagen cargada
 durante el análisis y la revisión") — sin cobertura de tarea todavía.
 
-- [ ] T064 [US2] Modificar `components/CapturaImagen.tsx` para crear un
+- [X] T064 [US2] Modificar `components/CapturaImagen.tsx` para crear un
       object URL (`URL.createObjectURL`) del archivo seleccionado y
       mostrarlo como miniatura de tamaño fijo (sin zoom) mientras
       `procesando` es `true`, exponiendo ese URL al padre a través de los
       callbacks `onExito`/`onError`, para pasar FR-019a / escenario 1a
       (missing).
-- [ ] T065 [US2] Modificar `components/RevisionConsumo.tsx` para aceptar
+- [X] T065 [US2] Modificar `components/RevisionConsumo.tsx` para aceptar
       una prop `imagenUrl` opcional y mostrarla junto a los campos
       editables, tanto en modo revisión de estimación (`inicial` no nulo)
       como en modo carga manual tras error (`inicial` nulo), para pasar
       FR-019a / escenarios 6a y 7a (missing).
-- [ ] T066 [US2] Modificar `app/nuevo/page.tsx` para levantar a `Paso` el
+- [X] T066 [US2] Modificar `app/nuevo/page.tsx` para levantar a `Paso` el
       `imagenUrl` recibido de `CapturaImagen`, pasarlo a `RevisionConsumo`
       en los pasos `revision` y `manual`, reemplazarlo (revocando el
       anterior con `URL.revokeObjectURL`) cuando el usuario recarga
       imagen desde "Cargar otra imagen", y revocarlo también al cancelar,
       guardar o desmontar, para pasar FR-019a (missing) — incluye la
       decisión de reemplazo de `checklists/imagen-cargada.md` CHK006.
-- [ ] T067 [US2] Verificación manual vía `quickstart.md` Escenario 2,
+      Verificado: `npx tsc --noEmit` sin errores, `npm run lint` sin
+      errores (2 warnings pre-existentes por usar `<img>` en vez de
+      `next/image`, esperado con `blob:` URLs), `npm test` 98/98 en
+      verde, y `/nuevo` renderiza sin errores en `next dev`.
+- [X] T067 [US2] Verificación manual vía `quickstart.md` Escenario 2,
       pasos 1, 2, 5 y 7 (miniatura visible durante el procesamiento, en la
       revisión de una estimación exitosa, tras recargar imagen, y en la
       carga manual luego de un error) — sin test automatizado dedicado,
       mismo patrón que T053/T054/T063 (el proyecto no tiene RTL/jsdom).
+      Confirmado por el usuario: se ve bien en los 4 momentos.
 
 ---
 

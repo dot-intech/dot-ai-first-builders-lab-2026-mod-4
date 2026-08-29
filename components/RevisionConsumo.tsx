@@ -13,6 +13,7 @@ export interface EstimacionInicial {
 
 interface RevisionConsumoProps {
   inicial: EstimacionInicial | null;
+  imagenUrl?: string | null;
   onCancelar: () => void;
   onGuardado: () => void;
   onRecargarImagen?: () => void;
@@ -27,7 +28,7 @@ const DESGLOSE_VACIO: DesgloseNutricional = {
 
 const UMBRAL_BAJA_CONFIANZA = 0.7;
 
-export default function RevisionConsumo({ inicial, onCancelar, onGuardado, onRecargarImagen }: RevisionConsumoProps) {
+export default function RevisionConsumo({ inicial, imagenUrl, onCancelar, onGuardado, onRecargarImagen }: RevisionConsumoProps) {
   const [descripcion, setDescripcion] = useState(inicial?.descripcion ?? "");
   const [calorias, setCalorias] = useState(inicial?.calorias ?? 0);
   const [desglose, setDesglose] = useState<DesgloseNutricional>(inicial?.desglose ?? DESGLOSE_VACIO);
@@ -72,6 +73,14 @@ export default function RevisionConsumo({ inicial, onCancelar, onGuardado, onRec
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12, width: 320 }}>
       <p>Esta estimación puede ser inexacta — revisala antes de guardar.</p>
+
+      {imagenUrl && (
+        <img
+          src={imagenUrl}
+          alt="Foto del consumo cargada"
+          style={{ width: 160, height: 160, objectFit: "cover" }}
+        />
+      )}
 
       {bajaConfianza && (
         <div role="alert">
