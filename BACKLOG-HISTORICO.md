@@ -24,12 +24,7 @@ alcance — cubierto por el ítem de Pico.css en `BACKLOG.md`.
 ## 2026-08-29 — FR-019a: mostrar la imagen cargada durante el análisis y la revisión
 
 Amend de spec vía flujo `AGENTS.md` (no spec nueva: refina User Story 2
-existente). Decisiones resueltas en checklist: miniatura de tamaño fijo,
-sin zoom; se reemplaza (no convive) al recargar imagen con "Cargar otra
-imagen"; se muestra también en la carga manual tras error de análisis,
-no sólo en la revisión de una estimación exitosa. Implementado con
-`URL.createObjectURL` en el cliente, sin persistencia en backend
-(FR-031).
+existente). Ver T064-T067 en `specs/001-registro-consumo-foto/tasks.md`.
 
 **Commits:** `969f8e5` (spec/checklist/tasks), `3ac810d` (implementación).
 
@@ -37,11 +32,10 @@ no sólo en la revisión de una estimación exitosa. Implementado con
 
 ## 2026-08-29 — FR-034b: volver al tablero desde el historial
 
-Amend de spec vía flujo `AGENTS.md`. Decisión: opción de navegación
-visible, sin scroll adicional, sólo en Historial (no se generalizó a
-otras pantallas). Resuelto con `<Link>` de Next.js, sin lógica de
-cliente. Primera vez que se corrió el flujo de punta a punta — validó
-que `AGENTS.md` alcanza sin tener que volver a preguntar el proceso.
+Amend de spec vía flujo `AGENTS.md`. Ver T063 en
+`specs/001-registro-consumo-foto/tasks.md`. Primera vez que se corrió
+el flujo de punta a punta — validó que `AGENTS.md` alcanza sin tener
+que volver a preguntar el proceso.
 
 **Commits:** `5cd0a14` (spec/checklist/tasks), `0535387` (implementación).
 
@@ -65,16 +59,11 @@ ya elegida (Postgres vía Docker Compose, sin ORM).
 
 ## 2026-08-28 — Descartado: thinkingBudget=0 como fix de performance (FR-022/SC-001)
 
-**Hipótesis:** el modelo `gemini-3.1-flash-lite` podía estar usando un
-presupuesto de "thinking" alto por default, explicando el p95 de 31.56s
-medido en T059 (vs. umbral de 10s).
-
-**Resultado:** se probó `generationConfig.thinkingConfig.thinkingBudget
-= 0` en `lib/ai/vision.ts` — **sin mejora significativa** de latencia.
-Se dejó el cambio (config razonable, no hace daño) pero **la causa raíz
-sigue sin identificarse** — no volver a probar esta hipótesis sin
-evidencia nueva. Ver `BACKLOG.md` § Performance para las hipótesis
-pendientes.
+Spike descartado — ver T059b en
+`specs/001-registro-consumo-foto/tasks.md`: sin mejora significativa de
+latencia, causa raíz sigue sin identificarse. No volver a probar esta
+hipótesis sin evidencia nueva. Ver `BACKLOG.md` § Performance para las
+hipótesis pendientes.
 
 **Commits:** `3cb9bbe`, `44cfc8c`.
 
