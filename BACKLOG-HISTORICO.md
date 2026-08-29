@@ -10,6 +10,21 @@ puntero al commit. Ver `AGENTS.md` § Backlog.
 
 ---
 
+## 2026-08-29 — Agrandar el campo de la descripción para que se lea completa
+
+Sin amend de spec (no agrega ni modifica ningún FR — FR-024 ya permite
+editar la descripción sin mandatar el tipo de control). `<input>` de una
+línea reemplazado por `<textarea>`; primera vuelta (sólo cambiar el tag)
+dejó el texto cortado porque el ancho por defecto del navegador es menor
+al del contenedor — resuelto con `width: 100%` + `box-sizing:
+border-box` en el `textarea` y `display: block` en el `label`. Ancho
+general del contenedor (320px, sensación de pantalla "estrecha") queda
+fuera de alcance — cubierto por el ítem de Pico.css en `BACKLOG.md`.
+
+**Commits:** `15c97dd` (tasks.md), `6f924ed` (implementación).
+
+---
+
 ## 2026-08-29 — FR-019a: mostrar la imagen cargada durante el análisis y la revisión
 
 Amend de spec vía flujo `AGENTS.md` (no spec nueva: refina User Story 2
