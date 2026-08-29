@@ -100,6 +100,28 @@ comportamiento observable, ese cambio sí entra al flujo de arriba (paso 1).
 ### 4. Implementación
 Siempre TDD (rojo → verde), como en la feature 001.
 
+## Principios de implementación
+Aplican a cualquier cambio de código (fix, feature, ítem de backlog), no
+sólo a los que pasan por el flujo de arriba.
+
+- **Cambio mínimo indispensable.** Al resolver un fix o agregar una
+  feature sobre código ya existente, tocar sólo lo estrictamente
+  necesario para completar la tarea — no aprovechar el cambio para
+  refactors, limpieza o ajustes no pedidos, aunque se los note al pasar.
+  Si algo fuera de alcance amerita cambiarse, es un ítem de `BACKLOG.md`
+  aparte, no parte de este commit.
+- **No duplicar lógica que ya existe.** Si código nuevo necesita algo que
+  ya está resuelto en otro lugar (misma lógica, no sólo código
+  parecido), extraerlo a una función/componente reusable e invocarlo
+  desde ambos puntos en vez de copiar/pegar una vez más — además de
+  reducir superficie de bugs, el test queda encapsulado en un único
+  lugar en vez de repetirse por cada copia. **Esto no es licencia para
+  refactorizar duplicación preexistente no relacionada con la tarea
+  actual** — eso choca con el principio anterior; si amerita hacerse, es
+  un ítem de `BACKLOG.md` aparte. Tampoco es licencia para abstraer
+  preventivamente ante un caso hipotético que todavía no existe — eso
+  sigue evitándose igual que antes.
+
 ## Commits
 - **Unidad de commit** = el código + sus tests + el estado de `tasks.md`
   para esa tarea (tildada si se completó, o con su status si es un
