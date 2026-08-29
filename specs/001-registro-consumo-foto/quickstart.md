@@ -114,6 +114,8 @@ Repetir el Escenario 2 eligiendo "Nuevo" → galería en vez de cámara →
    vacío, no una lista en blanco.
 4. Ver el detalle de un consumo guardado → **esperado**: no hay opción de
    editar, sólo de eliminar (FR-034a).
+5. Desde el Historial, sin usar el botón "atrás" del navegador → **esperado**:
+   existe una opción visible para volver al tablero principal (FR-034b).
 
 ## Escenario 6 — Eliminar un consumo (User Story 5, P3)
 

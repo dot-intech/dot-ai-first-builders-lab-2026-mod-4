@@ -395,6 +395,10 @@ no se contabiliza en el tablero del día correspondiente.
   Historial sólo se ofrece la opción de eliminarlo. La edición de la
   descripción, calorías y desglose sólo está disponible antes de confirmar el
   guardado (ver FR-024).
+- **FR-034b**: El Historial MUST ofrecer una opción visible (sin requerir
+  scroll adicional) para volver al tablero principal, sin depender de la
+  navegación "atrás" del navegador. La posición exacta dentro de la pantalla
+  queda a criterio de implementación.
 
 **Seguridad y accesos**
 
