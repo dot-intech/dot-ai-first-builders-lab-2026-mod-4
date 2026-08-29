@@ -51,6 +51,15 @@ descartó deshabilitar el razonamiento extendido del modelo (`thinkingBudget
 
 ## UX
 
+- [ ] **Agregar un indicador visual (spinner/animación) mientras se
+  procesa la imagen, no sólo texto.** FR-019 ya exige "un indicador
+  gráfico de procesamiento" (RF-18), pero hoy `CapturaImagen.tsx:58`
+  sólo muestra `<p role="status">Analizando tu foto…</p>` — sin nada
+  gráfico/animado. No requiere tocar el spec (FR-019 ya lo cubre, es un
+  refinamiento de la implementación existente, no una capacidad nueva):
+  agregar un spinner (CSS puro, sin librería) junto al texto, sin sacar
+  el `role="status"` (accesibilidad).
+
 - [ ] **Subir el límite de la descripción de 120 a 200 caracteres.**
   FR-017 (y el `CHECK` en `data-model.md`/migración de `consumos`,
   `DESCRIPCION_MAX_LENGTH` en `lib/ai/vision.ts`, y la validación en
