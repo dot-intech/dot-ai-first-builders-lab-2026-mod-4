@@ -89,7 +89,7 @@ npm test                    # suite Vitest (unit + integration + contract)
    **vacío** (no prellenado) para descripción, calorías y desglose
    (FR-023), mostrando igual la miniatura de la foto que falló al
    analizarse (FR-019a); se guarda igual que una estimación revisada, con
-   la misma validación (no vacía, ≤120 caracteres, desglose suma 100%,
+   la misma validación (no vacía, ≤200 caracteres, desglose suma 100%,
    calorías ≥ 0).
 
 ## Escenario 3 — Cero persistencia de imágenes (RNF-07 / SC-002)

@@ -342,7 +342,7 @@ no se contabiliza en el tablero del día correspondiente.
   internamente un modelo de visión a través de la API de Google AI Studio,
   enviando la imagen y un prompt con los datos a extraer. (RF-11)
 - **FR-017**: El sistema MUST mostrar una descripción amigable, breve y
-  concisa (no vacía, de hasta 120 caracteres, sin prosa extensa) de los
+  concisa (no vacía, de hasta 200 caracteres, sin prosa extensa) de los
   alimentos identificados, mencionando la bebida si está presente. (RF-12)
 - **FR-018**: El sistema MUST mostrar la cantidad de calorías estimada a
   partir del análisis de la imagen. (RF-13)
@@ -371,12 +371,12 @@ no se contabiliza en el tablero del día correspondiente.
   usuario hacer una carga manual de la descripción, cantidad de calorías y
   desglose nutricional del consumo; la descripción cargada manualmente
   MUST cumplir el mismo límite que una generada por el modelo (no vacía,
-  hasta 120 caracteres — ver FR-017), y el desglose cargado manualmente
+  hasta 200 caracteres — ver FR-017), y el desglose cargado manualmente
   MUST sumar exactamente 100% en las 4 categorías, igual que uno generado
   por el modelo. (RF-21)
 - **FR-024**: El sistema MUST permitir al usuario editar la descripción, las
   calorías y el desglose obtenidos antes de guardar el consumo. La
-  descripción editada MUST seguir siendo no vacía y de hasta 120
+  descripción editada MUST seguir siendo no vacía y de hasta 200
   caracteres (ver FR-017); las calorías (estimadas o editadas) MUST ser un
   número no negativo, y el desglose nutricional editado MUST seguir
   sumando exactamente 100% en sus 4 categorías. (RF-22)

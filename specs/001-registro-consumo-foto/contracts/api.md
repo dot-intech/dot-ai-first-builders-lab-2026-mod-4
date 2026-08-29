@@ -89,13 +89,13 @@ Guarda un consumo ya revisado/confirmado (FR-015, FR-024).
 - **Body**:
   ```json
   {
-    "descripcion": "string no vacía, hasta 120 caracteres",
+    "descripcion": "string no vacía, hasta 200 caracteres",
     "calorias": 0,
     "desglose": { "carbohidratos": 0, "proteinas": 0, "grasas": 0, "otrosNutrientes": 0 }
   }
   ```
 - **201**: `{ "id": "uuid", "fechaHora": "ISO-8601" }`.
-- **400**: `descripcion` vacía o de más de 120 caracteres (FR-017,
+- **400**: `descripcion` vacía o de más de 200 caracteres (FR-017,
   aplicable igual si vino del modelo, de carga manual o de edición del
   usuario — FR-023, FR-024), `calorias < 0`, desglose no entero, o
   desglose que no suma 100 (reforzado por el `CHECK` de `data-model.md`).
