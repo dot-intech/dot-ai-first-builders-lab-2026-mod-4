@@ -93,11 +93,13 @@ export default function RevisionConsumo({ inicial, imagenUrl, onCancelar, onGuar
         </div>
       )}
 
-      <label>
+      <label style={{ display: "block" }}>
         Descripción
-        <input
+        <textarea
           value={descripcion}
           maxLength={120}
+          rows={3}
+          style={{ display: "block", width: "100%", boxSizing: "border-box" }}
           onChange={(e) => {
             setDescripcion(e.target.value);
             setEditadoManualmente(true);

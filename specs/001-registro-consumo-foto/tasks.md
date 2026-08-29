@@ -524,11 +524,20 @@ modifica ningún FR, FR-024 ya permite editar la descripción sin mandatar
 el tipo de control; es un cambio de presentación dentro de un flujo ya
 especificado.
 
-- [ ] T068 [US2] Cambiar en `components/RevisionConsumo.tsx` el `<input>`
+- [X] T068 [US2] Cambiar en `components/RevisionConsumo.tsx` el `<input>`
       de la descripción por un `<textarea>` (mismo `value`/`onChange`,
       mismo `maxLength={120}`), para que el texto se lea completo sin
       necesidad de editar — sin cambios en FR-017/FR-024 (límite y
-      edición no cambian, sólo el control).
+      edición no cambian, sólo el control). Verificado: `npx tsc --noEmit`
+      sin errores, `npm run lint` sin errores (mismos 2 warnings
+      preexistentes de `<img>`), `npm test` 98/98 en verde — sin test
+      automatizado dedicado (el proyecto no tiene RTL/jsdom, mismo patrón
+      que T053/T054/T063/T067). Primera vuelta (sólo `<textarea>`) dejaba
+      el texto cortado — el ancho por defecto del navegador es mucho
+      menor a los 320px del contenedor; agregado `style={{ display:
+      "block", width: "100%", boxSizing: "border-box" }}` en el
+      `<textarea>` y `display: "block"` en el `<label>` para que ocupe el
+      ancho disponible. Confirmado por el usuario: ya no se corta.
 
 ---
 

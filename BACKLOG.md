@@ -51,15 +51,6 @@ descartó deshabilitar el razonamiento extendido del modelo (`thinkingBudget
 
 ## UX
 
-- [ ] **Agrandar el campo de la descripción para que se lea completa.**
-  Hoy `RevisionConsumo.tsx:89-90` muestra la descripción devuelta por
-  el modelo en un `<input>` de una sola línea — queda feo y corta el
-  texto si es largo, aunque el límite sea de 120 caracteres (FR-017).
-  El campo debe seguir siendo editable (FR-024/FR-028/FR-029), sólo
-  cambia el control — por ejemplo un `<textarea>` o un `<input>` con
-  más ancho/múltiples líneas, para que se vea la descripción completa
-  sin necesidad de editar.
-
 - [ ] **Subir el límite de la descripción de 120 a 200 caracteres.**
   FR-017 (y el `CHECK` en `data-model.md`/migración de `consumos`,
   `DESCRIPCION_MAX_LENGTH` en `lib/ai/vision.ts`, y la validación en
