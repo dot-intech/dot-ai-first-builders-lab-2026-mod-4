@@ -469,12 +469,15 @@ independiente.
 FR-034b (amend de spec, ítem de `BACKLOG.md` "volver al tablero desde el
 historial") — sin cobertura de tarea todavía.
 
-- [ ] T063 [US4] Agregar en `app/historial/page.tsx` una opción visible
+- [X] T063 [US4] Agregar en `app/historial/page.tsx` una opción visible
       (sin scroll adicional) para volver a `/tablero`, sin depender del
       botón "atrás" del navegador, para pasar FR-034b (missing) —
       verificación manual vía `quickstart.md` Escenario 5, paso 5; sin
       test automatizado dedicado, mismo patrón que T053/T054 (el proyecto
       no tiene RTL/jsdom, sólo tests de integración a nivel API/DB)
+      — Implementado con `<Link href="/tablero">` de Next.js en
+      `app/historial/page.tsx` (server component, no requiere lógica de
+      cliente).
 
 ---
 

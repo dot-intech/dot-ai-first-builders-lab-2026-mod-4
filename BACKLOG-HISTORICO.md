@@ -11,6 +11,45 @@ como entrada nueva (más reciente arriba) — no se deja tildado `[X]` en
 
 ---
 
+## 2026-08-29 — Agregar una forma de volver al tablero desde el historial
+
+**Problema:** `app/historial/page.tsx` no tenía ningún link/botón de
+vuelta al tablero — la única forma de salir era el botón "atrás" del
+navegador.
+
+**Resolución:** primer ítem tomado con el flujo formal de `AGENTS.md`
+§ "Flujo para tomar un ítem del backlog" (modificar spec existente, no
+spec nueva): se agregó **FR-034b** a `spec.md` ("el Historial MUST
+ofrecer una opción visible, sin scroll adicional, para volver al
+tablero principal, sin depender del botón 'atrás'"), se corrió
+`/speckit-clarify` (0 preguntas — sin ambigüedades de alto impacto) y
+`/speckit-checklist` (checklist nuevo `navegacion-historial.md`, 5
+ítems, resueltos de forma interactiva con el usuario), se agregó el
+paso 5 al Escenario 5 de `quickstart.md`, `/speckit-analyze` no
+encontró problemas críticos, y `/speckit-converge` agregó **T063** a
+`tasks.md` (Phase 9: Convergence). Implementado con `<Link
+href="/tablero">` de Next.js directo en `app/historial/page.tsx`
+(server component, sin necesidad de lógica de cliente). Sin test
+automatizado dedicado — mismo patrón que T053/T054 (el proyecto no
+tiene RTL/jsdom, sólo tests de integración a nivel API/DB) —
+verificado manualmente vía el paso agregado en `quickstart.md`. 98/98
+tests, typecheck y `eslint` en verde tras el cambio.
+
+**Por qué así (no otra alternativa):** no se creó una spec nueva
+porque el cambio refina un área ya declarada (Historial, FR-032/FR-033)
+sin introducir una capacidad nueva del producto; no se tocó
+`research.md`/`data-model.md`/`contracts/api.md` porque es navegación
+pura sobre datos que la pantalla ya obtiene (`GET /api/consumos`), sin
+endpoint ni columna nueva.
+
+**Nota de proceso:** primera vez que se usa el flujo completo
+documentado en `AGENTS.md` de punta a punta — alcanzó sin tener que
+volver a preguntarle al usuario cómo proceder en ningún paso del
+pipeline de Spec Kit (sólo se consultaron decisiones de contenido del
+checklist, como está previsto).
+
+---
+
 ## 2026-08-28 — Separar la base de datos de tests de la de desarrollo
 
 **Problema:** `vitest.config.ts` cargaba el mismo `.env.local` que usa

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { obtenerSesionActual } from "@/lib/auth/guard";
 import { pool } from "@/lib/db/pool";
@@ -26,6 +27,7 @@ export default async function HistorialPage() {
 
   return (
     <main style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, padding: 48 }}>
+      <Link href="/tablero">← Volver al tablero</Link>
       <h1>Historial</h1>
       <HistorialLista consumosIniciales={consumosIniciales} />
     </main>

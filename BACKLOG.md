@@ -96,12 +96,6 @@ descartó deshabilitar el razonamiento extendido del modelo (`thinkingBudget
   al markup (salvo el uso puntual de alguna clase opcional de Pico,
   como `.outline` o `.grid`, si se llegara a usar).
 
-- [ ] **Agregar una forma de volver al tablero desde el historial.**
-  Hoy `app/historial/page.tsx` no tiene ningún link/botón de vuelta al
-  inicio — la única forma de salir es con el botón "atrás" del browser.
-  Agregar un link visible (por ejemplo "Volver al tablero") hacia
-  `app/tablero`.
-
 ## Otras mejoras propuestas (menor prioridad / no relacionadas a performance)
 
 - [ ] **Comprimir/redimensionar la imagen en el cliente antes de
