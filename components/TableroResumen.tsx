@@ -29,20 +29,34 @@ export default function TableroResumen() {
   useEffect(() => {
     let cancelado = false;
 
-    fetch(`/api/resumen-dia?fecha=${fechaLocalDeHoy()}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("No se pudo cargar el resumen del día");
-        return res.json();
-      })
-      .then((data: ResumenDia) => {
-        if (!cancelado) setResumen(data);
-      })
-      .catch(() => {
-        if (!cancelado) setError(true);
-      });
+    function buscarResumen() {
+      fetch(`/api/resumen-dia?fecha=${fechaLocalDeHoy()}`)
+        .then((res) => {
+          if (!res.ok) throw new Error("No se pudo cargar el resumen del día");
+          return res.json();
+        })
+        .then((data: ResumenDia) => {
+          if (!cancelado) setResumen(data);
+        })
+        .catch(() => {
+          if (!cancelado) setError(true);
+        });
+    }
+
+    buscarResumen();
+
+    // Al restaurarse desde el bfcache del navegador (event.persisted), el
+    // componente no se remonta y este efecto no se re-ejecuta solo — hay que
+    // volver a pedir el resumen a mano para no mostrar datos desactualizados
+    // (ver BACKLOG-HISTORICO.md, FR-012).
+    function alRestaurarDesdeBfcache(evento: PageTransitionEvent) {
+      if (evento.persisted) buscarResumen();
+    }
+    window.addEventListener("pageshow", alRestaurarDesdeBfcache);
 
     return () => {
       cancelado = true;
+      window.removeEventListener("pageshow", alRestaurarDesdeBfcache);
     };
   }, []);
 

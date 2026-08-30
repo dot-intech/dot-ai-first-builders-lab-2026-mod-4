@@ -10,6 +10,31 @@ puntero al commit. Ver `AGENTS.md` § Backlog.
 
 ---
 
+## 2026-08-30 — Fix: dona del tablero no se actualizaba tras restaurarse desde bfcache
+
+Bug preexistente encontrado por el usuario en testing manual (no relacionado
+a los dos ítems de UX cerrados el 2026-08-29 — confirmado con `git diff` que
+esos commits no tocan `TableroResumen.tsx` ni el flujo de guardado). Causa
+raíz: cuando el navegador restaura `/tablero` desde su back-forward cache
+(bfcache) tras un consumo guardado, el componente no se remonta, así que el
+`useEffect` de fetch-on-mount de `TableroResumen.tsx` no vuelve a dispararse
+(FR-012). Confirmado por el propio usuario vía consola del navegador
+("Page entered Back-Forward Cache").
+
+**Decisión:** agregar un listener de `pageshow` (`event.persisted`) que
+repite el fetch al restaurarse desde bfcache — patrón estándar para este
+caso, sin tocar la arquitectura de navegación. No se pudo verificar el fix
+con un repro automatizado extremo a extremo: Chromium excluye del bfcache
+cualquier página con DevTools Protocol conectado, que es justamente cómo
+Playwright controla el navegador — limitación de la herramienta de testing,
+no del fix en sí. Sin infraestructura de tests de componentes React en el
+proyecto (mismo caso que el ítem del spinner), así que tampoco hay test
+unitario para este cambio.
+
+**Commit:** `<pendiente>`.
+
+---
+
 ## 2026-08-29 — Subir el límite de la descripción de 120 a 200 caracteres
 
 Amend de spec vía flujo `AGENTS.md` (FR-017/FR-023/FR-024). Ver T069-T076
