@@ -6,6 +6,7 @@ vi.mock("@google/genai", () => ({
   GoogleGenAI: vi.fn().mockImplementation(function GoogleGenAI(this: object) {
     Object.assign(this, { models: { generateContent: generateContentMock } });
   }),
+  ThinkingLevel: { MINIMAL: "MINIMAL" },
 }));
 
 function mockRespuesta(json: unknown) {

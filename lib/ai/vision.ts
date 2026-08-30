@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, ThinkingLevel } from "@google/genai";
 import type { GenerateContentConfig } from "@google/genai";
 import type { DesgloseNutricional } from "@/lib/consumos/nutricion";
 
@@ -6,14 +6,17 @@ const MODEL_NAME = "gemini-3.1-flash-lite";
 const DESCRIPCION_MAX_LENGTH = 200;
 
 /**
- * thinkingBudget en 0 desactiva el razonamiento extendido del modelo: sin
- * esto, la API usa un presupuesto por default que resultó ser la causa
- * principal de la latencia observada en T059 (p95 de 31.56s bajo 4G, con
- * imágenes de sólo ~500KB). Si la calidad de las estimaciones se degrada
- * demasiado, subir a un budget chico (p. ej. 512) en vez de volver a 0.
+ * thinkingLevel es el dial vigente en Gemini 3.x para razonamiento extendido
+ * (reemplaza a thinkingBudget, el dial numérico legacy). MINIMAL ya es el
+ * default de gemini-3.1-flash-lite según la documentación de Gemini, así que
+ * fijarlo acá no cambia el comportamiento del modelo — queda explícito sólo
+ * para documentar la intención en el código. thinkingBudget=0 ya se probó
+ * por separado como fix de latencia y se descartó sin mejora (T059b, ver
+ * BACKLOG-HISTORICO.md); la causa raíz de la latencia de FR-022/SC-001 sigue
+ * sin identificarse (ver BACKLOG.md).
  */
 const GENERATION_CONFIG: GenerateContentConfig = {
-  thinkingConfig: { thinkingBudget: 0 },
+  thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL },
 };
 
 export type AnalisisImagen =
