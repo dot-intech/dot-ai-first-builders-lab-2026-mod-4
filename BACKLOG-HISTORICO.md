@@ -31,7 +31,7 @@ no del fix en sí. Sin infraestructura de tests de componentes React en el
 proyecto (mismo caso que el ítem del spinner), así que tampoco hay test
 unitario para este cambio.
 
-**Commit:** `<pendiente>`.
+**Commit:** `789a4d7`.
 
 ---
 
