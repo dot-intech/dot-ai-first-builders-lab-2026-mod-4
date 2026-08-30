@@ -51,17 +51,6 @@ descartó deshabilitar el razonamiento extendido del modelo (`thinkingBudget
 
 ## UX
 
-- [ ] **Subir el límite de la descripción de 120 a 200 caracteres.**
-  FR-017 (y el `CHECK` en `data-model.md`/migración de `consumos`,
-  `DESCRIPCION_MAX_LENGTH` en `lib/ai/vision.ts`, y la validación en
-  `lib/consumos/nutricion.ts`) limitan la descripción a 120 caracteres
-  — quedó corto, el texto del modelo se corta seguido. Subirlo a 200
-  toca: el `CHECK` de la tabla `consumos` (requiere migración), FR-017
-  y FR-023/FR-024 en `spec.md` (aplican el mismo límite a la carga
-  manual y a la edición), y los tests que fijan el límite en 120
-  (T021 y los de validación). Relacionado con el ítem de agrandar el
-  campo de descripción arriba.
-
 - [ ] **Adoptar Pico.css para mejorar el look and feel general de la
   UI.** Hoy todos los estilos son inline por componente (`style={{...}}`,
   ver por ejemplo `CapturaImagen.tsx`), sin ningún framework — los

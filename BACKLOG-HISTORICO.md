@@ -10,6 +10,19 @@ puntero al commit. Ver `AGENTS.md` § Backlog.
 
 ---
 
+## 2026-08-29 — Subir el límite de la descripción de 120 a 200 caracteres
+
+Amend de spec vía flujo `AGENTS.md` (FR-017/FR-023/FR-024). Ver T069-T076
+en `specs/001-registro-consumo-foto/tasks.md` (Phase 12: Convergence,
+agregadas por `/speckit-converge`). Constraint de `descripcion` en la
+tabla `consumos` (`consumos_descripcion_check`) actualizado con una
+migración nueva (`0002_ampliar_limite_descripcion.sql`), aplicada contra
+dev y test.
+
+**Commits:** `6bca9d2` (spec/checklist/tasks), `356555d` (implementación).
+
+---
+
 ## 2026-08-29 — Spinner visual durante el procesamiento de la imagen
 
 Sin amend de spec (FR-019/RF-18 ya exigía "indicador gráfico de
