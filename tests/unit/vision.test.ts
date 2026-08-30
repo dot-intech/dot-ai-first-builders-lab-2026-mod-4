@@ -1,18 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const generateContentMock = vi.fn();
-const getGenerativeModelMock = vi.fn(() => ({ generateContent: generateContentMock }));
 
-vi.mock("@google/generative-ai", () => ({
-  GoogleGenerativeAI: vi.fn().mockImplementation(function GoogleGenerativeAI(this: object) {
-    Object.assign(this, { getGenerativeModel: getGenerativeModelMock });
+vi.mock("@google/genai", () => ({
+  GoogleGenAI: vi.fn().mockImplementation(function GoogleGenAI(this: object) {
+    Object.assign(this, { models: { generateContent: generateContentMock } });
   }),
 }));
 
 function mockRespuesta(json: unknown) {
-  generateContentMock.mockResolvedValue({
-    response: { text: () => JSON.stringify(json) },
-  });
+  generateContentMock.mockResolvedValue({ text: JSON.stringify(json) });
 }
 
 beforeEach(() => {
@@ -54,8 +51,8 @@ describe("analizarImagen", () => {
     const { analizarImagen } = await import("@/lib/ai/vision");
     await analizarImagen(Buffer.from("fake-image"), "image/jpeg");
 
-    const partesEnviadas = generateContentMock.mock.calls[0][0] as Array<{ text?: string }>;
-    const textoPrompt = partesEnviadas.find((p) => typeof p.text === "string")?.text ?? "";
+    const paramsEnviados = generateContentMock.mock.calls[0][0] as { contents: Array<{ text?: string }> };
+    const textoPrompt = paramsEnviados.contents.find((p) => typeof p.text === "string")?.text ?? "";
     expect(textoPrompt.toLowerCase()).toContain("español");
   });
 

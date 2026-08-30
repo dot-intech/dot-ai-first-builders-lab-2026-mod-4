@@ -1,5 +1,5 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import type { GenerationConfig } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
+import type { GenerateContentConfig } from "@google/genai";
 import type { DesgloseNutricional } from "@/lib/consumos/nutricion";
 
 const MODEL_NAME = "gemini-3.1-flash-lite";
@@ -12,11 +12,7 @@ const DESCRIPCION_MAX_LENGTH = 200;
  * imágenes de sólo ~500KB). Si la calidad de las estimaciones se degrada
  * demasiado, subir a un budget chico (p. ej. 512) en vez de volver a 0.
  */
-interface GenerationConfigConThinking extends GenerationConfig {
-  thinkingConfig?: { thinkingBudget: number };
-}
-
-const GENERATION_CONFIG: GenerationConfigConThinking = {
+const GENERATION_CONFIG: GenerateContentConfig = {
   thinkingConfig: { thinkingBudget: 0 },
 };
 
@@ -64,16 +60,19 @@ export async function analizarImagen(buffer: Buffer, mimeType: string): Promise<
     throw new Error("GOOGLE_AI_API_KEY no está definida");
   }
 
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: MODEL_NAME, generationConfig: GENERATION_CONFIG });
+  const genAI = new GoogleGenAI({ apiKey });
 
   let texto: string;
   try {
-    const result = await model.generateContent([
-      { text: PROMPT },
-      { inlineData: { data: buffer.toString("base64"), mimeType } },
-    ]);
-    texto = result.response.text();
+    const result = await genAI.models.generateContent({
+      model: MODEL_NAME,
+      contents: [
+        { text: PROMPT },
+        { inlineData: { data: buffer.toString("base64"), mimeType } },
+      ],
+      config: GENERATION_CONFIG,
+    });
+    texto = result.text ?? "";
   } catch (error) {
     console.error("[lib/ai/vision] Error del SDK de Gemini:", error);
     throw new Error("El modelo de visión no respondió correctamente", { cause: error });
