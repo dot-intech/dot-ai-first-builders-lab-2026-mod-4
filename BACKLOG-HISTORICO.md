@@ -10,6 +10,29 @@ puntero al commit. Ver `AGENTS.md` § Backlog.
 
 ---
 
+## 2026-08-30 — Descartado: thinkingLevel=MINIMAL como fix de performance (FR-022/SC-001)
+
+Segunda vuelta del spike de `thinkingBudget=0` (2026-08-28), ahora con el
+dial vigente de Gemini 3.x tras migrar a `@google/genai` (ver entrada
+anterior). Documentación oficial de Gemini
+([ai.google.dev/gemini-api/docs/gemini-3](https://ai.google.dev/gemini-api/docs/gemini-3)):
+`MINIMAL` ya es el default de `gemini-3.1-flash-lite` sin pasar
+`thinkingConfig` — fijarlo explícito no cambia el comportamiento del
+modelo. Como el spike anterior con `thinkingBudget=0` (techo más agresivo
+aún, "0 tokens") ya se había descartado sin mejora, no hay expectativa de
+que esto resuelva la latencia; se implementó de todos modos para dejar el
+código con el dial oficial y tipado en vez del legacy no documentado.
+**Causa raíz de la latencia sigue sin identificarse** — ver `BACKLOG.md`
+§ Performance, ítem de instrumentar tiempos.
+
+**Decisión:** `thinkingConfig: { thinkingBudget: 0 }` →
+`thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL }` en
+`lib/ai/vision.ts`.
+
+**Commit:** `4d5f512`.
+
+---
+
 ## 2026-08-30 — Migrar de `@google/generative-ai` a `@google/genai`
 
 `@google/generative-ai` es el SDK **legacy** de Google, discontinuado en

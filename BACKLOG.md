@@ -16,44 +16,10 @@ Fast 4G real: 8/10 corridas violaron el umbral de 10s, 5/10 fallaron
 directamente (504/500). Las imágenes de prueba pesaban ≤500KB, así que
 **la subida de la imagen no es la causa principal** — descartada la
 hipótesis inicial de tamaño de imagen sin comprimir. Ya se probó y
-descartó deshabilitar el razonamiento extendido del modelo (`thinkingBudget
-= 0`) — ver `BACKLOG-HISTORICO.md`.
-
-- [ ] **Reintentar el spike de deshabilitar razonamiento extendido, pero con
-  `thinkingLevel` en vez de `thinkingBudget`.** Investigación de la sesión
-  2026-08-30, a partir de la pregunta de si "thinking budget" y "effort" son
-  lo mismo:
-  - El SDK que usa el proyecto es `@google/generative-ai@0.24.1` — el
-    paquete **legacy** de Google, discontinuado en favor de `@google/genai`
-    (SDK unificado). Confirmado en `package.json`.
-  - Los propios tipos de ese SDK (`generative-ai.d.ts`, interface
-    `GenerationConfig`) **no declaran `thinkingConfig` en ningún lado** — el
-    `thinkingConfig: { thinkingBudget: 0 }` de `lib/ai/vision.ts` es una
-    extensión manual de TypeScript (`extends GenerationConfig`) nunca tipada
-    ni documentada por el SDK.
-  - Sí se confirmó (leyendo `dist/index.js` del SDK instalado) que el
-    `generationConfig` se reenvía tal cual al body de la request, sin
-    reconstruirlo campo por campo — descartado que el SDK esté descartando
-    el campo en silencio; `thinkingBudget: 0` sí llegó a la API.
-  - Punto no confirmable sin documentación oficial: `thinkingBudget` es un
-    dial **numérico** (cantidad de tokens de "pensamiento"), el mecanismo de
-    los modelos Gemini 2.5. Gemini 3 introdujo `thinkingLevel`, un dial
-    **cualitativo** (`"low"`/`"high"`) — el equivalente real más cercano al
-    concepto de "effort" de otras APIs (ej. `reasoning_effort` de OpenAI).
-    Como acá el modelo es `gemini-3.1-flash-lite` (generación 3.x), es
-    plausible que `thinkingBudget=0` no sea el dial que realmente controla
-    la latencia para este modelo, y que el spike descartado
-    (`BACKLOG-HISTORICO.md`, 2026-08-28) haya tocado el parámetro
-    equivocado sin que la hipótesis original estuviera mal.
-  - **Actualización 2026-08-30 (post-migración a `@google/genai`, ver
-    `BACKLOG-HISTORICO.md`):** los tipos del SDK vigente (interface
-    `ThinkingConfig` en `node_modules/@google/genai/dist/genai.d.ts`) sí
-    declaran `thinkingLevel?: ThinkingLevel` (`"minimal"|"low"|"medium"|
-    "high"`), a diferencia del SDK legacy que no lo tipaba en absoluto.
-    Confirma que el campo existe a nivel de contrato del SDK — **no
-    confirma** que `gemini-3.1-flash-lite` puntualmente lo soporte ni cuál
-    es su valor mínimo aceptado; sigue pendiente revisar la documentación
-    de Gemini para eso antes de reintentar el spike.
+descartó deshabilitar el razonamiento extendido del modelo, tanto con
+`thinkingBudget = 0` (SDK legacy) como con `thinkingLevel: MINIMAL` (SDK
+vigente, que además ya es el default del modelo) — ver
+`BACKLOG-HISTORICO.md`.
 
 - [ ] **Investigar la causa raíz real de la latencia.** Instrumentar
   `app/api/consumos/analizar/route.ts` y `lib/ai/vision.ts` con logs de
@@ -61,8 +27,8 @@ descartó deshabilitar el razonamiento extendido del modelo (`thinkingBudget
   aislar cuánto del tiempo total es: (a) subida cliente→server, (b)
   espera de la respuesta de Gemini, (c) parseo. Con imágenes de 500KB,
   todo indica que el cuello de botella está en (b) — la llamada a Gemini
-  en sí — no en la red del cliente. Ya se descartó el presupuesto de
-  "thinking" del modelo como causa (ítem anterior).
+  en sí — no en la red del cliente. Ya se descartó el "thinking" del
+  modelo como causa (ver `BACKLOG-HISTORICO.md`).
 - [ ] **Revisar si la clave de `GOOGLE_AI_API_KEY` tiene límites de
   cuota/tier gratuito** que impongan latencia adicional o
   rate-limiting silencioso en Google AI Studio.
