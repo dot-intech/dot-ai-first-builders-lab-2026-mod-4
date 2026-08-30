@@ -19,6 +19,40 @@ hipótesis inicial de tamaño de imagen sin comprimir. Ya se probó y
 descartó deshabilitar el razonamiento extendido del modelo (`thinkingBudget
 = 0`) — ver `BACKLOG-HISTORICO.md`.
 
+- [ ] **Reintentar el spike de deshabilitar razonamiento extendido, pero con
+  `thinkingLevel` en vez de `thinkingBudget`.** Investigación de la sesión
+  2026-08-30, a partir de la pregunta de si "thinking budget" y "effort" son
+  lo mismo:
+  - El SDK que usa el proyecto es `@google/generative-ai@0.24.1` — el
+    paquete **legacy** de Google, discontinuado en favor de `@google/genai`
+    (SDK unificado). Confirmado en `package.json`.
+  - Los propios tipos de ese SDK (`generative-ai.d.ts`, interface
+    `GenerationConfig`) **no declaran `thinkingConfig` en ningún lado** — el
+    `thinkingConfig: { thinkingBudget: 0 }` de `lib/ai/vision.ts` es una
+    extensión manual de TypeScript (`extends GenerationConfig`) nunca tipada
+    ni documentada por el SDK.
+  - Sí se confirmó (leyendo `dist/index.js` del SDK instalado) que el
+    `generationConfig` se reenvía tal cual al body de la request, sin
+    reconstruirlo campo por campo — descartado que el SDK esté descartando
+    el campo en silencio; `thinkingBudget: 0` sí llegó a la API.
+  - Punto no confirmable sin documentación oficial: `thinkingBudget` es un
+    dial **numérico** (cantidad de tokens de "pensamiento"), el mecanismo de
+    los modelos Gemini 2.5. Gemini 3 introdujo `thinkingLevel`, un dial
+    **cualitativo** (`"low"`/`"high"`) — el equivalente real más cercano al
+    concepto de "effort" de otras APIs (ej. `reasoning_effort` de OpenAI).
+    Como acá el modelo es `gemini-3.1-flash-lite` (generación 3.x), es
+    plausible que `thinkingBudget=0` no sea el dial que realmente controla
+    la latencia para este modelo, y que el spike descartado
+    (`BACKLOG-HISTORICO.md`, 2026-08-28) haya tocado el parámetro
+    equivocado sin que la hipótesis original estuviera mal.
+  - **Antes de reintentar:** revisar la documentación actualizada de Gemini
+    para confirmar que `thinkingLevel` existe para `gemini-3.1-flash-lite`
+    y qué valor mínimo acepta — pendiente definir, la próxima sesión, cómo
+    consultar esa documentación (no hay docs de esta API vendorizadas en el
+    repo, a diferencia de las de Next.js en `node_modules/next/dist/docs/`).
+  - Evaluar también si conviene migrar de `@google/generative-ai` a
+    `@google/genai` (el SDK vigente) como parte de este ítem o aparte.
+
 - [ ] **Investigar la causa raíz real de la latencia.** Instrumentar
   `app/api/consumos/analizar/route.ts` y `lib/ai/vision.ts` con logs de
   tiempo (marca de tiempo antes/después de `model.generateContent`) para
