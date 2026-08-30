@@ -10,6 +10,29 @@ puntero al commit. Ver `AGENTS.md` § Backlog.
 
 ---
 
+## 2026-08-30 — Migrar de `@google/generative-ai` a `@google/genai`
+
+`@google/generative-ai` es el SDK **legacy** de Google, discontinuado en
+favor de `@google/genai` (SDK unificado) — surgió al investigar el ítem de
+`thinkingLevel` del backlog (los tipos del legacy no declaraban
+`thinkingConfig` en absoluto). Migración 1:1 sin cambio de comportamiento
+observable: mismo modelo, mismo `thinkingConfig: { thinkingBudget: 0 }`,
+misma forma de `AnalisisImagen`. Único punto de contacto en
+`lib/ai/vision.ts` (Principio II de la constitución), así que el resto del
+proyecto no se vio afectado.
+
+**Decisión:** `new GoogleGenAI({ apiKey })` +
+`genAI.models.generateContent({ model, contents, config })` en vez de
+`genAI.getGenerativeModel(...).generateContent([...])`; `result.text`
+(getter) en vez de `result.response.text()` (método). Confirma, vía los
+tipos del SDK instalado, que `thinkingLevel` existe como campo de
+`ThinkingConfig` — detalle agregado al ítem de `thinkingLevel` en
+`BACKLOG.md`, que sigue abierto.
+
+**Commit:** `79047d2`.
+
+---
+
 ## 2026-08-30 — Fix: dona del tablero no se actualizaba tras restaurarse desde bfcache
 
 Bug preexistente encontrado por el usuario en testing manual (no relacionado

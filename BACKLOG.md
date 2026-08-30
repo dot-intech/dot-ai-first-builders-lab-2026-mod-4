@@ -45,13 +45,15 @@ descartó deshabilitar el razonamiento extendido del modelo (`thinkingBudget
     la latencia para este modelo, y que el spike descartado
     (`BACKLOG-HISTORICO.md`, 2026-08-28) haya tocado el parámetro
     equivocado sin que la hipótesis original estuviera mal.
-  - **Antes de reintentar:** revisar la documentación actualizada de Gemini
-    para confirmar que `thinkingLevel` existe para `gemini-3.1-flash-lite`
-    y qué valor mínimo acepta — pendiente definir, la próxima sesión, cómo
-    consultar esa documentación (no hay docs de esta API vendorizadas en el
-    repo, a diferencia de las de Next.js en `node_modules/next/dist/docs/`).
-  - Evaluar también si conviene migrar de `@google/generative-ai` a
-    `@google/genai` (el SDK vigente) como parte de este ítem o aparte.
+  - **Actualización 2026-08-30 (post-migración a `@google/genai`, ver
+    `BACKLOG-HISTORICO.md`):** los tipos del SDK vigente (interface
+    `ThinkingConfig` en `node_modules/@google/genai/dist/genai.d.ts`) sí
+    declaran `thinkingLevel?: ThinkingLevel` (`"minimal"|"low"|"medium"|
+    "high"`), a diferencia del SDK legacy que no lo tipaba en absoluto.
+    Confirma que el campo existe a nivel de contrato del SDK — **no
+    confirma** que `gemini-3.1-flash-lite` puntualmente lo soporte ni cuál
+    es su valor mínimo aceptado; sigue pendiente revisar la documentación
+    de Gemini para eso antes de reintentar el spike.
 
 - [ ] **Investigar la causa raíz real de la latencia.** Instrumentar
   `app/api/consumos/analizar/route.ts` y `lib/ai/vision.ts` con logs de
