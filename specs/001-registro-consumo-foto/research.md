@@ -36,7 +36,7 @@ Los datos de sesión y de magic link viven como columnas en la tabla
   cualquier link anterior no usado (FR-004a).
 - `session_token_hash`, `session_last_activity_at` — sesión activa (si la
   hay); se actualiza en cada request autenticado para implementar expiración
-  por 8h de inactividad (FR-006), y se limpia al cerrar sesión (FR-007).
+  por 24h de inactividad (FR-006), y se limpia al cerrar sesión (FR-007).
 
 **Rationale**: La constitución restringe explícitamente el esquema a
 `usuarios` y `consumos`; cualquier tabla adicional requeriría actualizar el

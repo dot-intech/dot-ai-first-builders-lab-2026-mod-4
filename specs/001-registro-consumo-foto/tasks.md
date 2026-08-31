@@ -577,6 +577,35 @@ todavía: código, migración y tests siguen fijando el límite en 120.
 
 ---
 
+## Phase 13: Convergence
+
+**Purpose**: Cerrar la brecha detectada por `/speckit-analyze` tras ampliar
+FR-006/RNF-06 (amend de spec, ítem de `BACKLOG.md` "subir la duración de
+expiración de sesión por inactividad de 8 a 24 horas") — código y tests
+siguen fijando el límite en 8 horas.
+
+- [ ] T077 [US1] Actualizar `tests/unit/session.test.ts` para que los tests
+      de `estaSesionInactiva` usen 24 horas en lugar de 8 horas: cambiar
+      "no está inactiva justo antes de las 8 horas" a 24 horas (línea ~23)
+      y "está inactiva a partir de las 8 horas exactas" a 24 horas (línea
+      ~29), reemplazando `8 * 60 * 60 * 1000` por `24 * 60 * 60 * 1000` en
+      ambos casos, para pasar FR-006/RNF-06 (partial — TDD: test primero,
+      fallará en rojo con el código viejo).
+- [ ] T078 [US1] Actualizar `tests/integration/session.test.ts` (test "la
+      sesión expira tras 8h de inactividad (FR-006)", línea ~40) para
+      reemplazar `interval '8 hours 1 minute'` por `interval '24 hours 1
+      minute'` (línea ~45) y actualizar el nombre/descripción del test a
+      "la sesión expira tras 24h de inactividad (FR-006)", para pasar
+      FR-006/RNF-06 (partial — TDD: test primero, fallará en rojo).
+- [ ] T079 [US1] Cambiar la constante `INACTIVIDAD_MAX_MS` de
+      `8 * 60 * 60 * 1000` a `24 * 60 * 60 * 1000` en
+      `lib/auth/session.ts:4`, para pasar FR-006/RNF-06 (partial).
+- [ ] T080 [US1] Correr `npm test` (unit+integration+contract) y confirmar
+      que la suite completa está en verde tras T077-T079, para verificar
+      FR-006/RNF-06 (missing).
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

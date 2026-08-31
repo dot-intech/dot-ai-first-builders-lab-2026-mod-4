@@ -134,7 +134,7 @@ Repetir el Escenario 2 eligiendo "Nuevo" → galería en vez de cámara →
 ## Escenario 7 — Sesión por inactividad
 
 Simular (en test de integración, ajustando `session_last_activity_at`
-directamente en DB a más de 8h atrás) una sesión inactiva → **esperado**:
+directamente en DB a más de 24h atrás) una sesión inactiva → **esperado**:
 la siguiente request autenticada devuelve `401` y la UI exige un nuevo
 magic link (FR-006).
 

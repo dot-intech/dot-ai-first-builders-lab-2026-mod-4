@@ -19,7 +19,7 @@ Persona autenticada por email; dueña exclusiva de sus consumos.
 | `magic_link_expires_at`      | `timestamptz NULL`        | Vence a los 15 min de emitido (FR-005) |
 | `magic_link_used_at`         | `timestamptz NULL`        | Se setea al usarse; un token usado no vuelve a aceptarse (FR-004) |
 | `session_token_hash`         | `text NULL`               | SHA-256 del token de sesión activa; `NULL` si no hay sesión |
-| `session_last_activity_at`   | `timestamptz NULL`        | Se actualiza en cada request autenticado; sesión expira a las 8h de inactividad (FR-006) |
+| `session_last_activity_at`   | `timestamptz NULL`        | Se actualiza en cada request autenticado; sesión expira a las 24h de inactividad (FR-006) |
 
 **Reglas de negocio**:
 - Emitir un nuevo magic link SOBREESCRIBE `magic_link_token_hash` /

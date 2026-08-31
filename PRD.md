@@ -53,7 +53,7 @@ Que la aplicación lleve un registro claro y ordenado de los alimentos consumido
 - RNF-03: El nivel aceptable de confianza en la información estimada a partir de la imagen del consumo debe ser > 70%, caso contrario se clasifica la estimación como de baja confianza.
 - RNF-04: El tiempo máximo de procesamiento de la imágen debe ser <= 30s.
 - RNF-05: La interfaz gráfica debe ser responsiva para dispositivos móviles (iOS y Android) bajo resoluciones estándar de pantalla entre 240p y 4K, con un tiempo de carga inicial (First Contentful Paint) < 3 s (p95) en conexión 4G.
-- RNF-06: la sesión expira tras 8 horas de inactividad.
+- RNF-06: la sesión expira tras 24 horas de inactividad.
 - RNF-07: Por motivos de privacidad y seguridad de la información, las imágenes provistas por el usuario nunca se persisten del lado del backend: 0 persistencia de imágenes provistas por el usuario.
 
 ## Criterios de Aceptación
@@ -93,7 +93,7 @@ Que la aplicación lleve un registro claro y ordenado de los alimentos consumido
 - AC-33 (RF-33): Dado un usuario que interactúa con la aplicación, cuando visualiza cualquier pantalla o la descripción de alimentos generada por el modelo de visión, entonces el sistema muestra el contenido en Español (Latinoamérica).
 - AC-34 (RF-34): Dado un link de acceso que ya fue utilizado para iniciar sesión, cuando el usuario intenta utilizarlo nuevamente, entonces el sistema rechaza el intento y le indica que debe solicitar un nuevo link de acceso.
 - AC-35 (RNF-01): Dado un link de acceso con más de 15 minutos desde su emisión, cuando el usuario intenta utilizarlo, entonces el sistema rechaza el intento y le indica que debe solicitar un nuevo link de acceso.
-- AC-36 (RNF-06): Dado un usuario autenticado sin actividad durante 8 horas continuas, cuando el usuario intenta realizar cualquier acción en la aplicación, entonces el sistema le exige volver a autenticarse mediante un nuevo link de acceso.
+- AC-36 (RNF-06): Dado un usuario autenticado sin actividad durante 24 horas continuas, cuando el usuario intenta realizar cualquier acción en la aplicación, entonces el sistema le exige volver a autenticarse mediante un nuevo link de acceso.
 - AC-37 (RNF-07): Dado un consumo registrado a partir de una imagen, cuando el sistema termina de procesarla (ya sea con éxito o con error), entonces no queda ninguna copia de la imagen original persistida en el backend (almacenamiento en disco, base de datos o logs).
 - AC-38 (RF-35): Dado un usuario que está creando un nuevo registro de consumo, cuando el usuario selecciona la opción "Cancelar" en cualquier paso del flujo (selección de imagen, error de procesamiento, carga manual, o revisión de la estimación), entonces el sistema lo redirige al tablero principal sin guardar ningún consumo.
 

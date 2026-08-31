@@ -118,7 +118,7 @@ lib/
 │       └── 0001_init.sql          # tablas usuarios, consumos (data-model.md)
 ├── auth/
 │   ├── magic-link.ts              # generación/validación/invalidación de tokens
-│   ├── session.ts                 # cookies, expiración por 8h de inactividad
+│   ├── session.ts                 # cookies, expiración por 24h de inactividad
 │   └── guard.ts                   # helper para proteger rutas/endpoints (FR-001, FR-035)
 ├── ai/
 │   └── vision.ts                  # único punto de contacto con Google AI Studio (Principio II)

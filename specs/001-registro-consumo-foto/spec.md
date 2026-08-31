@@ -77,7 +77,7 @@ Sesión].
    tablero carga, **Then** se muestra un gráfico de dona con el total de
    calorías del día y su desglose en [Carbohidratos, Proteínas, Grasas, Otros
    Nutrientes] en porcentajes enteros que suman exactamente 100%.
-6. **Given** un usuario autenticado sin actividad durante 8 horas continuas,
+6. **Given** un usuario autenticado sin actividad durante 24 horas continuas,
    **When** intenta realizar cualquier acción, **Then** el sistema exige
    volver a autenticarse mediante un nuevo link de acceso.
 7. **Given** un usuario en el tablero principal, **When** selecciona "Cerrar
@@ -263,7 +263,7 @@ no se contabiliza en el tablero del día correspondiente.
   (User Story 2, escenario 5).
 - ¿Qué pasa si el link de acceso expira (> 15 min) o ya fue usado? El sistema
   rechaza el intento y pide solicitar uno nuevo (User Story 1, escenario 4).
-- ¿Qué pasa si la sesión permanece inactiva 8 horas? El sistema exige
+- ¿Qué pasa si la sesión permanece inactiva 24 horas? El sistema exige
   reautenticación (User Story 1, escenario 6).
 - ¿Qué pasa si el email con el link de acceso demora o cae en spam? Queda
   fuera del control directo del sistema; se espera un proveedor de email
@@ -306,7 +306,7 @@ no se contabiliza en el tablero del día correspondiente.
   iniciar sesión.
 - **FR-005**: El link de acceso MUST expirar a los 15 minutos de emitido.
   (RNF-01)
-- **FR-006**: La sesión MUST expirar tras 8 horas de inactividad, exigiendo
+- **FR-006**: La sesión MUST expirar tras 24 horas de inactividad, exigiendo
   reautenticación. (RNF-06)
 - **FR-007**: El sistema MUST permitir cerrar sesión, pidiendo confirmación
   antes de finalizarla. (RF-17)
