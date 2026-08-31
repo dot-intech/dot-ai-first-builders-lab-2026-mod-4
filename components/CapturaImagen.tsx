@@ -56,7 +56,7 @@ export default function CapturaImagen({ onExito, onError }: CapturaImagenProps) 
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "center" }}>
         <p role="status">
-          <span className="spinner" aria-hidden="true" style={{ display: "inline-block", verticalAlign: "middle", marginRight: 8 }} />
+          <span className="spinner" aria-hidden="true" aria-busy="true" style={{ display: "inline-block", verticalAlign: "middle", marginRight: 8 }} />
           Analizando tu foto…
         </p>
         {imagenUrl && (

@@ -68,19 +68,6 @@ mejora significativa de latencia.
 
 ## UX
 
-- [ ] **Adoptar Pico.css para mejorar el look and feel general de la
-  UI.** Hoy todos los estilos son inline por componente (`style={{...}}`,
-  ver por ejemplo `CapturaImagen.tsx`), sin ningún framework — los
-  campos editables, botones, etc. se ven toscos y sin consistencia.
-  Pico.css es "classless": estiliza directo las etiquetas semánticas
-  (`<button>`, `<input>`, `<label>`, etc.) sin requerir agregar clases
-  propias en el JSX, así que es una integración rápida (sólo importar
-  el CSS) y de bajo riesgo — si más adelante no convence, se puede
-  sacar y migrar a algo con más control (por ejemplo Tailwind CSS) sin
-  una reescritura grande, ya que no deja clases de framework acopladas
-  al markup (salvo el uso puntual de alguna clase opcional de Pico,
-  como `.outline` o `.grid`, si se llegara a usar).
-
 - [ ] **Evaluar si `HistorialLista.tsx` puede mostrar datos desactualizados
   tras restaurarse desde el back-forward cache (bfcache) del navegador.**
   Mismo mecanismo que se arregló en `TableroResumen.tsx` (commit
