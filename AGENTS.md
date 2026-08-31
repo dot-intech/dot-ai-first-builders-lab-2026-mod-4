@@ -29,12 +29,15 @@ desarrollo.
 
 ## Backlog
 Las mejoras identificadas fuera del alcance de una spec cerrada viven en
-`BACKLOG.md` (ítems abiertos) y `BACKLOG-HISTORICO.md` (decisiones de
-proyecto ya cerradas, resumidas). El flujo completo para tomar y cerrar
-un ítem — gate de PRD/constitución, spec nuevo vs. modificar uno
-existente, qué comandos de Spec Kit correr, ítems de spike — vive en la
-skill `flujo-backlog`: invocarla al empezar a trabajar un ítem del
-backlog.
+`BACKLOG.md` — sólo ítems abiertos o parcialmente resueltos; una tarea
+resuelta se saca del todo (su registro ya vive en el commit y en
+`tasks.md`, no se archiva aparte). Una hipótesis probada y descartada
+queda como nota corta dentro del ítem abierto al que aplica, o en la
+sección "Descartado" de `BACKLOG.md` si no hay ítem abierto al que
+colgarla. El flujo completo para tomar y cerrar un ítem — gate de
+PRD/constitución, spec nuevo vs. modificar uno existente, qué comandos
+de Spec Kit correr según el caso, ítems de spike — vive en la skill
+`flujo-backlog`: invocarla al empezar a trabajar un ítem del backlog.
 
 ## Principios de implementación
 Aplican a cualquier cambio de código (fix, feature, ítem de backlog), no
@@ -66,7 +69,9 @@ sólo a los que pasan por el flujo de arriba.
 - No mezclar concerns no relacionados en un mismo commit (ej. no meter
   un fix de otra tarea en el mismo commit que cierra ésta). La fase de
   diseño (spec/plan/tasks) y la fase de implementación van en commits
-  separados, como se hizo en la feature 001.
+  separados, como se hizo en la feature 001 — excepto en un amend
+  trivial (cambia un solo valor/parámetro en un requisito ya testeable,
+  sin lógica nueva), donde alcanza un único commit.
 - **Nunca hacer `git commit` ni `git push` sin confirmación explícita del
   usuario en cada caso**, aunque parezca implícito por la conversación —
   el control de cuándo commitear y pushear es exclusivamente del

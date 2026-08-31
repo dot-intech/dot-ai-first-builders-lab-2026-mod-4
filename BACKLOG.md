@@ -5,9 +5,11 @@ Mejoras identificadas pero fuera del alcance de `tasks.md` de
 decidir con el usuario si ameritan actualizar el PRD/spec o si se
 tratan como deuda técnica suelta.
 
-Los ítems cerrados **no** quedan tildados acá — se sacan y se archivan
-en `BACKLOG-HISTORICO.md` con el detalle de qué se hizo y por qué. Ver
-`AGENTS.md` § Backlog.
+Un ítem cerrado se saca del todo — su registro completo ya vive en el
+commit y en `tasks.md`, no se archiva aparte. Una hipótesis probada y
+descartada (spike, intento fallido) queda como nota corta dentro del
+ítem abierto al que aplica, o en § Descartado si no hay ningún ítem
+abierto al que colgarla. Ver `AGENTS.md` § Backlog.
 
 ## Performance — FR-022/SC-001 no se cumple (p95 real: 31.56s vs. umbral 10s)
 
@@ -16,7 +18,8 @@ Fast 4G real: 8/10 corridas violaron el umbral de 10s, 5/10 fallaron
 directamente (504/500). Las imágenes de prueba pesaban ≤500KB, así que
 **la subida de la imagen no es la causa principal** — descartada la
 hipótesis inicial de tamaño de imagen sin comprimir. `thinkingBudget = 0`
-(SDK legacy) se probó y se descartó — ver `BACKLOG-HISTORICO.md`.
+(SDK legacy, commits `3cb9bbe`/`44cfc8c`) se probó y se descartó: sin
+mejora significativa de latencia.
 
 - [ ] **Re-verificar el p95 bajo Fast 4G con el protocolo de T059 (10
   corridas) ahora que se migró a `thinkingLevel: ThinkingLevel.MINIMAL`
@@ -38,9 +41,9 @@ hipótesis inicial de tamaño de imagen sin comprimir. `thinkingBudget = 0`
   espera de la respuesta de Gemini, (c) parseo. Con imágenes de 500KB,
   todo indica que el cuello de botella está en (b) — la llamada a Gemini
   en sí — no en la red del cliente. `thinkingBudget=0` se había descartado
-  como causa (ver `BACKLOG-HISTORICO.md`), pero la mejora informal
-  observada con `thinkingLevel: MINIMAL` (ítem de arriba) deja esto otra
-  vez en duda — instrumentar antes de asumir nada sobre el "thinking".
+  como causa, pero la mejora informal observada con `thinkingLevel:
+  MINIMAL` (ítem de arriba) deja esto otra vez en duda — instrumentar
+  antes de asumir nada sobre el "thinking".
 - [ ] **Revisar si la clave de `GOOGLE_AI_API_KEY` tiene límites de
   cuota/tier gratuito** que impongan latencia adicional o
   rate-limiting silencioso en Google AI Studio.
@@ -80,8 +83,8 @@ hipótesis inicial de tamaño de imagen sin comprimir. `thinkingBudget = 0`
 
 - [ ] **Evaluar si `HistorialLista.tsx` puede mostrar datos desactualizados
   tras restaurarse desde el back-forward cache (bfcache) del navegador.**
-  Mismo mecanismo que se arregló en `TableroResumen.tsx` (ver
-  `BACKLOG-HISTORICO.md`, 2026-08-30): si el usuario borra o agrega un
+  Mismo mecanismo que se arregló en `TableroResumen.tsx` (commit
+  `789a4d7`, 2026-08-30): si el usuario borra o agrega un
   consumo y después usa el botón "atrás" del navegador para volver a
   `/historial` desde una página que quedó bfcached, podría ver la lista
   vieja. Caso más acotado que el del tablero — requiere específicamente
@@ -101,3 +104,29 @@ hipótesis inicial de tamaño de imagen sin comprimir. `thinkingBudget = 0`
   cámara de alta resolución o sin comprimir. Es una operación
   transitoria en memoria del navegador — no viola RNF-07 (cero
   persistencia de imágenes).
+
+## Descartado — no re-proponer sin evidencia nueva
+
+Hallazgos o hipótesis evaluados explícitamente y rechazados a propósito
+(no se perdieron ni se descartaron por omisión). No re-plantearlos como
+hallazgos nuevos (ej. en una futura vuelta de `/speckit-analyze`) sin
+revisar antes esta sección.
+
+- **Seis hallazgos de la tercera vuelta de `/speckit-analyze`
+  (2026-08-26), revisados uno por uno con el usuario y dejados sin
+  resolver** ("no, basta, eso los dejamos así"):
+  - Falta test de que la descripción (FR-017/US2#3) mencione la bebida
+    si está presente.
+  - La agregación del tablero de varios desgloses ya redondeados a 100%
+    puede no cerrar en 100% exacto; falta algoritmo de redondeo
+    definido y test.
+  - FR-029 no define qué cuenta como "editar manualmente" antes de
+    guardar con confianza ≤70%.
+  - `contracts/api.md` describe `GET /api/auth/verify` como 200 pero en
+    la misma línea dice que redirige con 302 (contradictorio).
+  - Diseño de una sola sesión activa por usuario (loguearse en un
+    segundo dispositivo invalida la del primero en silencio) sólo
+    documentado en `research.md`, nunca como supuesto visible en
+    `spec.md`.
+  - T041 llama "p95" a una medición de una sola corrida mockeada, no es
+    un p95 real (cosmético, ya cubierto correctamente por T059).

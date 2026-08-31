@@ -6,26 +6,22 @@ description: Flujo completo para tomar y cerrar un ítem de BACKLOG.md de NutraS
 # Flujo para tomar un ítem del backlog (NutraShot)
 
 Las mejoras identificadas fuera del alcance de una spec cerrada viven en
-dos archivos:
-- `BACKLOG.md` — ítems abiertos, pendientes de hacer.
-- `BACKLOG-HISTORICO.md` — decisiones de proyecto que no viven en ningún
-  otro documento (ni en el `spec.md`/`research.md` de una feature
-  puntual, ni en la constitución), con fecha, la decisión tomada, y el
-  motivo si no es obvio (incluye intentos descartados, no sólo los que
-  funcionaron).
+`BACKLOG.md` — sólo ítems abiertos o parcialmente resueltos.
 
-Cuando se cierra un ítem, **se saca de `BACKLOG.md` y se agrega como
-entrada nueva en `BACKLOG-HISTORICO.md`** (más reciente arriba) — no se
-deja tildado `[X]` en `BACKLOG.md`. El objetivo es que `BACKLOG.md`
-siempre muestre sólo lo pendiente, y que el historial de decisiones quede
-consultable aparte. Un ítem se cierra recién cuando el código está
-implementado y sus tests pasan (ver paso 4 abajo) — nunca antes.
+Cuando se cierra un ítem (código implementado, tests en verde — ver paso
+4 abajo, nunca antes), **se saca de `BACKLOG.md` directamente, sin
+archivarlo en ningún otro lado** — no se deja tildado `[X]`. Su registro
+completo ya vive en el/los commit(s) y en `tasks.md`; no se duplica en
+prosa aparte (se probó tener un archivo de histórico separado y no
+valía el costo de mantenerlo sincronizado con la realidad del código).
 
-Cada entrada de `BACKLOG-HISTORICO.md` va **resumida**: la decisión y el
-motivo (si no es obvio), no el paso a paso — el detalle narrativo (qué
-se tocó, en qué orden) ya vive en el mensaje del/los commit(s)
-referenciados, no hace falta duplicarlo acá. Cerrar con un puntero a
-esos commits.
+Una hipótesis probada y descartada (spike, intento que no funcionó) NO
+se saca del backlog: queda como nota corta dentro del ítem abierto al
+que aplica ("ya se probó X, se descartó, ver commit `abc123`"), para no
+volver a proponerla sin evidencia nueva. Si no hay ningún ítem abierto al
+que colgarla (ej. hallazgos de análisis que se decidió no resolver),
+usar la sección "## Descartado — no re-proponer sin evidencia nueva" al
+final de `BACKLOG.md`.
 
 ## 0. Gate de documentos rectores (obligatorio, antes de tocar cualquier spec)
 `PRD.md` y la constitución (`.specify/memory/constitution.md`) mandan
@@ -55,7 +51,10 @@ sobre cualquier spec. Antes de escribir una línea de spec:
   `/speckit-checklist` → `/speckit-plan` → `/speckit-tasks` →
   `/speckit-analyze`.
 - **Modificar un spec existente**: editar `spec.md` a mano →
-  `/speckit-clarify` → `/speckit-checklist` → editar a mano
+  `/speckit-clarify` → `/speckit-checklist` (**saltar ambos** si el
+  cambio es un amend trivial: un solo valor/parámetro dentro de un FR ya
+  testeable, sin comportamiento nuevo ni ambigüedad plausible sobre su
+  alcance — ej. subir un umbral numérico) → editar a mano
   `research.md`/`data-model.md`/`contracts/`/`quickstart.md`/`plan.md`
   (**nunca correr `/speckit-plan`** sobre un plan existente — regenera
   todo desde cero y borra el razonamiento ya documentado) →
@@ -75,9 +74,11 @@ sobre cualquier spec. Antes de escribir una línea de spec:
 Ítems sin comportamiento observable de usuario (ej. "instrumentar
 tiempos para encontrar la causa de la latencia") quedan **fuera** de
 este flujo: se resuelven directo y el resultado — funcione o no — se
-documenta al cerrarse en `BACKLOG-HISTORICO.md` (ver ejemplo del intento
-de `thinkingBudget=0`). Si un spike concluye en un cambio de
-comportamiento observable, ese cambio sí entra al flujo de arriba (paso 1).
+documenta al cerrarse como nota corta en el ítem abierto de `BACKLOG.md`
+al que aplica (ver ejemplo del intento de `thinkingBudget=0` en §
+Performance), o en § Descartado si no hay ítem abierto al que colgarlo.
+Si un spike concluye en un cambio de comportamiento observable, ese
+cambio sí entra al flujo de arriba (paso 1).
 
 ## 4. Implementación
 Siempre TDD (rojo → verde), como en la feature 001. Ver también
