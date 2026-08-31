@@ -15,11 +15,21 @@ Medido en T059 (`specs/001-registro-consumo-foto/tasks.md`) con throttling
 Fast 4G real: 8/10 corridas violaron el umbral de 10s, 5/10 fallaron
 directamente (504/500). Las imágenes de prueba pesaban ≤500KB, así que
 **la subida de la imagen no es la causa principal** — descartada la
-hipótesis inicial de tamaño de imagen sin comprimir. Ya se probó y
-descartó deshabilitar el razonamiento extendido del modelo, tanto con
-`thinkingBudget = 0` (SDK legacy) como con `thinkingLevel: MINIMAL` (SDK
-vigente, que además ya es el default del modelo) — ver
-`BACKLOG-HISTORICO.md`.
+hipótesis inicial de tamaño de imagen sin comprimir. `thinkingBudget = 0`
+(SDK legacy) se probó y se descartó — ver `BACKLOG-HISTORICO.md`.
+
+- [ ] **Re-verificar el p95 bajo Fast 4G con el protocolo de T059 (10
+  corridas) ahora que se migró a `thinkingLevel: ThinkingLevel.MINIMAL`
+  (SDK vigente, commit `4d5f512`).** Señal informal positiva el
+  2026-08-31: 4 corridas en red normal (sin throttling, no comparable
+  1:1 con T059), 3/4 debajo de 10s, 0 fallos — mejora marcada respecto al
+  8/10 violaron el umbral y 5/10 fallaron del benchmark original. Pero
+  `MINIMAL` ya era el default del modelo según la documentación de
+  Gemini, así que no había expectativa de que este cambio mejorara nada
+  — la mejora observada es sorpresiva y no está explicada; podría deberse
+  también a la migración de SDK en sí (`@google/generative-ai` →
+  `@google/genai`, commit `79047d2`) y no al dial de thinking. No dar por
+  cumplido FR-022/SC-001 sin repetir el benchmark formal bajo Fast 4G.
 
 - [ ] **Investigar la causa raíz real de la latencia.** Instrumentar
   `app/api/consumos/analizar/route.ts` y `lib/ai/vision.ts` con logs de
@@ -27,8 +37,10 @@ vigente, que además ya es el default del modelo) — ver
   aislar cuánto del tiempo total es: (a) subida cliente→server, (b)
   espera de la respuesta de Gemini, (c) parseo. Con imágenes de 500KB,
   todo indica que el cuello de botella está en (b) — la llamada a Gemini
-  en sí — no en la red del cliente. Ya se descartó el "thinking" del
-  modelo como causa (ver `BACKLOG-HISTORICO.md`).
+  en sí — no en la red del cliente. `thinkingBudget=0` se había descartado
+  como causa (ver `BACKLOG-HISTORICO.md`), pero la mejora informal
+  observada con `thinkingLevel: MINIMAL` (ítem de arriba) deja esto otra
+  vez en duda — instrumentar antes de asumir nada sobre el "thinking".
 - [ ] **Revisar si la clave de `GOOGLE_AI_API_KEY` tiene límites de
   cuota/tier gratuito** que impongan latencia adicional o
   rate-limiting silencioso en Google AI Studio.

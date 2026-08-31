@@ -10,20 +10,25 @@ puntero al commit. Ver `AGENTS.md` § Backlog.
 
 ---
 
-## 2026-08-30 — Descartado: thinkingLevel=MINIMAL como fix de performance (FR-022/SC-001)
+## 2026-08-30 — Migrar de thinkingBudget=0 a thinkingLevel=MINIMAL (SDK vigente)
 
 Segunda vuelta del spike de `thinkingBudget=0` (2026-08-28), ahora con el
 dial vigente de Gemini 3.x tras migrar a `@google/genai` (ver entrada
 anterior). Documentación oficial de Gemini
 ([ai.google.dev/gemini-api/docs/gemini-3](https://ai.google.dev/gemini-api/docs/gemini-3)):
 `MINIMAL` ya es el default de `gemini-3.1-flash-lite` sin pasar
-`thinkingConfig` — fijarlo explícito no cambia el comportamiento del
-modelo. Como el spike anterior con `thinkingBudget=0` (techo más agresivo
-aún, "0 tokens") ya se había descartado sin mejora, no hay expectativa de
-que esto resuelva la latencia; se implementó de todos modos para dejar el
+`thinkingConfig`, así que **no había expectativa** de que fijarlo
+explícito cambiara la latencia — se implementó igual para dejar el
 código con el dial oficial y tipado en vez del legacy no documentado.
-**Causa raíz de la latencia sigue sin identificarse** — ver `BACKLOG.md`
-§ Performance, ítem de instrumentar tiempos.
+
+**Corrección 2026-08-31:** esa expectativa resultó errónea. Prueba
+informal del usuario en red normal (sin throttling, no comparable 1:1
+con T059): 4 corridas, 3/4 debajo de 10s, 0 fallos — mejora marcada
+frente al 8/10 violaron el umbral / 5/10 fallaron del benchmark
+original. No está explicado — podría ser el dial, podría ser la
+migración de SDK en sí. **No se da por cumplido FR-022/SC-001 ni se
+descarta el "thinking" como causa** sin repetir el benchmark formal bajo
+Fast 4G — ítem reabierto en `BACKLOG.md` § Performance.
 
 **Decisión:** `thinkingConfig: { thinkingBudget: 0 }` →
 `thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL }` en
