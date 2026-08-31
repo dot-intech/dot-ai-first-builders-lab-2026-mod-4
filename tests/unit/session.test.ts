@@ -20,15 +20,15 @@ describe("hashTokenSesion", () => {
 });
 
 describe("estaSesionInactiva", () => {
-  it("no está inactiva justo antes de las 8 horas", () => {
+  it("no está inactiva justo antes de las 24 horas", () => {
     const ultimaActividad = new Date("2026-08-26T00:00:00.000Z");
-    const ahora = new Date(ultimaActividad.getTime() + 8 * 60 * 60 * 1000 - 1);
+    const ahora = new Date(ultimaActividad.getTime() + 24 * 60 * 60 * 1000 - 1);
     expect(estaSesionInactiva(ultimaActividad, ahora)).toBe(false);
   });
 
-  it("está inactiva a partir de las 8 horas exactas", () => {
+  it("está inactiva a partir de las 24 horas exactas", () => {
     const ultimaActividad = new Date("2026-08-26T00:00:00.000Z");
-    const ahora = new Date(ultimaActividad.getTime() + 8 * 60 * 60 * 1000);
+    const ahora = new Date(ultimaActividad.getTime() + 24 * 60 * 60 * 1000);
     expect(estaSesionInactiva(ultimaActividad, ahora)).toBe(true);
   });
 });

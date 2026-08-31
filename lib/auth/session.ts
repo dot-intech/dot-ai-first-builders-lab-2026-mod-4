@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import { pool } from "@/lib/db/pool";
 
-const INACTIVIDAD_MAX_MS = 8 * 60 * 60 * 1000;
+const INACTIVIDAD_MAX_MS = 24 * 60 * 60 * 1000;
 
 export function generarTokenSesion(): string {
   return randomBytes(32).toString("base64url");

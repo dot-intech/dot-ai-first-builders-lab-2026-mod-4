@@ -37,12 +37,12 @@ describe("crearSesion / validarSesion", () => {
     }
   });
 
-  it("la sesión expira tras 8h de inactividad (FR-006)", async () => {
+  it("la sesión expira tras 24h de inactividad (FR-006)", async () => {
     const usuarioId = await crearUsuarioAutenticado("inactivo@example.com");
     const { token } = await crearSesion(usuarioId);
 
     await pool.query(
-      "UPDATE usuarios SET session_last_activity_at = now() - interval '8 hours 1 minute' WHERE id = $1",
+      "UPDATE usuarios SET session_last_activity_at = now() - interval '24 hours 1 minute' WHERE id = $1",
       [usuarioId]
     );
 

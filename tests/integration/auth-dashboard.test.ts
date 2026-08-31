@@ -114,7 +114,7 @@ describe("User Story 1 — autenticación y tablero (acceptance scenarios)", () 
     expect(respuesta.status).toBe(401);
   });
 
-  it("una sesión inactiva por 8h exige volver a autenticarse (escenario 6, FR-006)", async () => {
+  it("una sesión inactiva por 24h exige volver a autenticarse (escenario 6, FR-006)", async () => {
     const { emitirMagicLink } = await import("@/lib/auth/magic-link");
     const { GET: verificar } = await import("@/app/api/auth/verify/route");
 
@@ -124,7 +124,7 @@ describe("User Story 1 — autenticación y tablero (acceptance scenarios)", () 
     const sessionToken = /nutrashot_session=([^;]+)/.exec(setCookie)![1];
 
     await pool.query(
-      "UPDATE usuarios SET session_last_activity_at = now() - interval '8 hours 1 minute' WHERE email = $1",
+      "UPDATE usuarios SET session_last_activity_at = now() - interval '24 hours 1 minute' WHERE email = $1",
       ["inactivo-us1@example.com"]
     );
 

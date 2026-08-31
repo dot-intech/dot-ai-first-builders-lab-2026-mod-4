@@ -35,10 +35,15 @@ checklist genérico de toda la feature.
 
 ## Dependencies & Assumptions
 
-- [ ] CHK005 ¿El valor de `INACTIVIDAD_MAX_MS` en código y los casos de
+- [x] CHK005 ¿El valor de `INACTIVIDAD_MAX_MS` en código y los casos de
   prueba que lo ejercitan quedan como la única fuente de verdad, sin
   valores de "8 horas" hardcodeados en otro lugar del código/tests?
-  [Traceability, Gap] — pendiente de verificar al implementar.
+  [Traceability, Gap] — resuelto (T077-T081). Nota: ni `/speckit-analyze`
+  ni `/speckit-converge` (Haiku) detectaron `tests/integration/
+  auth-dashboard.test.ts`, que también tenía "8h" hardcodeado — se
+  encontró recién al correr `npm test` tras T079 y ver un tercer archivo
+  fallar. Este checklist había marcado el riesgo correctamente; el gap
+  estaba en la herramienta automática, no en el checklist.
 
 ## Notes
 
