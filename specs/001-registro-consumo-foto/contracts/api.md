@@ -21,8 +21,8 @@ Solicita un link de acceso (RF-03).
 ### `GET /api/auth/verify?token=...`
 Valida un magic link y crea la sesión (FR-004, FR-005).
 
-- **200**: setea cookie de sesión `httpOnly; Secure; SameSite=Lax` y
-  redirige (`302`) al tablero principal.
+- **302**: setea cookie de sesión `httpOnly; Secure; SameSite=Lax` y
+  redirige al tablero principal.
 - **401**: token inexistente, ya usado, o expirado (> 15 min) → mensaje
   indicando que debe solicitar un nuevo link.
 

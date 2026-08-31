@@ -104,29 +104,3 @@ mejora significativa de latencia.
   cámara de alta resolución o sin comprimir. Es una operación
   transitoria en memoria del navegador — no viola RNF-07 (cero
   persistencia de imágenes).
-
-## Descartado — no re-proponer sin evidencia nueva
-
-Hallazgos o hipótesis evaluados explícitamente y rechazados a propósito
-(no se perdieron ni se descartaron por omisión). No re-plantearlos como
-hallazgos nuevos (ej. en una futura vuelta de `/speckit-analyze`) sin
-revisar antes esta sección.
-
-- **Seis hallazgos de la tercera vuelta de `/speckit-analyze`
-  (2026-08-26), revisados uno por uno con el usuario y dejados sin
-  resolver** ("no, basta, eso los dejamos así"):
-  - Falta test de que la descripción (FR-017/US2#3) mencione la bebida
-    si está presente.
-  - La agregación del tablero de varios desgloses ya redondeados a 100%
-    puede no cerrar en 100% exacto; falta algoritmo de redondeo
-    definido y test.
-  - FR-029 no define qué cuenta como "editar manualmente" antes de
-    guardar con confianza ≤70%.
-  - `contracts/api.md` describe `GET /api/auth/verify` como 200 pero en
-    la misma línea dice que redirige con 302 (contradictorio).
-  - Diseño de una sola sesión activa por usuario (loguearse en un
-    segundo dispositivo invalida la del primero en silencio) sólo
-    documentado en `research.md`, nunca como supuesto visible en
-    `spec.md`.
-  - T041 llama "p95" a una medición de una sola corrida mockeada, no es
-    un p95 real (cosmético, ya cubierto correctamente por T059).

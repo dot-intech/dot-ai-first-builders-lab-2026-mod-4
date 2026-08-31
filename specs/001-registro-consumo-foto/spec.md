@@ -398,7 +398,10 @@ no se contabiliza en el tablero del día correspondiente.
   al usuario la opción de cargar una nueva imagen. (RF-27)
 - **FR-029**: Ante una estimación de baja confianza, el sistema MUST exigir al
   usuario editar manualmente la descripción y la cantidad de calorías antes
-  de poder guardar el consumo. (RF-28)
+  de poder guardar el consumo. "Editar manualmente" se satisface con
+  modificar el valor de cualquiera de los dos campos (descripción o
+  calorías), independientemente de si el valor final termina siendo
+  distinto al estimado originalmente. (RF-28)
 - **FR-030**: El sistema MUST permitir cancelar la creación de un nuevo
   consumo en cualquier paso del flujo, volviendo al tablero principal sin
   guardar ningún dato. (RF-35)
@@ -496,6 +499,9 @@ no se contabiliza en el tablero del día correspondiente.
 - El sistema no implementa detección ni prevención de consumos duplicados
   (p. ej. la misma imagen cargada dos veces): cada guardado confirmado por el
   usuario se acepta como una decisión válida.
+- Un usuario tiene una única sesión activa a la vez (no hay soporte
+  multi-dispositivo): iniciar sesión desde un nuevo dispositivo o
+  navegador invalida en silencio cualquier sesión previa activa.
 - El requisito de idioma (Español Latinoamérica, FR-036) se garantiza
   mediante el prompt enviado al modelo de visión, como responsabilidad del
   módulo de IA aislado; no existe un mecanismo de traducción de respaldo si
