@@ -36,6 +36,21 @@ SDK) sin un experimento que aisle cada uno.
 - [ ] **Bajar el p95 de ~11.8s a menos de 10s.** Con la causa raíz de la
   latencia todavía sin identificar (ver ítem de instrumentación abajo),
   no hay una hipótesis concreta de qué tocar para cerrar esta brecha.
+- [ ] **Evaluar elevar el umbral de FR-022/SC-001 de 10s a 15s.** El TTFT
+  (tiempo al primer token) reportado para la familia de este modelo ronda
+  los 5s sólo de texto — sin contar subida de imagen bajo Fast 4G,
+  generación del resto de la respuesta, ni overhead de la app — así que
+  10s podría ser un umbral poco realista para este modelo en el tier
+  gratuito, más que un problema de implementación. No hay evidencia de
+  que el free tier en sí sea más lento que el pago (hay reportes del foro
+  oficial de casos donde el tier pago fue más lento por congestión), así
+  que no se plantea esto como fix de tier sino como posible ajuste de
+  expectativa. **No re-evaluar todavía** — esperar a que se implemente la
+  compresión/redimensionado de imagen en cliente (ítem en "Otras mejoras"
+  abajo), que podría bajar el p95 lo suficiente como para no necesitar
+  tocar el umbral. Si tras eso se decide subirlo, es un cambio de
+  FR-022/SC-001 y pasa por el gate de PRD/spec (`AGENTS.md` § Backlog),
+  no un ajuste suelto de código.
 
 - [ ] **Investigar la causa raíz real de la latencia.** Instrumentar
   `app/api/consumos/analizar/route.ts` y `lib/ai/vision.ts` con logs de
