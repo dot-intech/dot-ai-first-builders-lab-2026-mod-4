@@ -24,7 +24,9 @@ function conTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  const tInicio = performance.now();
   const form = await request.formData().catch(() => null);
+  const tSubida = performance.now();
   const imagen = form?.get("imagen");
 
   if (!(imagen instanceof File)) {
@@ -47,6 +49,10 @@ export async function POST(request: Request): Promise<Response> {
       return NextResponse.json({ error: "El análisis tardó demasiado" }, { status: 504 });
     }
     throw error;
+  } finally {
+    console.log(
+      `[analizar/route] subida=${(tSubida - tInicio).toFixed(0)}ms total=${(performance.now() - tInicio).toFixed(0)}ms`
+    );
   }
 
   if (!resultado.identificado) {
