@@ -33,6 +33,19 @@ marcada frente al baseline (p95 31.56s → ~11.8s, fallos 5/10 → 2/15), pero
 atribuirse la mejora a un cambio puntual (`thinkingLevel` vs. migración de
 SDK) sin un experimento que aisle cada uno.
 
+**Compresión/redimensionado de imagen en cliente implementada
+(2026-09-01, commit `75f9720`)** — `lib/imagen/comprimir.ts` +
+`components/CapturaImagen.tsx`, máximo 1280px en el lado mayor, calidad
+JPEG 0.85. Prueba manual inmediatamente después (3 corridas, sin
+throttling Fast 4G): 500 a los 20.5s, luego 200 a los 4.8s, luego 200 a
+los 27.2s. **La variancia persiste igual de alta con la imagen ya
+comprimida** — confirma que la causa raíz no es el tamaño de la subida
+(ya se sabía desde el baseline) y que el cuello de botella sigue estando
+en la espera de la respuesta de Gemini. No se corrió el benchmark
+formal de 15 corridas bajo Fast 4G con este cambio — se decidió que la
+evidencia manual ya alcanza para descartar la subida como causa y no
+justifica el costo de repetir el protocolo completo.
+
 - [ ] **Bajar el p95 de ~11.8s a menos de 10s.** Con la causa raíz de la
   latencia todavía sin identificar (ver ítem de instrumentación abajo),
   no hay una hipótesis concreta de qué tocar para cerrar esta brecha.
@@ -45,10 +58,12 @@ SDK) sin un experimento que aisle cada uno.
   que el free tier en sí sea más lento que el pago (hay reportes del foro
   oficial de casos donde el tier pago fue más lento por congestión), así
   que no se plantea esto como fix de tier sino como posible ajuste de
-  expectativa. **No re-evaluar todavía** — esperar a que se implemente la
-  compresión/redimensionado de imagen en cliente (ítem en "Otras mejoras"
-  abajo), que podría bajar el p95 lo suficiente como para no necesitar
-  tocar el umbral. Si tras eso se decide subirlo, es un cambio de
+  expectativa. La compresión/redimensionado de imagen en cliente ya se
+  implementó (ver nota arriba) y la evidencia manual indica que **no**
+  bajó la variancia del p95 — el bloqueo que impedía evaluar este ítem ya
+  no aplica, pero sigue sin decidirse porque falta el benchmark formal de
+  15 corridas bajo Fast 4G con el cambio aplicado para tener un número
+  comparable al de arriba. Si se decide subir el umbral, es un cambio de
   FR-022/SC-001 y pasa por el gate de PRD/spec (`AGENTS.md` § Backlog),
   no un ajuste suelto de código.
 
@@ -71,21 +86,19 @@ SDK) sin un experimento que aisle cada uno.
 - [ ] **Investigar los errores 500 intermitentes** (~2/10 corridas en
   T059, 2/15 el 2026-09-01) — hipótesis original: `JSON.parse` falla
   sobre la respuesta del modelo (cortada o envuelta en texto adicional
-  pese al prompt). Pero **`app/api/consumos/analizar/route.ts` no tiene
-  ningún catch genérico** alrededor de `analizarImagen()` (sólo captura
-  `TimeoutAnalisisError`) — cualquier error no-timeout, incluido un 503
-  "overloaded" de Gemini sin reintentar, sube sin manejar y Next.js lo
-  convierte en el mismo 500 genérico. Es decir, el 500 intermitente
-  podría ser JSON malformado, 503 de Gemini, o ambos indistintamente; hoy
-  no se puede saber cuál sin loguear. Reprodujo de nuevo el 2026-09-01
-  (corridas 9 y 10 del benchmark de p95 bajo Fast 4G) pero sin captura
-  del log — `npm run dev` corría interactivo en la terminal del usuario,
-  sin archivo de log, y no se guardó el output a tiempo. El logging
-  agregado en `lib/ai/vision.ts` (commit `06aa0ff`) ya deja la traza real
-  en consola — la próxima vez que se reproduzca, **redirigir `npm run
-  dev` a un archivo** (o revisar la terminal en el momento) para poder
-  leerla. Se resolverá junto con el catch genérico + logging discriminado
-  cuando se encare el ítem de reintento con backoff de abajo.
+  pese al prompt). **Confirmado uno de los casos (2026-09-01, prueba
+  manual tras el commit `75f9720`)**: no es JSON malformado, es un 503
+  real de Gemini (`"This model is currently experiencing high demand...
+  status: UNAVAILABLE"`), visible en el log de `lib/ai/vision.ts`
+  (commit `06aa0ff`) porque esta vez sí se corrió `npm run dev` en
+  background con el output redirigido a archivo. Sigue sin poder
+  descartarse que además haya casos de JSON malformado — sólo se
+  confirmó esta instancia puntual. **`app/api/consumos/analizar/route.ts`
+  sigue sin ningún catch genérico** alrededor de `analizarImagen()` (sólo
+  captura `TimeoutAnalisisError`) — el 503 sube sin manejar y Next.js lo
+  convierte en el mismo 500 genérico, sin reintentar. Se resolverá junto
+  con el catch genérico + logging discriminado cuando se encare el ítem
+  de reintento con backoff de abajo.
 - [ ] **Revisar si el timeout de 30s en `route.ts` (`TIMEOUT_ANALISIS_MS`)
   es la estrategia correcta** — hoy sólo envuelve la llamada a Gemini,
   no la subida completa, y 30s es varias veces el umbral de 10s de
@@ -108,16 +121,3 @@ SDK) sin un experimento que aisle cada uno.
   el botón atrás, no el flujo normal hacia adelante — y el spec no exige
   actualización instantánea en Historial (a diferencia de FR-012 para el
   tablero), por eso queda como ítem a evaluar, no como bug confirmado.
-
-## Otras mejoras propuestas (menor prioridad / no relacionadas a performance)
-
-- [ ] **Comprimir/redimensionar la imagen en el cliente antes de
-  subirla** (Canvas API: `createImageBitmap` + `canvas.toBlob`, máximo
-  ~1280px en el lado más largo, calidad JPEG ~0.85) en
-  `components/CapturaImagen.tsx`. Propuesta original pensada como fix
-  de performance — **descartada como causa raíz en este caso** (las
-  imágenes de prueba pesaban ≤500KB), pero sigue siendo una mejora
-  defensiva válida para cuando un usuario suba fotos pesadas desde una
-  cámara de alta resolución o sin comprimir. Es una operación
-  transitoria en memoria del navegador — no viola RNF-07 (cero
-  persistencia de imágenes).
