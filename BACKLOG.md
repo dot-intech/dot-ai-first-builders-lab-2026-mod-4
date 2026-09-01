@@ -46,9 +46,32 @@ formal de 15 corridas bajo Fast 4G con este cambio — se decidió que la
 evidencia manual ya alcanza para descartar la subida como causa y no
 justifica el costo de repetir el protocolo completo.
 
-- [ ] **Bajar el p95 de ~11.8s a menos de 10s.** Con la causa raíz de la
-  latencia todavía sin identificar (ver ítem de instrumentación abajo),
-  no hay una hipótesis concreta de qué tocar para cerrar esta brecha.
+**Instrumentación de tiempos (2026-09-01, commit `6d34a3d`)** — se
+agregaron logs de `performance.now()` en
+`app/api/consumos/analizar/route.ts` (tiempo de
+`request.formData()`, o sea lectura del body ya recibido) y
+`lib/ai/vision.ts` (tiempo de `generateContent` y de `parsearRespuesta`).
+5 corridas locales (sin throttling Fast 4G, servidor y cliente en el
+mismo host — esto **no** mide la subida real por red lenta, sólo el
+overhead de lectura del body ya en el server) con una imagen sintética:
+`gemini` = 14343, 14360, 1876, 1061, 23106ms; `parseo` = 0ms en las 4
+corridas que llegaron a parsear (la 2ª tiró 503 de Gemini antes); `subida`
+(lectura del body) = 1-4ms en las 5. **Confirma la sospecha ya
+documentada arriba: la espera de la respuesta de Gemini es
+prácticamente el 100% del tiempo total** — el parseo del JSON es
+insignificante y la lectura del body en el server también, aunque este
+último dato no reemplaza al benchmark formal bajo Fast 4G para medir la
+subida real por red (eso sigue siendo overhead de transferencia, no de
+procesamiento). No hay margen de optimización en el código de la app
+para esta brecha — cualquier mejora depende de la latencia del modelo
+en sí (ver ítems de tier/modelo abajo) o de aceptar el umbral de 15s.
+
+- [ ] **Bajar el p95 de ~11.8s a menos de 10s.** Con la instrumentación
+  de arriba confirmando que casi el 100% del tiempo es la espera de la
+  respuesta de Gemini (no subida, no parseo), no queda margen de
+  optimización en el código de la app — la única palanca real es cambiar
+  de modelo/tier (ver ítems abajo) o, si eso no rinde, evaluar el ítem
+  de subir el umbral a 15s.
 - [ ] **Evaluar elevar el umbral de FR-022/SC-001 de 10s a 15s.** El TTFT
   (tiempo al primer token) reportado para la familia de este modelo ronda
   los 5s sólo de texto — sin contar subida de imagen bajo Fast 4G,
@@ -67,16 +90,6 @@ justifica el costo de repetir el protocolo completo.
   FR-022/SC-001 y pasa por el gate de PRD/spec (`AGENTS.md` § Backlog),
   no un ajuste suelto de código.
 
-- [ ] **Investigar la causa raíz real de la latencia.** Instrumentar
-  `app/api/consumos/analizar/route.ts` y `lib/ai/vision.ts` con logs de
-  tiempo (marca de tiempo antes/después de `model.generateContent`) para
-  aislar cuánto del tiempo total es: (a) subida cliente→server, (b)
-  espera de la respuesta de Gemini, (c) parseo. Con imágenes de 500KB,
-  todo indica que el cuello de botella está en (b) — la llamada a Gemini
-  en sí — no en la red del cliente. `thinkingBudget=0` se había descartado
-  como causa, pero la mejora informal observada con `thinkingLevel:
-  MINIMAL` (ítem de arriba) deja esto otra vez en duda — instrumentar
-  antes de asumir nada sobre el "thinking".
 - [ ] **Revisar si la clave de `GOOGLE_AI_API_KEY` tiene límites de
   cuota/tier gratuito** que impongan latencia adicional o
   rate-limiting silencioso en Google AI Studio.
