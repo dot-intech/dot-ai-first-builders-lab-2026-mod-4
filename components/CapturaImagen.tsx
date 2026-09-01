@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { DesgloseNutricional } from "@/lib/consumos/nutricion";
+import { comprimirImagen } from "@/lib/imagen/comprimir";
 
 export interface EstimacionAnalisis {
   descripcion: string;
@@ -22,12 +23,13 @@ export default function CapturaImagen({ onExito, onError }: CapturaImagenProps) 
   const inputGaleriaRef = useRef<HTMLInputElement>(null);
 
   async function analizar(file: File) {
-    const urlPreview = URL.createObjectURL(file);
-    setImagenUrl(urlPreview);
     setProcesando(true);
+    const archivoAAnalizar = await comprimirImagen(file);
+    const urlPreview = URL.createObjectURL(archivoAAnalizar);
+    setImagenUrl(urlPreview);
     try {
       const form = new FormData();
-      form.set("imagen", file);
+      form.set("imagen", archivoAAnalizar);
       const response = await fetch("/api/consumos/analizar", { method: "POST", body: form });
 
       if (!response.ok) {
