@@ -7,6 +7,13 @@ vi.mock("@google/genai", () => ({
     Object.assign(this, { models: { generateContent: generateContentMock } });
   }),
   ThinkingLevel: { MINIMAL: "MINIMAL" },
+  Type: {
+    OBJECT: "OBJECT",
+    STRING: "STRING",
+    NUMBER: "NUMBER",
+    INTEGER: "INTEGER",
+    BOOLEAN: "BOOLEAN",
+  },
   ApiError: class ApiError extends Error {
     status: number;
     constructor({ message, status }: { message: string; status: number }) {
@@ -45,6 +52,26 @@ describe("analizarImagen", () => {
       desglose: { carbohidratos: 40, proteinas: 30, grasas: 20, otrosNutrientes: 10 },
       confianza: 0.85,
     });
+  });
+
+  it("pide structured output con responseMimeType/responseSchema en vez de confiar sólo en el prompt", async () => {
+    mockRespuesta({
+      identificado: true,
+      descripcion: "Ensalada",
+      calorias: 200,
+      desglose: { carbohidratos: 50, proteinas: 20, grasas: 20, otrosNutrientes: 10 },
+      confianza: 0.9,
+    });
+
+    const { analizarImagen } = await import("@/lib/ai/vision");
+    await analizarImagen(Buffer.from("fake-image"), "image/jpeg");
+
+    const paramsEnviados = generateContentMock.mock.calls[0][0] as {
+      config: { responseMimeType?: string; responseSchema?: { type?: string; required?: string[] } };
+    };
+    expect(paramsEnviados.config.responseMimeType).toBe("application/json");
+    expect(paramsEnviados.config.responseSchema?.type).toBe("OBJECT");
+    expect(paramsEnviados.config.responseSchema?.required).toContain("identificado");
   });
 
   it("incluye en el prompt la instrucción de responder en Español LatAm (FR-036)", async () => {

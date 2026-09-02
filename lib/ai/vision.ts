@@ -1,5 +1,5 @@
-import { ApiError, GoogleGenAI, ThinkingLevel } from "@google/genai";
-import type { GenerateContentConfig, GenerateContentParameters } from "@google/genai";
+import { ApiError, GoogleGenAI, ThinkingLevel, Type } from "@google/genai";
+import type { GenerateContentConfig, GenerateContentParameters, Schema } from "@google/genai";
 import type { DesgloseNutricional } from "@/lib/consumos/nutricion";
 
 const MODEL_NAME = "gemini-3.1-flash-lite";
@@ -18,8 +18,39 @@ const STATUS_TRANSITORIOS = new Set([503, 429]);
  * BACKLOG-HISTORICO.md); la causa raíz de la latencia de FR-022/SC-001 sigue
  * sin identificarse (ver BACKLOG.md).
  */
+/**
+ * responseSchema restringe el sampling de tokens del modelo para que sólo
+ * pueda generar JSON que cumpla esta forma, en vez de depender de que
+ * obedezca la instrucción de formato del PROMPT (que hoy se mitiga a medias
+ * con limpiarBloqueCodigo si el modelo igual lo envuelve en markdown). No es
+ * 100% infalible (puede truncarse por límite de tokens), pero elimina la
+ * clase de error más probable de JSON malformado (ver BACKLOG.md).
+ */
+const RESPUESTA_SCHEMA: Schema = {
+  type: Type.OBJECT,
+  properties: {
+    identificado: { type: Type.BOOLEAN },
+    descripcion: { type: Type.STRING },
+    calorias: { type: Type.NUMBER, minimum: 0 },
+    desglose: {
+      type: Type.OBJECT,
+      properties: {
+        carbohidratos: { type: Type.INTEGER, minimum: 0, maximum: 100 },
+        proteinas: { type: Type.INTEGER, minimum: 0, maximum: 100 },
+        grasas: { type: Type.INTEGER, minimum: 0, maximum: 100 },
+        otrosNutrientes: { type: Type.INTEGER, minimum: 0, maximum: 100 },
+      },
+      required: ["carbohidratos", "proteinas", "grasas", "otrosNutrientes"],
+    },
+    confianza: { type: Type.NUMBER, minimum: 0, maximum: 1 },
+  },
+  required: ["identificado"],
+};
+
 const GENERATION_CONFIG: GenerateContentConfig = {
   thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL },
+  responseMimeType: "application/json",
+  responseSchema: RESPUESTA_SCHEMA,
 };
 
 export type AnalisisImagen =
