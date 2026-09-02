@@ -74,6 +74,39 @@ describe("analizarImagen", () => {
     expect(paramsEnviados.config.responseSchema?.required).toContain("identificado");
   });
 
+  it("el schema exige desglose entero de 0 a 100 y confianza entre 0 y 1 (regla de dominio)", async () => {
+    mockRespuesta({
+      identificado: true,
+      descripcion: "Ensalada",
+      calorias: 200,
+      desglose: { carbohidratos: 50, proteinas: 20, grasas: 20, otrosNutrientes: 10 },
+      confianza: 0.9,
+    });
+
+    const { analizarImagen } = await import("@/lib/ai/vision");
+    await analizarImagen(Buffer.from("fake-image"), "image/jpeg");
+
+    const paramsEnviados = generateContentMock.mock.calls[0][0] as {
+      config: {
+        responseSchema?: {
+          properties?: {
+            desglose?: { properties?: Record<string, { type?: string; minimum?: number; maximum?: number }> };
+            confianza?: { type?: string; minimum?: number; maximum?: number };
+          };
+        };
+      };
+    };
+    const desglose = paramsEnviados.config.responseSchema?.properties?.desglose?.properties;
+    for (const campo of ["carbohidratos", "proteinas", "grasas", "otrosNutrientes"]) {
+      expect(desglose?.[campo]).toEqual({ type: "INTEGER", minimum: 0, maximum: 100 });
+    }
+    expect(paramsEnviados.config.responseSchema?.properties?.confianza).toEqual({
+      type: "NUMBER",
+      minimum: 0,
+      maximum: 1,
+    });
+  });
+
   it("incluye en el prompt la instrucción de responder en Español LatAm (FR-036)", async () => {
     mockRespuesta({
       identificado: true,
