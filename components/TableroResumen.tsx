@@ -42,7 +42,7 @@ export default function TableroResumen() {
     // Al restaurarse desde el bfcache del navegador (event.persisted), el
     // componente no se remonta y este efecto no se re-ejecuta solo — hay que
     // volver a pedir el resumen a mano para no mostrar datos desactualizados
-    // (ver BACKLOG-HISTORICO.md, FR-012).
+    // (FR-012, commit `789a4d7`).
     function alRestaurarDesdeBfcache(evento: PageTransitionEvent) {
       if (evento.persisted) buscarResumen();
     }

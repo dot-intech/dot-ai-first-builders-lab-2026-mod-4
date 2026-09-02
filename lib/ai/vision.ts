@@ -14,9 +14,10 @@ const STATUS_TRANSITORIOS = new Set([503, 429]);
  * default de gemini-3.1-flash-lite según la documentación de Gemini, así que
  * fijarlo acá no cambia el comportamiento del modelo — queda explícito sólo
  * para documentar la intención en el código. thinkingBudget=0 ya se probó
- * por separado como fix de latencia y se descartó sin mejora (T059b, ver
- * BACKLOG-HISTORICO.md); la causa raíz de la latencia de FR-022/SC-001 sigue
- * sin identificarse (ver BACKLOG.md).
+ * por separado como fix de latencia y se descartó sin mejora (commits
+ * `3cb9bbe`/`44cfc8c`); la latencia de FR-022/SC-001 está confirmada como
+ * la espera de la respuesta de Gemini (ver BACKLOG.md § Performance), no
+ * hay margen de optimización adicional en el código de la app para esto.
  */
 /**
  * responseSchema restringe el sampling de tokens del modelo para que sólo
