@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { analizarImagen } from "@/lib/ai/vision";
+import { analizarImagen, RespuestaInvalidaError } from "@/lib/ai/vision";
 
 const FORMATOS_SOPORTADOS = new Set(["image/jpeg", "image/png", "image/webp"]);
 const TAMANO_MAXIMO_BYTES = 10 * 1024 * 1024;
@@ -47,6 +47,10 @@ export async function POST(request: Request): Promise<Response> {
   } catch (error) {
     if (error instanceof TimeoutAnalisisError) {
       return NextResponse.json({ error: "El análisis tardó demasiado" }, { status: 504 });
+    }
+    if (error instanceof RespuestaInvalidaError) {
+      console.error("[analizar/route] Gemini devolvió una respuesta no parseable como JSON:", error);
+      return NextResponse.json({ error: "No pudimos analizar la imagen" }, { status: 500 });
     }
     console.error("[analizar/route] Error no manejado al analizar la imagen:", error);
     return NextResponse.json({ error: "No pudimos analizar la imagen" }, { status: 500 });

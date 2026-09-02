@@ -6,6 +6,7 @@ import { crearSesion } from "@/lib/auth/session";
 const analizarImagenMock = vi.fn();
 vi.mock("@/lib/ai/vision", () => ({
   analizarImagen: analizarImagenMock,
+  RespuestaInvalidaError: class RespuestaInvalidaError extends Error {},
 }));
 
 async function limpiar() {

@@ -60,6 +60,8 @@ interface RespuestaModeloNoIdentificada {
 
 type RespuestaModelo = RespuestaModeloIdentificada | RespuestaModeloNoIdentificada;
 
+export class RespuestaInvalidaError extends Error {}
+
 function esFalloTransitorio(error: unknown): boolean {
   return error instanceof ApiError && STATUS_TRANSITORIOS.has(error.status);
 }
@@ -121,7 +123,9 @@ export async function analizarImagen(buffer: Buffer, mimeType: string): Promise<
     return parsearRespuesta(texto);
   } catch (error) {
     console.error("[lib/ai/vision] Respuesta del modelo no es JSON válido:", texto, error);
-    throw new Error("El modelo de visión devolvió una respuesta inesperada", { cause: error });
+    throw new RespuestaInvalidaError("El modelo de visión devolvió una respuesta inesperada", {
+      cause: error,
+    });
   } finally {
     console.log(`[lib/ai/vision] parseo=${(performance.now() - tParseoInicio).toFixed(0)}ms`);
   }

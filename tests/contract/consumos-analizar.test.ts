@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const analizarImagenMock = vi.fn();
 vi.mock("@/lib/ai/vision", () => ({
   analizarImagen: analizarImagenMock,
+  RespuestaInvalidaError: class RespuestaInvalidaError extends Error {},
 }));
 
 function requestConImagen(bytes: Uint8Array, mimeType: string, nombreCampo = "imagen") {
@@ -99,6 +100,19 @@ describe("POST /api/consumos/analizar", () => {
     const body = await response.json();
     expect(body.error).toBeTruthy();
     expect(JSON.stringify(body).toLowerCase()).not.toContain("boom");
+  });
+
+  it("500 con mensaje genérico si analizarImagen lanza RespuestaInvalidaError (JSON malformado del modelo)", async () => {
+    const { RespuestaInvalidaError } = await import("@/lib/ai/vision");
+    analizarImagenMock.mockRejectedValue(new RespuestaInvalidaError("no es JSON"));
+
+    const { POST } = await import("@/app/api/consumos/analizar/route");
+    const response = await POST(requestConImagen(new Uint8Array([1, 2, 3]), "image/jpeg"));
+
+    expect(response.status).toBe(500);
+    const body = await response.json();
+    expect(body.error).toBeTruthy();
+    expect(JSON.stringify(body).toLowerCase()).not.toContain("json");
   });
 
   it("504 si el análisis supera los 30s (FR-021)", async () => {

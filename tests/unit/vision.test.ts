@@ -128,6 +128,15 @@ describe("analizarImagen", () => {
     expect(generateContentMock).toHaveBeenCalledTimes(1);
   });
 
+  it("lanza RespuestaInvalidaError cuando la respuesta del modelo no es JSON válido", async () => {
+    generateContentMock.mockResolvedValue({ text: "esto no es JSON" });
+
+    const { analizarImagen, RespuestaInvalidaError } = await import("@/lib/ai/vision");
+    await expect(analizarImagen(Buffer.from("fake-image"), "image/jpeg")).rejects.toBeInstanceOf(
+      RespuestaInvalidaError
+    );
+  });
+
   it("reintenta como máximo una vez: si el 503 persiste, propaga el error", async () => {
     const { ApiError } = await import("@google/genai");
     generateContentMock.mockRejectedValue(new ApiError({ message: "UNAVAILABLE", status: 503 }));
