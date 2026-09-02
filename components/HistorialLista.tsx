@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface ConsumoHistorial {
   id: string;
@@ -45,6 +45,31 @@ function agrupar(consumos: ConsumoHistorial[]): { grupo: string; items: ConsumoH
 
 export default function HistorialLista({ consumosIniciales }: HistorialListaProps) {
   const [consumos, setConsumos] = useState(consumosIniciales);
+
+  useEffect(() => {
+    let cancelado = false;
+
+    // Al restaurarse desde el bfcache del navegador (event.persisted), el
+    // componente no se remonta y sigue mostrando los `consumosIniciales` del
+    // momento en que se salió de la página — hay que volver a pedir el
+    // historial a mano para no mostrar datos desactualizados (mismo
+    // mecanismo que TableroResumen.tsx, commit 789a4d7).
+    function alRestaurarDesdeBfcache(evento: PageTransitionEvent) {
+      if (!evento.persisted) return;
+      fetch("/api/consumos")
+        .then((res) => (res.ok ? res.json() : Promise.reject()))
+        .then((data: { consumos: ConsumoHistorial[] }) => {
+          if (!cancelado) setConsumos(data.consumos);
+        })
+        .catch(() => {});
+    }
+
+    window.addEventListener("pageshow", alRestaurarDesdeBfcache);
+    return () => {
+      cancelado = true;
+      window.removeEventListener("pageshow", alRestaurarDesdeBfcache);
+    };
+  }, []);
 
   async function eliminar(id: string) {
     const confirmado = window.confirm(

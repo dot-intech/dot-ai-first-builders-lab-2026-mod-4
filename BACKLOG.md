@@ -121,16 +121,3 @@ en sí (ver ítems de tier/modelo abajo) o de aceptar el umbral de 15s.
   transitorios de la llamada a Gemini (distinto del reintento de
   guardado de FR-024a, que es para el guardado en DB, no para el
   análisis de imagen).
-
-## UX
-
-- [ ] **Evaluar si `HistorialLista.tsx` puede mostrar datos desactualizados
-  tras restaurarse desde el back-forward cache (bfcache) del navegador.**
-  Mismo mecanismo que se arregló en `TableroResumen.tsx` (commit
-  `789a4d7`, 2026-08-30): si el usuario borra o agrega un
-  consumo y después usa el botón "atrás" del navegador para volver a
-  `/historial` desde una página que quedó bfcached, podría ver la lista
-  vieja. Caso más acotado que el del tablero — requiere específicamente
-  el botón atrás, no el flujo normal hacia adelante — y el spec no exige
-  actualización instantánea en Historial (a diferencia de FR-012 para el
-  tablero), por eso queda como ítem a evaluar, no como bug confirmado.
