@@ -66,6 +66,46 @@ procesamiento). No hay margen de optimización en el código de la app
 para esta brecha — cualquier mejora depende de la latencia del modelo
 en sí (ver ítems de tier/modelo abajo) o de aceptar el umbral de 15s.
 
+**Investigación de modelos/config alternativos (2026-09-02)** —
+investigación de fuentes públicas (sin tocar código), para responder si
+`gemini-3.1-flash-lite` es realmente la opción de menor latencia
+disponible en Google AI Studio para este caso de uso. Conclusión: hay
+un candidato razonable para probar, no un fix garantizado.
+[Artificial Analysis — Gemini 3.5 Flash (minimal) vs Gemini 3.1
+Flash-Lite](https://artificialanalysis.ai/models/comparisons/gemini-3-5-flash-minimal-vs-gemini-3-1-flash-lite-preview)
+(benchmarks sobre la API real de Google, release de `gemini-3.5-flash`
+19/05/2026): TTFT de `gemini-3.5-flash` con `thinkingLevel: MINIMAL` =
+0.92s vs. 5.22s de `gemini-3.1-flash-lite` (~5x mejor); output algo más
+lento una vez arrancado (186 tok/s vs. 283 tok/s). El sucesor directo
+`gemini-3.5-flash-lite` **no** es mejor — [TTFT 7.60s, peor que el
+modelo actual](https://artificialanalysis.ai/models/gemini-3-5-flash-lite) —
+"lite" no predice menor latencia en esta familia. Contra de
+`gemini-3.5-flash`: ~6x más caro por token de output ($9.00 vs. $1.50
+/1M), aunque en tier gratuito de AI Studio (uso de desarrollo, sin
+billing) el costo no aplica. La [documentación oficial de rate
+limits](https://ai.google.dev/gemini-api/docs/rate-limits) no publica
+cifras concretas por modelo ni diferencias de latencia entre tier
+gratis y pago. Hallazgo más relevante: un [hilo del foro oficial de
+Google AI Developers (mayo
+2026)](https://discuss.ai.google.dev/t/gemini-3-1-flash-lite-is-very-slow-and-inconsistent/143754)
+reporta el mismo patrón que este proyecto (mismo prompt, thinking
+mínimo, latencia 0.6s-20.3s en ~25% de las corridas vía API, rápido y
+consistente en el playground) sin causa raíz confirmada por Google —
+corrobora que la variancia medida acá es un problema conocido del
+modelo/infraestructura de Google, no de la implementación de
+NutraShot. Además existe
+[`config.mediaResolution`](https://ai.google.dev/gemini-api/docs/generate-content/media-resolution)
+en el SDK `@google/genai` (`LOW`/`MEDIUM`/`HIGH`/`ULTRA_HIGH`, default
+`UNSPECIFIED`): `LOW` reduce los tokens con que el modelo procesa la
+imagen → "faster processing and lower cost, but with less detail"
+(cita textual de la doc) — mecanismo distinto de comprimir el archivo
+antes de subir (ya descartado sin mejora), actúa sobre el
+procesamiento interno del modelo, no sobre el tamaño transmitido.
+Streaming (`generateContentStream`) se descartó como palanca: reduciría
+el TTFT percibido pero no el tiempo hasta tener el JSON completo
+parseable, y requeriría rediseñar el frontend para progreso parcial —
+cambio de alcance mayor, no una config puntual.
+
 - [ ] **Bajar el p95 de ~11.8s a menos de 10s.** Con la instrumentación
   de arriba confirmando que casi el 100% del tiempo es la espera de la
   respuesta de Gemini (no subida, no parseo), no queda margen de
@@ -93,9 +133,19 @@ en sí (ver ítems de tier/modelo abajo) o de aceptar el umbral de 15s.
 - [ ] **Revisar si la clave de `GOOGLE_AI_API_KEY` tiene límites de
   cuota/tier gratuito** que impongan latencia adicional o
   rate-limiting silencioso en Google AI Studio.
-- [ ] **Confirmar que `gemini-3.1-flash-lite` es realmente el modelo
-  usado y que no hay una alternativa de menor latencia** disponible en
-  Google AI Studio para este caso de uso.
+- [ ] **Spike: probar `gemini-3.5-flash` con `thinkingLevel: LOW` o
+  `MINIMAL` explícito** en vez de `gemini-3.1-flash-lite` (ver nota de
+  investigación arriba) — correr el benchmark formal de 15 corridas bajo
+  Fast 4G (mismo protocolo de T059) para confirmar si el TTFT ~5x mejor
+  reportado por Artificial Analysis se traduce en un p95 real más bajo
+  en este proyecto, y evaluar el impacto en costo (~6x más caro por
+  token de output; irrelevante mientras se use tier gratuito de AI
+  Studio) y en precisión de identificación antes de adoptarlo.
+- [ ] **Spike: probar `config.mediaResolution: LOW`** en la llamada a
+  `generateContent` de `lib/ai/vision.ts` (ver nota de investigación
+  arriba) — medir impacto en latencia y, por separado, en la precisión
+  de identificación de alimentos/calorías (trade-off documentado por
+  Google, no gratis).
 - [ ] **Sigue sin poder descartarse que además haya casos de JSON
   malformado** en la respuesta de Gemini (hipótesis original de los 500
   intermitentes, sólo se confirmó la instancia puntual de 503 — ver nota
