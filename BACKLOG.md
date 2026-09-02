@@ -96,28 +96,24 @@ en sí (ver ítems de tier/modelo abajo) o de aceptar el umbral de 15s.
 - [ ] **Confirmar que `gemini-3.1-flash-lite` es realmente el modelo
   usado y que no hay una alternativa de menor latencia** disponible en
   Google AI Studio para este caso de uso.
-- [ ] **Investigar los errores 500 intermitentes** (~2/10 corridas en
-  T059, 2/15 el 2026-09-01) — hipótesis original: `JSON.parse` falla
-  sobre la respuesta del modelo (cortada o envuelta en texto adicional
-  pese al prompt). **Confirmado uno de los casos (2026-09-01, prueba
-  manual tras el commit `75f9720`)**: no es JSON malformado, es un 503
-  real de Gemini (`"This model is currently experiencing high demand...
-  status: UNAVAILABLE"`), visible en el log de `lib/ai/vision.ts`
-  (commit `06aa0ff`) porque esta vez sí se corrió `npm run dev` en
-  background con el output redirigido a archivo. Sigue sin poder
-  descartarse que además haya casos de JSON malformado — sólo se
-  confirmó esta instancia puntual. **`app/api/consumos/analizar/route.ts`
-  sigue sin ningún catch genérico** alrededor de `analizarImagen()` (sólo
-  captura `TimeoutAnalisisError`) — el 503 sube sin manejar y Next.js lo
-  convierte en el mismo 500 genérico, sin reintentar. Se resolverá junto
-  con el catch genérico + logging discriminado cuando se encare el ítem
-  de reintento con backoff de abajo.
-- [ ] **Revisar si el timeout de 30s en `route.ts` (`TIMEOUT_ANALISIS_MS`)
-  es la estrategia correcta** — hoy sólo envuelve la llamada a Gemini,
-  no la subida completa, y 30s es varias veces el umbral de 10s de
-  FR-022; una vez resuelta la causa raíz, decidir si conviene bajarlo
-  para fallar más rápido y reintentar (ver ítem de reintentos abajo).
-- [ ] **Agregar reintento automático con backoff** ante fallos
-  transitorios de la llamada a Gemini (distinto del reintento de
-  guardado de FR-024a, que es para el guardado en DB, no para el
-  análisis de imagen).
+- [ ] **Sigue sin poder descartarse que además haya casos de JSON
+  malformado** en la respuesta de Gemini (hipótesis original de los 500
+  intermitentes, sólo se confirmó la instancia puntual de 503 — ver nota
+  de manejo de errores arriba). El reintento con backoff agregado no
+  cubre este caso: sólo reintenta fallos transitorios de la llamada
+  (`ApiError` con status 503/429), no un `JSON.parse` que falla sobre una
+  respuesta ya recibida.
+
+**Manejo de errores, timeout y reintento (commit `a73ccc9`)** — se
+agregó reintento automático (1 reintento, backoff fijo de 1s) en
+`lib/ai/vision.ts` ante fallos transitorios de la llamada a Gemini
+(`ApiError` con status 503 o 429), y un catch genérico en
+`app/api/consumos/analizar/route.ts` que devuelve un 500 explícito con
+mensaje genérico en vez de dejar subir la excepción sin manejar (que
+Next.js convertía en un 500 sin cuerpo estructurado). El timeout de 30s
+(`TIMEOUT_ANALISIS_MS`, FR-021) se revisó y se decidió **no** bajarlo:
+sigue envolviendo el análisis completo (incluido el reintento interno),
+así que un fallo transitorio que persiste dos intentos igual cae dentro
+del mismo presupuesto de 30s sin necesitar un timeout más corto para
+"fallar rápido y reintentar" — el reintento ya vive adentro del
+timeout existente.
