@@ -146,13 +146,18 @@ cambio de alcance mayor, no una config puntual.
   arriba) — medir impacto en latencia y, por separado, en la precisión
   de identificación de alimentos/calorías (trade-off documentado por
   Google, no gratis).
-- [ ] **Sigue sin poder descartarse que además haya casos de JSON
-  malformado** en la respuesta de Gemini (hipótesis original de los 500
-  intermitentes, sólo se confirmó la instancia puntual de 503 — ver nota
-  de manejo de errores arriba). El reintento con backoff agregado no
-  cubre este caso: sólo reintenta fallos transitorios de la llamada
-  (`ApiError` con status 503/429), no un `JSON.parse` que falla sobre una
-  respuesta ya recibida.
+- [ ] **Confirmar si además hay casos reales de JSON malformado** en la
+  respuesta de Gemini (hipótesis original de los 500 intermitentes,
+  sólo se confirmó la instancia puntual de 503 — ver nota de manejo de
+  errores arriba). El reintento con backoff no cubre este caso: sólo
+  reintenta fallos transitorios de la llamada (`ApiError` con status
+  503/429), no un `JSON.parse` que falla sobre una respuesta ya
+  recibida. **Instrumentación agregada (2026-09-02, commit `40527e8`)**
+  — `RespuestaInvalidaError` en `lib/ai/vision.ts` distingue este caso
+  con su propio log tanto ahí como en `route.ts`; sigue pendiente
+  revisar logs de uso real para saber si ocurre y con qué frecuencia
+  (no se puede confirmar sin tráfico real o un caso reproducido a
+  mano).
 
 **Manejo de errores, timeout y reintento (commit `a73ccc9`)** — se
 agregó reintento automático (1 reintento, backoff fijo de 1s) en
