@@ -158,27 +158,26 @@ cambio de alcance mayor, no una config puntual.
   revisar logs de uso real para saber si ocurre y con qué frecuencia
   (no se puede confirmar sin tráfico real o un caso reproducido a
   mano).
-- [ ] **Migrar a structured output de Gemini** (`responseMimeType:
-  "application/json"` + `responseSchema`, soportado por el SDK
-  `@google/genai` ya en uso — confirmado en
-  `node_modules/@google/genai/dist/genai.d.ts`) en vez de confiar en la
-  instrucción de formato dentro del prompt de texto. Restringe el
-  sampling de tokens del modelo para que sólo pueda generar JSON que
-  cumpla el schema pasado, en vez de una instrucción que puede
-  ignorar — ataca la causa raíz de JSON malformado/envuelto en markdown
-  (hoy mitigado a medias con `limpiarBloqueCodigo`) en lugar de sólo
-  mitigar el síntoma. No es 100% infalible (puede truncarse por límite
-  de tokens, o fallar por un error de API), pero elimina la clase de
-  error más probable. Preferido sobre el ítem de reintento de abajo
-  como fix principal.
 - [ ] **Agregar reintento inmediato (sin backoff) ante
-  `RespuestaInvalidaError`**, como backstop una vez migrado a structured
-  output (ítem de arriba) — a diferencia del reintento ya agregado para
-  fallos transitorios de red (503/429, donde el reintento tiene sentido
-  estadístico), un JSON malformado por el modelo no tiene garantía de
-  resolverse reintentando con el mismo prompt si la causa es sistemática
-  para cierto contenido; sirve sólo como red de seguridad barata para lo
-  que quede después del schema (ej. truncamiento por límite de tokens).
+  `RespuestaInvalidaError`**, como backstop del structured output ya
+  migrado (`responseMimeType`/`responseSchema`, commit `e39c6ed`) — a
+  diferencia del reintento ya agregado para fallos transitorios de red
+  (503/429, donde el reintento tiene sentido estadístico), un JSON
+  malformado por el modelo no tiene garantía de resolverse reintentando
+  con el mismo prompt si la causa es sistemática para cierto contenido;
+  sirve sólo como red de seguridad barata para lo que quede después del
+  schema (ej. truncamiento por límite de tokens).
+
+**Structured output migrado (2026-09-02, commit `e39c6ed`)** — se
+agregó `responseMimeType: "application/json"` + `responseSchema` a
+`GENERATION_CONFIG` en `lib/ai/vision.ts`, restringiendo el sampling de
+tokens del modelo a la forma esperada en vez de depender sólo de la
+instrucción de formato del prompt. Validado contra la API real de
+Gemini (además del test que confirma los params enviados): la
+respuesta vino sin markdown ni texto extra, y parseó sin error. No es
+100% infalible (puede truncarse por límite de tokens, o fallar por un
+error de API) — de ahí el ítem de reintento inmediato de arriba como
+backstop, todavía pendiente.
 
 **Manejo de errores, timeout y reintento (commit `a73ccc9`)** — se
 agregó reintento automático (1 reintento, backoff fijo de 1s) en
