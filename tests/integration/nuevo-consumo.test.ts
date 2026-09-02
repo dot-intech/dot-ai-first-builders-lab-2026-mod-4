@@ -128,7 +128,8 @@ describe("User Story 2 — registrar un consumo por foto (acceptance scenarios)"
     const { POST: analizar } = await import("@/app/api/consumos/analizar/route");
     const { POST: guardar } = await import("@/app/api/consumos/route");
 
-    await expect(analizar(requestConImagen(token))).rejects.toThrow();
+    const analisisResponse = await analizar(requestConImagen(token));
+    expect(analisisResponse.status).toBe(500);
 
     const cargaManual = {
       descripcion: "Sandwich de jamón y queso",

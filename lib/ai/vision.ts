@@ -1,9 +1,12 @@
-import { GoogleGenAI, ThinkingLevel } from "@google/genai";
-import type { GenerateContentConfig } from "@google/genai";
+import { ApiError, GoogleGenAI, ThinkingLevel } from "@google/genai";
+import type { GenerateContentConfig, GenerateContentParameters } from "@google/genai";
 import type { DesgloseNutricional } from "@/lib/consumos/nutricion";
 
 const MODEL_NAME = "gemini-3.1-flash-lite";
 const DESCRIPCION_MAX_LENGTH = 200;
+const MAX_INTENTOS_GEMINI = 2;
+const ESPERA_REINTENTO_MS = 1000;
+const STATUS_TRANSITORIOS = new Set([503, 429]);
 
 /**
  * thinkingLevel es el dial vigente en Gemini 3.x para razonamiento extendido
@@ -57,6 +60,35 @@ interface RespuestaModeloNoIdentificada {
 
 type RespuestaModelo = RespuestaModeloIdentificada | RespuestaModeloNoIdentificada;
 
+function esFalloTransitorio(error: unknown): boolean {
+  return error instanceof ApiError && STATUS_TRANSITORIOS.has(error.status);
+}
+
+function esperar(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function generarConReintento(
+  genAI: GoogleGenAI,
+  params: GenerateContentParameters
+): ReturnType<GoogleGenAI["models"]["generateContent"]> {
+  for (let intento = 1; intento <= MAX_INTENTOS_GEMINI; intento++) {
+    try {
+      return await genAI.models.generateContent(params);
+    } catch (error) {
+      if (intento === MAX_INTENTOS_GEMINI || !esFalloTransitorio(error)) {
+        throw error;
+      }
+      console.warn(
+        `[lib/ai/vision] Fallo transitorio de Gemini (intento ${intento}/${MAX_INTENTOS_GEMINI}), reintentando en ${ESPERA_REINTENTO_MS}ms:`,
+        error
+      );
+      await esperar(ESPERA_REINTENTO_MS);
+    }
+  }
+  throw new Error("No se pudo obtener respuesta de Gemini");
+}
+
 export async function analizarImagen(buffer: Buffer, mimeType: string): Promise<AnalisisImagen> {
   const apiKey = process.env.GOOGLE_AI_API_KEY;
   if (!apiKey) {
@@ -68,7 +100,7 @@ export async function analizarImagen(buffer: Buffer, mimeType: string): Promise<
   let texto: string;
   const tGeminiInicio = performance.now();
   try {
-    const result = await genAI.models.generateContent({
+    const result = await generarConReintento(genAI, {
       model: MODEL_NAME,
       contents: [
         { text: PROMPT },

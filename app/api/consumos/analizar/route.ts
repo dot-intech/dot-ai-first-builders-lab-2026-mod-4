@@ -48,7 +48,8 @@ export async function POST(request: Request): Promise<Response> {
     if (error instanceof TimeoutAnalisisError) {
       return NextResponse.json({ error: "El análisis tardó demasiado" }, { status: 504 });
     }
-    throw error;
+    console.error("[analizar/route] Error no manejado al analizar la imagen:", error);
+    return NextResponse.json({ error: "No pudimos analizar la imagen" }, { status: 500 });
   } finally {
     console.log(
       `[analizar/route] subida=${(tSubida - tInicio).toFixed(0)}ms total=${(performance.now() - tInicio).toFixed(0)}ms`

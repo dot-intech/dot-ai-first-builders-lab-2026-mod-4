@@ -7,6 +7,13 @@ vi.mock("@google/genai", () => ({
     Object.assign(this, { models: { generateContent: generateContentMock } });
   }),
   ThinkingLevel: { MINIMAL: "MINIMAL" },
+  ApiError: class ApiError extends Error {
+    status: number;
+    constructor({ message, status }: { message: string; status: number }) {
+      super(message);
+      this.status = status;
+    }
+  },
 }));
 
 function mockRespuesta(json: unknown) {
@@ -82,5 +89,62 @@ describe("analizarImagen", () => {
     const resultado = await analizarImagen(Buffer.from("fake-image"), "image/jpeg");
 
     expect(resultado).toEqual({ identificado: false });
+  });
+
+  it("reintenta una vez ante un 503 transitorio de Gemini y devuelve el resultado si el reintento tiene éxito", async () => {
+    const { ApiError } = await import("@google/genai");
+    generateContentMock
+      .mockRejectedValueOnce(new ApiError({ message: "UNAVAILABLE", status: 503 }))
+      .mockResolvedValueOnce({
+        text: JSON.stringify({
+          identificado: true,
+          descripcion: "Milanesa con puré",
+          calorias: 650,
+          desglose: { carbohidratos: 40, proteinas: 30, grasas: 20, otrosNutrientes: 10 },
+          confianza: 0.85,
+        }),
+      });
+
+    vi.useFakeTimers();
+    try {
+      const { analizarImagen } = await import("@/lib/ai/vision");
+      const resultadoPromise = analizarImagen(Buffer.from("fake-image"), "image/jpeg");
+      await vi.advanceTimersByTimeAsync(1000);
+      const resultado = await resultadoPromise;
+
+      expect(resultado.identificado).toBe(true);
+      expect(generateContentMock).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("no reintenta ante un error no transitorio de Gemini (ej. 400)", async () => {
+    const { ApiError } = await import("@google/genai");
+    generateContentMock.mockRejectedValue(new ApiError({ message: "Bad Request", status: 400 }));
+
+    const { analizarImagen } = await import("@/lib/ai/vision");
+    await expect(analizarImagen(Buffer.from("fake-image"), "image/jpeg")).rejects.toThrow();
+    expect(generateContentMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("reintenta como máximo una vez: si el 503 persiste, propaga el error", async () => {
+    const { ApiError } = await import("@google/genai");
+    generateContentMock.mockRejectedValue(new ApiError({ message: "UNAVAILABLE", status: 503 }));
+
+    vi.useFakeTimers();
+    try {
+      const { analizarImagen } = await import("@/lib/ai/vision");
+      const resultadoPromise = analizarImagen(Buffer.from("fake-image"), "image/jpeg").catch(
+        (error: unknown) => error
+      );
+      await vi.advanceTimersByTimeAsync(1000);
+      const error = await resultadoPromise;
+
+      expect(error).toBeInstanceOf(Error);
+      expect(generateContentMock).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

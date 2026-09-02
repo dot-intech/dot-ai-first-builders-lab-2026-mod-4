@@ -89,6 +89,18 @@ describe("POST /api/consumos/analizar", () => {
     expect(response.status).toBe(422);
   });
 
+  it("500 con mensaje genérico si analizarImagen lanza un error no manejado (FR-021)", async () => {
+    analizarImagenMock.mockRejectedValue(new Error("boom interno"));
+
+    const { POST } = await import("@/app/api/consumos/analizar/route");
+    const response = await POST(requestConImagen(new Uint8Array([1, 2, 3]), "image/jpeg"));
+
+    expect(response.status).toBe(500);
+    const body = await response.json();
+    expect(body.error).toBeTruthy();
+    expect(JSON.stringify(body).toLowerCase()).not.toContain("boom");
+  });
+
   it("504 si el análisis supera los 30s (FR-021)", async () => {
     vi.useFakeTimers();
     try {
