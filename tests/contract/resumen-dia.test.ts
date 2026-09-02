@@ -26,13 +26,14 @@ async function crearSesionDePrueba(email: string) {
 }
 
 describe("GET /api/resumen-dia", () => {
-  it("200 con ceros si no hay consumos para la fecha recibida", async () => {
+  it("200 con ceros si no hay consumos en el rango recibido", async () => {
     const { token } = await crearSesionDePrueba("resumen-vacio@example.com");
     const { GET } = await import("@/app/api/resumen-dia/route");
 
-    const request = new Request("http://localhost/api/resumen-dia?fecha=2026-08-26", {
-      headers: { cookie: `nutrashot_session=${token}` },
-    });
+    const request = new Request(
+      "http://localhost/api/resumen-dia?desde=2026-08-26T00:00:00.000Z&hasta=2026-08-27T00:00:00.000Z",
+      { headers: { cookie: `nutrashot_session=${token}` } }
+    );
     const response = await GET(request);
 
     expect(response.status).toBe(200);
@@ -43,7 +44,7 @@ describe("GET /api/resumen-dia", () => {
     });
   });
 
-  it("200 con agregados correctos cuando hay consumos en esa fecha", async () => {
+  it("200 con agregados correctos cuando hay consumos en ese rango", async () => {
     const { token, usuarioId } = await crearSesionDePrueba("resumen-con-datos@example.com");
 
     await pool.query(
@@ -59,9 +60,10 @@ describe("GET /api/resumen-dia", () => {
     );
 
     const { GET } = await import("@/app/api/resumen-dia/route");
-    const request = new Request("http://localhost/api/resumen-dia?fecha=2026-08-26", {
-      headers: { cookie: `nutrashot_session=${token}` },
-    });
+    const request = new Request(
+      "http://localhost/api/resumen-dia?desde=2026-08-26T00:00:00.000Z&hasta=2026-08-27T00:00:00.000Z",
+      { headers: { cookie: `nutrashot_session=${token}` } }
+    );
     const response = await GET(request);
 
     expect(response.status).toBe(200);
@@ -69,10 +71,74 @@ describe("GET /api/resumen-dia", () => {
     expect(body.totalCalorias).toBe(600);
   });
 
-  it("400 si falta el parámetro fecha", async () => {
-    const { token } = await crearSesionDePrueba("resumen-sin-fecha@example.com");
+  it("incluye un consumo cercano a la medianoche UTC cuando cae dentro del rango del día local (regresión bug zona horaria)", async () => {
+    const { token, usuarioId } = await crearSesionDePrueba("resumen-timezone@example.com");
+
+    // 2026-08-26T00:30:00Z: en UTC-3 esto es 2026-08-25 21:30 local, "hoy"
+    // sigue siendo el 25. El rango desde/hasta ya viene resuelto en UTC
+    // representando ese día local (25/8 00:00 -03:00 a 26/8 00:00 -03:00).
+    await pool.query(
+      `INSERT INTO consumos (usuario_id, fecha_hora, descripcion, calorias, pct_carbohidratos, pct_proteinas, pct_grasas, pct_otros_nutrientes)
+       VALUES ($1, '2026-08-26T00:30:00Z', 'Café con leche', 200, 25, 25, 25, 25)`,
+      [usuarioId]
+    );
+
     const { GET } = await import("@/app/api/resumen-dia/route");
-    const request = new Request("http://localhost/api/resumen-dia", {
+    const request = new Request(
+      "http://localhost/api/resumen-dia?desde=2026-08-25T03:00:00.000Z&hasta=2026-08-26T03:00:00.000Z",
+      { headers: { cookie: `nutrashot_session=${token}` } }
+    );
+    const response = await GET(request);
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.totalCalorias).toBe(200);
+  });
+
+  it("el límite superior del rango es exclusivo", async () => {
+    const { token, usuarioId } = await crearSesionDePrueba("resumen-limite@example.com");
+
+    await pool.query(
+      `INSERT INTO consumos (usuario_id, fecha_hora, descripcion, calorias, pct_carbohidratos, pct_proteinas, pct_grasas, pct_otros_nutrientes)
+       VALUES ($1, '2026-08-27T00:00:00Z', 'Justo al límite', 100, 25, 25, 25, 25)`,
+      [usuarioId]
+    );
+
+    const { GET } = await import("@/app/api/resumen-dia/route");
+    const request = new Request(
+      "http://localhost/api/resumen-dia?desde=2026-08-26T00:00:00.000Z&hasta=2026-08-27T00:00:00.000Z",
+      { headers: { cookie: `nutrashot_session=${token}` } }
+    );
+    const response = await GET(request);
+
+    const body = await response.json();
+    expect(body.totalCalorias).toBe(0);
+  });
+
+  it("400 si falta desde o hasta", async () => {
+    const { token } = await crearSesionDePrueba("resumen-sin-rango@example.com");
+    const { GET } = await import("@/app/api/resumen-dia/route");
+
+    const sinHasta = await GET(
+      new Request("http://localhost/api/resumen-dia?desde=2026-08-26T00:00:00.000Z", {
+        headers: { cookie: `nutrashot_session=${token}` },
+      })
+    );
+    expect(sinHasta.status).toBe(400);
+
+    const sinDesde = await GET(
+      new Request("http://localhost/api/resumen-dia?hasta=2026-08-27T00:00:00.000Z", {
+        headers: { cookie: `nutrashot_session=${token}` },
+      })
+    );
+    expect(sinDesde.status).toBe(400);
+  });
+
+  it("400 si desde/hasta no son fechas ISO válidas", async () => {
+    const { token } = await crearSesionDePrueba("resumen-rango-invalido@example.com");
+    const { GET } = await import("@/app/api/resumen-dia/route");
+
+    const request = new Request("http://localhost/api/resumen-dia?desde=no-es-fecha&hasta=tampoco", {
       headers: { cookie: `nutrashot_session=${token}` },
     });
     const response = await GET(request);
@@ -81,7 +147,9 @@ describe("GET /api/resumen-dia", () => {
 
   it("401 sin sesión", async () => {
     const { GET } = await import("@/app/api/resumen-dia/route");
-    const request = new Request("http://localhost/api/resumen-dia?fecha=2026-08-26");
+    const request = new Request(
+      "http://localhost/api/resumen-dia?desde=2026-08-26T00:00:00.000Z&hasta=2026-08-27T00:00:00.000Z"
+    );
     const response = await GET(request);
     expect(response.status).toBe(401);
   });

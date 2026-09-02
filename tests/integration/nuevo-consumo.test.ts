@@ -105,14 +105,15 @@ describe("User Story 2 — registrar un consumo por foto (acceptance scenarios)"
     const { POST: analizar } = await import("@/app/api/consumos/analizar/route");
     const { POST: guardar } = await import("@/app/api/consumos/route");
     const { GET: resumenDia } = await import("@/app/api/resumen-dia/route");
+    const { limitesDeHoyLocal } = await import("@/lib/consumos/limites-dia");
 
     const estimacion = await (await analizar(requestConImagen(token))).json();
     const guardadoResponse = await guardar(requestGuardar(estimacion, token));
     expect(guardadoResponse.status).toBe(201);
 
-    const hoy = new Date().toISOString().slice(0, 10);
+    const { desde, hasta } = limitesDeHoyLocal();
     const resumenResponse = await resumenDia(
-      new Request(`http://localhost/api/resumen-dia?fecha=${hoy}`, {
+      new Request(`http://localhost/api/resumen-dia?desde=${desde}&hasta=${hasta}`, {
         headers: { cookie: `nutrashot_session=${token}` },
       })
     );

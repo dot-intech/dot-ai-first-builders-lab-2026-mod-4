@@ -178,7 +178,12 @@ describe("User Story 1 — autenticación y tablero (acceptance scenarios)", () 
     if (!validacion.valido) throw new Error("fixture inválido");
     const { token: sessionToken } = await crearSesion(validacion.usuarioId);
 
-    const response = await resumenDia(cookieRequest("http://localhost/api/resumen-dia?fecha=2026-08-26", sessionToken));
+    const response = await resumenDia(
+      cookieRequest(
+        "http://localhost/api/resumen-dia?desde=2026-08-26T00:00:00.000Z&hasta=2026-08-27T00:00:00.000Z",
+        sessionToken
+      )
+    );
     const body = await response.json();
 
     expect(body).toEqual({

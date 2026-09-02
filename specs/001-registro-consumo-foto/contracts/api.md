@@ -37,13 +37,19 @@ UI antes de llamar a este endpoint.
 ### `GET /api/resumen-dia`
 Agregado de consumos del día actual del usuario autenticado (FR-009).
 
-- **Query** (obligatorio): `?fecha=YYYY-MM-DD` — la fecha de "hoy" según
-  el dispositivo del cliente, no un rango arbitrario: el servidor no
-  conoce la zona horaria del usuario, así que el cliente calcula su
-  propio "hoy" local y lo envía en cada llamada (mismo criterio de
-  timezone que el historial — ver [[../research.md]] §9). FR-009 sólo
-  exige agregados del día actual; este endpoint no sirve para consultar
-  otras fechas.
+- **Query** (ambos obligatorios): `?desde=<ISO8601>&hasta=<ISO8601>` —
+  instantes UTC que delimitan el día "de hoy" (`desde` inclusivo, `hasta`
+  exclusivo). El servidor no conoce la zona horaria del usuario, así que
+  el cliente calcula la medianoche de hoy y de mañana en su propia hora
+  local (`lib/consumos/limites-dia.ts`) y las convierte a UTC antes de
+  mandarlas — el servidor sólo compara instantes UTC contra `fecha_hora`,
+  sin reinterpretar ninguna fecha en su propia zona horaria (mismo
+  criterio de timezone que el historial — ver [[../research.md]] §9).
+  **No usar `fecha_hora::date = $fecha::date`** — ese cast usa la
+  timezone de la sesión de Postgres, no la del cliente, y produce
+  resultados incorrectos cerca de la medianoche UTC cuando ambas
+  timezones difieren. FR-009 sólo exige agregados del día actual; este
+  endpoint no sirve para consultar otros rangos.
 - **200**:
   ```json
   {
@@ -53,7 +59,7 @@ Agregado de consumos del día actual del usuario autenticado (FR-009).
   ```
   Todo en cero si no hay consumos ese día (acceptance scenario US1 #9).
   El desglose siempre suma exactamente 100 cuando `totalCalorias > 0`.
-- **400**: falta `fecha` o no tiene formato `YYYY-MM-DD`.
+- **400**: falta `desde` o `hasta`, o no son fechas ISO 8601 válidas.
 
 ## Análisis de imagen (sin persistencia — RNF-07)
 

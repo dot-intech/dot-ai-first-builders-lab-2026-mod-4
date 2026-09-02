@@ -3,17 +3,17 @@ import { exigirSesion } from "@/lib/auth/guard";
 import { pool } from "@/lib/db/pool";
 import { agregarConsumosDia, type ConsumoParaAgregar } from "@/lib/consumos/agregados";
 
-const FECHA_REGEX = /^\d{4}-\d{2}-\d{2}$/;
-
 export async function GET(request: Request): Promise<Response> {
   const sesion = await exigirSesion(request);
   if (!sesion.autenticado) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
   }
 
-  const fecha = new URL(request.url).searchParams.get("fecha");
-  if (!fecha || !FECHA_REGEX.test(fecha)) {
-    return NextResponse.json({ error: "Parámetro fecha requerido (YYYY-MM-DD)" }, { status: 400 });
+  const params = new URL(request.url).searchParams;
+  const desde = params.get("desde");
+  const hasta = params.get("hasta");
+  if (!desde || !hasta || Number.isNaN(Date.parse(desde)) || Number.isNaN(Date.parse(hasta))) {
+    return NextResponse.json({ error: "Parámetros desde y hasta requeridos (ISO 8601)" }, { status: 400 });
   }
 
   const { rows } = await pool.query<{
@@ -25,8 +25,8 @@ export async function GET(request: Request): Promise<Response> {
   }>(
     `SELECT calorias, pct_carbohidratos, pct_proteinas, pct_grasas, pct_otros_nutrientes
      FROM consumos
-     WHERE usuario_id = $1 AND fecha_hora::date = $2::date`,
-    [sesion.usuarioId, fecha]
+     WHERE usuario_id = $1 AND fecha_hora >= $2 AND fecha_hora < $3`,
+    [sesion.usuarioId, desde, hasta]
   );
 
   const consumos: ConsumoParaAgregar[] = rows.map((fila) => ({

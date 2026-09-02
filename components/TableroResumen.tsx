@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import DonaNutricional from "@/components/DonaNutricional";
+import { limitesDeHoyLocal } from "@/lib/consumos/limites-dia";
 import type { DesgloseNutricional } from "@/lib/consumos/nutricion";
 
 interface ResumenDia {
@@ -14,14 +15,6 @@ const CERO: ResumenDia = {
   desglose: { carbohidratos: 0, proteinas: 0, grasas: 0, otrosNutrientes: 0 },
 };
 
-function fechaLocalDeHoy(): string {
-  const ahora = new Date();
-  const anio = ahora.getFullYear();
-  const mes = String(ahora.getMonth() + 1).padStart(2, "0");
-  const dia = String(ahora.getDate()).padStart(2, "0");
-  return `${anio}-${mes}-${dia}`;
-}
-
 export default function TableroResumen() {
   const [resumen, setResumen] = useState<ResumenDia | null>(null);
   const [error, setError] = useState(false);
@@ -30,7 +23,8 @@ export default function TableroResumen() {
     let cancelado = false;
 
     function buscarResumen() {
-      fetch(`/api/resumen-dia?fecha=${fechaLocalDeHoy()}`)
+      const { desde, hasta } = limitesDeHoyLocal();
+      fetch(`/api/resumen-dia?desde=${encodeURIComponent(desde)}&hasta=${encodeURIComponent(hasta)}`)
         .then((res) => {
           if (!res.ok) throw new Error("No se pudo cargar el resumen del día");
           return res.json();

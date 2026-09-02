@@ -177,6 +177,17 @@ agrupamiento usa la zona horaria del dispositivo del usuario).
 **Alternatives considered**: Ninguna — es un requisito explícito, no una
 decisión abierta.
 
+**Nota (2026-09-02)**: el mismo criterio aplica a `GET /api/resumen-dia`
+(agregado del "día actual" del tablero, FR-009) — el cliente calcula el
+rango `[desde, hasta)` del día local con `lib/consumos/limites-dia.ts` y
+lo manda como instantes UTC ya resueltos; el servidor filtra
+`fecha_hora >= desde AND fecha_hora < hasta` sin castear ni asumir
+ninguna timezone propia. La implementación original de este endpoint no
+seguía este criterio (comparaba `fecha_hora::date` contra una fecha
+suelta, cast que usa la timezone de la sesión de Postgres) — bug real
+detectado al reportar el usuario que el tablero mostraba 0 calorías
+justo después de guardar un consumo cerca de la medianoche UTC.
+
 ## 10. Estrategia de testing de rutas API
 
 **Decision**: Vitest invocando los route handlers de Next.js App Router

@@ -46,10 +46,11 @@ describe("User Story 5 — eliminar un consumo (acceptance scenarios)", () => {
     const id = rows[0].id;
 
     const { GET: resumenDia } = await import("@/app/api/resumen-dia/route");
-    const hoy = hoyIso.slice(0, 10);
+    const { limitesDeHoyLocal } = await import("@/lib/consumos/limites-dia");
+    const { desde, hasta } = limitesDeHoyLocal(new Date(hoyIso));
     const resumenAntes = await (
       await resumenDia(
-        new Request(`http://localhost/api/resumen-dia?fecha=${hoy}`, {
+        new Request(`http://localhost/api/resumen-dia?desde=${desde}&hasta=${hasta}`, {
           headers: { cookie: `nutrashot_session=${token}` },
         })
       )
@@ -76,7 +77,7 @@ describe("User Story 5 — eliminar un consumo (acceptance scenarios)", () => {
 
     const resumenDespues = await (
       await resumenDia(
-        new Request(`http://localhost/api/resumen-dia?fecha=${hoy}`, {
+        new Request(`http://localhost/api/resumen-dia?desde=${desde}&hasta=${hasta}`, {
           headers: { cookie: `nutrashot_session=${token}` },
         })
       )
