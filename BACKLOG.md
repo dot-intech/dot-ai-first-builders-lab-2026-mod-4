@@ -174,19 +174,6 @@ datos incompletos.
   FR-022/SC-001 y pasa por el gate de PRD/spec (`AGENTS.md` § Backlog),
   no un ajuste suelto de código.
 
-- [ ] **Spike: probar `gemini-3.5-flash` con `thinkingLevel: LOW` o
-  `MINIMAL` explícito** en vez de `gemini-3.1-flash-lite` (ver nota de
-  investigación arriba) — correr el benchmark formal de 15 corridas bajo
-  Fast 4G (mismo protocolo de T059) para confirmar si el TTFT ~5x mejor
-  reportado por Artificial Analysis se traduce en un p95 real más bajo
-  en este proyecto, y evaluar el impacto en costo (~6x más caro por
-  token de output; irrelevante mientras se use tier gratuito de AI
-  Studio) y en precisión de identificación antes de adoptarlo. **Ojo:**
-  `gemini-3.5-flash` tiene sólo **20 RPD** en el free tier vs. las
-  **500 RPD** de `gemini-3.1-flash-lite` (ver nota de cuota abajo) — 25x
-  menos, probablemente insuficiente para uso real con margen de
-  testing. Evaluar esto junto con la latencia antes de decidir, no sólo
-  la latencia sola.
 - [ ] **Confirmar si además hay casos reales de JSON malformado** en la
   respuesta de Gemini (hipótesis original de los 500 intermitentes,
   sólo se confirmó la instancia puntual de 503 — ver nota de manejo de
@@ -248,3 +235,15 @@ así que un fallo transitorio que persiste dos intentos igual cae dentro
 del mismo presupuesto de 30s sin necesitar un timeout más corto para
 "fallar rápido y reintentar" — el reintento ya vive adentro del
 timeout existente.
+
+## Descartado — no re-proponer sin evidencia nueva
+
+**`gemini-3.5-flash` como reemplazo de `gemini-3.1-flash-lite`
+(2026-09-03)** — descartado sin correr el benchmark formal (decisión
+del usuario). El TTFT ~5x mejor reportado por Artificial Analysis
+(ver nota de investigación de modelos, § Performance) no compensa la
+cuota del free tier: `gemini-3.5-flash` tiene sólo **20 RPD** vs. las
+**500 RPD** de `gemini-3.1-flash-lite` (ver nota de cuota, § Performance)
+— 25x menos, insuficiente para uso real con margen de testing. No
+re-proponer sin evidencia de que el límite de RPD del free tier haya
+cambiado, o sin decidir explícitamente pasar a tier pago.
