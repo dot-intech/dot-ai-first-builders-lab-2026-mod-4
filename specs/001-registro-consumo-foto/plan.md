@@ -27,7 +27,7 @@ decisión y sus alternativas descartadas.
 
 **Language/Version**: TypeScript 5.x sobre Next.js 15 (App Router), Node.js 20 LTS
 
-**Primary Dependencies**: Next.js 15, React 19, `pg` (node-postgres), `resend` (email transaccional), `@google/generative-ai` (Google AI Studio / Gemini), Vitest
+**Primary Dependencies**: Next.js 15, React 19, `pg` (node-postgres), `resend` (email transaccional), `@google/genai` (Google AI Studio / Gemini), Vitest
 
 **Storage**: PostgreSQL (Docker Compose en desarrollo), esquema limitado a `usuarios` y `consumos` — ver [data-model.md](./data-model.md)
 

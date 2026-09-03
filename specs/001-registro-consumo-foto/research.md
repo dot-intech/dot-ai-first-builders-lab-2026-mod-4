@@ -86,7 +86,7 @@ tocar el resto del sistema si el usuario prefiere otro proveedor.
 
 **Decision**: Único módulo `lib/ai/vision.ts`, que expone una función
 `analizarImagen(buffer, mimeType): Promise<AnalisisImagen>` y encapsula
-el SDK de Google AI Studio (`@google/generative-ai`), el prompt (incluye
+el SDK de Google AI Studio (`@google/genai`), el prompt (incluye
 instrucción explícita de responder en Español LatAm — FR-036) y el parsing
 de la respuesta a la forma interna `{ descripcion, calorias, desglose,
 confianza }`. Ningún otro módulo importa el SDK de Google directamente.
@@ -113,6 +113,21 @@ Se dejó el cambio igual, por ser una configuración razonable por
 default para este caso de uso (no se necesita razonamiento extendido
 para clasificar comida en una foto) aunque no haya resuelto el
 problema.
+
+**Actualización 2026-09-03** (config del modelo, sin cambiar el
+contrato de `analizarImagen` ni el módulo único de Principio II): desde
+la actualización de arriba, `lib/ai/vision.ts` migró de SDK
+(`@google/generative-ai` → `@google/genai`, `getGenerativeModel` +
+`generationConfig.thinkingConfig.thinkingBudget` → `models.generateContent`
++ `thinkingConfig.thinkingLevel: MINIMAL`), agregó `responseSchema`
+(structured output, con `anyOf` de dos ramas para que `descripcion`/
+`calorias`/`desglose`/`confianza` sean obligatorios cuando
+`identificado: true`, en vez de opcionales), reintento ante fallos
+transitorios de Gemini y ante JSON inválido, y `mediaResolution: LOW`
+(reduce tokens de imagen sin degradación de precisión medida). Detalle
+completo de cada cambio, su evidencia y los commits correspondientes
+vive en `BACKLOG.md` § Performance — no se duplica acá para no
+mantener dos historiales en paralelo.
 
 ## 6. Garantía de cero persistencia de imágenes (RNF-07)
 
