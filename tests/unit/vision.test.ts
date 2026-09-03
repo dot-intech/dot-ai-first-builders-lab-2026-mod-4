@@ -188,13 +188,34 @@ describe("analizarImagen", () => {
     expect(generateContentMock).toHaveBeenCalledTimes(1);
   });
 
-  it("lanza RespuestaInvalidaError cuando la respuesta del modelo no es JSON válido", async () => {
+  it("lanza RespuestaInvalidaError cuando la respuesta del modelo no es JSON válido, tras agotar el reintento inmediato", async () => {
     generateContentMock.mockResolvedValue({ text: "esto no es JSON" });
 
     const { analizarImagen, RespuestaInvalidaError } = await import("@/lib/ai/vision");
     await expect(analizarImagen(Buffer.from("fake-image"), "image/jpeg")).rejects.toBeInstanceOf(
       RespuestaInvalidaError
     );
+    expect(generateContentMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("reintenta de inmediato (sin backoff) ante JSON malformado y devuelve el resultado si el reintento sale bien", async () => {
+    generateContentMock
+      .mockResolvedValueOnce({ text: "esto no es JSON" })
+      .mockResolvedValueOnce({
+        text: JSON.stringify({
+          identificado: true,
+          descripcion: "Milanesa con puré",
+          calorias: 650,
+          desglose: { carbohidratos: 40, proteinas: 30, grasas: 20, otrosNutrientes: 10 },
+          confianza: 0.85,
+        }),
+      });
+
+    const { analizarImagen } = await import("@/lib/ai/vision");
+    const resultado = await analizarImagen(Buffer.from("fake-image"), "image/jpeg");
+
+    expect(resultado.identificado).toBe(true);
+    expect(generateContentMock).toHaveBeenCalledTimes(2);
   });
 
   it("reintenta como máximo una vez: si el 503 persiste, propaga el error", async () => {

@@ -123,25 +123,16 @@ async function generarConReintento(
   throw new Error("No se pudo obtener respuesta de Gemini");
 }
 
-export async function analizarImagen(buffer: Buffer, mimeType: string): Promise<AnalisisImagen> {
-  const apiKey = process.env.GOOGLE_AI_API_KEY;
-  if (!apiKey) {
-    throw new Error("GOOGLE_AI_API_KEY no está definida");
-  }
+const MAX_INTENTOS_PARSEO = 2;
 
-  const genAI = new GoogleGenAI({ apiKey });
-
+async function llamarYParsear(
+  genAI: GoogleGenAI,
+  params: GenerateContentParameters
+): Promise<AnalisisImagen> {
   let texto: string;
   const tGeminiInicio = performance.now();
   try {
-    const result = await generarConReintento(genAI, {
-      model: MODEL_NAME,
-      contents: [
-        { text: PROMPT },
-        { inlineData: { data: buffer.toString("base64"), mimeType } },
-      ],
-      config: GENERATION_CONFIG,
-    });
+    const result = await generarConReintento(genAI, params);
     texto = result.text ?? "";
   } catch (error) {
     console.error("[lib/ai/vision] Error del SDK de Gemini:", error);
@@ -161,6 +152,37 @@ export async function analizarImagen(buffer: Buffer, mimeType: string): Promise<
   } finally {
     console.log(`[lib/ai/vision] parseo=${(performance.now() - tParseoInicio).toFixed(0)}ms`);
   }
+}
+
+export async function analizarImagen(buffer: Buffer, mimeType: string): Promise<AnalisisImagen> {
+  const apiKey = process.env.GOOGLE_AI_API_KEY;
+  if (!apiKey) {
+    throw new Error("GOOGLE_AI_API_KEY no está definida");
+  }
+
+  const genAI = new GoogleGenAI({ apiKey });
+  const params: GenerateContentParameters = {
+    model: MODEL_NAME,
+    contents: [
+      { text: PROMPT },
+      { inlineData: { data: buffer.toString("base64"), mimeType } },
+    ],
+    config: GENERATION_CONFIG,
+  };
+
+  for (let intento = 1; intento <= MAX_INTENTOS_PARSEO; intento++) {
+    try {
+      return await llamarYParsear(genAI, params);
+    } catch (error) {
+      if (intento === MAX_INTENTOS_PARSEO || !(error instanceof RespuestaInvalidaError)) {
+        throw error;
+      }
+      console.warn(
+        `[lib/ai/vision] JSON inválido pese al schema (intento ${intento}/${MAX_INTENTOS_PARSEO}), reintentando de inmediato`
+      );
+    }
+  }
+  throw new Error("No se pudo obtener una respuesta parseable de Gemini");
 }
 
 function parsearRespuesta(texto: string): AnalisisImagen {
