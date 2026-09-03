@@ -158,16 +158,6 @@ cambio de alcance mayor, no una config puntual.
   revisar logs de uso real para saber si ocurre y con qué frecuencia
   (no se puede confirmar sin tráfico real o un caso reproducido a
   mano).
-- [ ] **Agregar reintento inmediato (sin backoff) ante
-  `RespuestaInvalidaError`**, como backstop del structured output ya
-  migrado (`responseMimeType`/`responseSchema`, commit `e39c6ed`) — a
-  diferencia del reintento ya agregado para fallos transitorios de red
-  (503/429, donde el reintento tiene sentido estadístico), un JSON
-  malformado por el modelo no tiene garantía de resolverse reintentando
-  con el mismo prompt si la causa es sistemática para cierto contenido;
-  sirve sólo como red de seguridad barata para lo que quede después del
-  schema (ej. truncamiento por límite de tokens).
-
 **Structured output migrado (2026-09-02, commit `e39c6ed`)** — se
 agregó `responseMimeType: "application/json"` + `responseSchema` a
 `GENERATION_CONFIG` en `lib/ai/vision.ts`, restringiendo el sampling de
@@ -176,8 +166,17 @@ instrucción de formato del prompt. Validado contra la API real de
 Gemini (además del test que confirma los params enviados): la
 respuesta vino sin markdown ni texto extra, y parseó sin error. No es
 100% infalible (puede truncarse por límite de tokens, o fallar por un
-error de API) — de ahí el ítem de reintento inmediato de arriba como
-backstop, todavía pendiente.
+error de API) — de ahí el reintento inmediato de abajo como backstop.
+
+**Reintento inmediato como backstop (2026-09-03, commit
+`b51951c`)** — ante `RespuestaInvalidaError` (JSON malformado pese al
+schema), `analizarImagen` reintenta la llamada completa a Gemini una
+vez, sin backoff (a diferencia del reintento por fallos transitorios de
+red, acá no hay motivo estadístico para esperar). Si el segundo intento
+también falla el parseo, se propaga `RespuestaInvalidaError` como
+antes. El timeout de 30s (`TIMEOUT_ANALISIS_MS`) sigue envolviendo todo
+el análisis (ver nota de manejo de errores abajo), así que este
+reintento adicional no necesita presupuesto propio.
 
 **Manejo de errores, timeout y reintento (commit `a73ccc9`)** — se
 agregó reintento automático (1 reintento, backoff fijo de 1s) en
