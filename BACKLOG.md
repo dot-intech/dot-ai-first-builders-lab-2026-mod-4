@@ -106,6 +106,50 @@ el TTFT percibido pero no el tiempo hasta tener el JSON completo
 parseable, y requeriría rediseñar el frontend para progreso parcial —
 cambio de alcance mayor, no una config puntual.
 
+**Spike: `config.mediaResolution: LOW` — no baja el p95, se adopta
+igual por cuota/costo del free tier (2026-09-03, commit `213da9a`)** —
+prueba manual
+contra la API real de Gemini (no el benchmark formal de 15 corridas
+bajo Fast 4G; script ad hoc, no committeado), 2 fotos reales de comida
+(pasta y sopa de fideos), 2 corridas cada una con y sin el flag: los
+tokens de imagen bajaron de ~1080 a ~260 (~4x menos, confirma la
+reducción documentada por Google), pero la latencia total no mostró
+mejora consistente — default: 5567, 5721, 2793, 7031, 2883ms (prom.
+~4.8s); LOW: 3697, 4900, 6669, 3845ms (prom. ~4.8s, mismo orden de
+magnitud y misma variancia alta). La descripción de ambos platos se
+mantuvo igual de detallada y correcta en las 4 corridas con LOW, sin
+degradación visible en esta muestra chica. **No baja el p95** —
+coherente con lo ya confirmado arriba (el cuello de botella es la
+espera de la respuesta del modelo, no el procesamiento de tokens de
+imagen), así que no se justificó correr el benchmark formal completo
+de 15 corridas para esto. Aun así se adoptó, decisión explícita del
+usuario: reduce el consumo de tokens de imagen contra la cuota TPM del
+free tier sin costo de precisión medido en esta muestra,
+independientemente de si mueve el p95 o no.
+
+**Campos obligatorios de la respuesta reforzados (2026-09-03, commit
+`213da9a`)** —
+durante el spike de arriba se notó que, con el schema previo
+(`required: ["identificado"]` a nivel raíz), el modelo a veces devolvía
+`identificado: true` sin `calorias` ni `confianza` (JSON válido, no
+disparaba `RespuestaInvalidaError`) — un consumo real se hubiese
+guardado con esos datos faltantes, ya que `validarConsumo` no lo
+detecta (`undefined < 0` es `false`). `RESPUESTA_SCHEMA` en
+`lib/ai/vision.ts` pasó a `anyOf` con dos ramas (identificado, con
+`descripcion`/`calorias`/`desglose`/`confianza` todos `required`; no
+identificado, sólo `identificado`) en vez de un único `required` a
+nivel raíz que dejaba esos campos opcionales incluso cuando
+identificado=true. Validado contra la API real: 4/4 corridas con el
+nuevo schema (fotos de pasta y sopa de fideos) devolvieron los 4 campos
+completos, algo que antes fallaba con frecuencia visible (ver corridas
+del spike de instrumentación arriba). Como backstop adicional (el
+schema no es 100% infalible, ver nota de structured output abajo),
+`parsearRespuesta` ahora también valida en runtime que esos campos
+estén presentes cuando identificado=true, y si no lo están reusa el
+mismo camino de `RespuestaInvalidaError` + reintento inmediato ya
+existente (ver nota de reintento inmediato abajo) en vez de guardar
+datos incompletos.
+
 - [ ] **Bajar el p95 de ~11.8s a menos de 10s.** Con la instrumentación
   de arriba confirmando que casi el 100% del tiempo es la espera de la
   respuesta de Gemini (no subida, no parseo), no queda margen de
@@ -143,11 +187,6 @@ cambio de alcance mayor, no una config puntual.
   menos, probablemente insuficiente para uso real con margen de
   testing. Evaluar esto junto con la latencia antes de decidir, no sólo
   la latencia sola.
-- [ ] **Spike: probar `config.mediaResolution: LOW`** en la llamada a
-  `generateContent` de `lib/ai/vision.ts` (ver nota de investigación
-  arriba) — medir impacto en latencia y, por separado, en la precisión
-  de identificación de alimentos/calorías (trade-off documentado por
-  Google, no gratis).
 - [ ] **Confirmar si además hay casos reales de JSON malformado** en la
   respuesta de Gemini (hipótesis original de los 500 intermitentes,
   sólo se confirmó la instancia puntual de 503 — ver nota de manejo de
