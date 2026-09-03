@@ -130,9 +130,6 @@ cambio de alcance mayor, no una config puntual.
   FR-022/SC-001 y pasa por el gate de PRD/spec (`AGENTS.md` § Backlog),
   no un ajuste suelto de código.
 
-- [ ] **Revisar si la clave de `GOOGLE_AI_API_KEY` tiene límites de
-  cuota/tier gratuito** que impongan latencia adicional o
-  rate-limiting silencioso en Google AI Studio.
 - [ ] **Spike: probar `gemini-3.5-flash` con `thinkingLevel: LOW` o
   `MINIMAL` explícito** en vez de `gemini-3.1-flash-lite` (ver nota de
   investigación arriba) — correr el benchmark formal de 15 corridas bajo
@@ -140,7 +137,12 @@ cambio de alcance mayor, no una config puntual.
   reportado por Artificial Analysis se traduce en un p95 real más bajo
   en este proyecto, y evaluar el impacto en costo (~6x más caro por
   token de output; irrelevante mientras se use tier gratuito de AI
-  Studio) y en precisión de identificación antes de adoptarlo.
+  Studio) y en precisión de identificación antes de adoptarlo. **Ojo:**
+  `gemini-3.5-flash` tiene sólo **20 RPD** en el free tier vs. las
+  **500 RPD** de `gemini-3.1-flash-lite` (ver nota de cuota abajo) — 25x
+  menos, probablemente insuficiente para uso real con margen de
+  testing. Evaluar esto junto con la latencia antes de decidir, no sólo
+  la latencia sola.
 - [ ] **Spike: probar `config.mediaResolution: LOW`** en la llamada a
   `generateContent` de `lib/ai/vision.ts` (ver nota de investigación
   arriba) — medir impacto en latencia y, por separado, en la precisión
@@ -158,6 +160,22 @@ cambio de alcance mayor, no una config puntual.
   revisar logs de uso real para saber si ocurre y con qué frecuencia
   (no se puede confirmar sin tráfico real o un caso reproducido a
   mano).
+
+**Cuota del free tier confirmada (2026-09-03)** — límites reales del
+dashboard de Google AI Studio (`aistudio.google.com/rate-limit`) para
+`gemini-3.1-flash-lite`: **15 RPM, 250K TPM (tokens de entrada), 500
+RPD**. No se descarta que ráfagas de testing/desarrollo (más de ~1
+request cada 4s) pisen el límite de RPM y devuelvan 429 — ya cubierto
+por el reintento de fallos transitorios (`STATUS_TRANSITORIOS`, commit
+`a73ccc9`, ver nota abajo). Para uso normal de un usuario real (pocas
+fotos por día) 500 RPD sobra de margen. No hay evidencia de latencia
+adicional impuesta por el free tier en sí — el rate limiting es sobre
+cantidad de requests/tokens, no sobre latencia por request. No se
+confirmó (ítem cerrado sin ir más allá; no se investigó) diferencia de
+latencia entre free tier y paid tier más allá de lo ya documentado en
+la nota de investigación de modelos arriba (sin evidencia oficial de
+que el paid tier sea más rápido).
+
 **Structured output migrado (2026-09-02, commit `e39c6ed`)** — se
 agregó `responseMimeType: "application/json"` + `responseSchema` a
 `GENERATION_CONFIG` en `lib/ai/vision.ts`, restringiendo el sampling de
