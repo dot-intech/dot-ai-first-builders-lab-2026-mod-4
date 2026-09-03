@@ -1,4 +1,4 @@
-import { ApiError, GoogleGenAI, ThinkingLevel, Type } from "@google/genai";
+import { ApiError, GoogleGenAI, MediaResolution, ThinkingLevel, Type } from "@google/genai";
 import type { GenerateContentConfig, GenerateContentParameters, Schema } from "@google/genai";
 import type { DesgloseNutricional } from "@/lib/consumos/nutricion";
 
@@ -26,8 +26,15 @@ const STATUS_TRANSITORIOS = new Set([503, 429]);
  * con limpiarBloqueCodigo si el modelo igual lo envuelve en markdown). No es
  * 100% infalible (puede truncarse por límite de tokens), pero elimina la
  * clase de error más probable de JSON malformado (ver BACKLOG.md).
+ *
+ * anyOf con dos ramas (en vez de un único `required` a nivel raíz) porque el
+ * modelo puede responder de dos formas mutuamente excluyentes: identificado
+ * con todos los datos, o `{"identificado": false}` sin el resto — un solo
+ * `required: ["identificado"]` dejaba a descripcion/calorias/desglose/
+ * confianza opcionales incluso cuando identificado=true, y el modelo los
+ * omitía en la práctica (ver BACKLOG.md).
  */
-const RESPUESTA_SCHEMA: Schema = {
+const RESPUESTA_IDENTIFICADA_SCHEMA: Schema = {
   type: Type.OBJECT,
   properties: {
     identificado: { type: Type.BOOLEAN },
@@ -45,13 +52,33 @@ const RESPUESTA_SCHEMA: Schema = {
     },
     confianza: { type: Type.NUMBER, minimum: 0, maximum: 1 },
   },
+  required: ["identificado", "descripcion", "calorias", "desglose", "confianza"],
+};
+
+const RESPUESTA_NO_IDENTIFICADA_SCHEMA: Schema = {
+  type: Type.OBJECT,
+  properties: {
+    identificado: { type: Type.BOOLEAN },
+  },
   required: ["identificado"],
 };
 
+const RESPUESTA_SCHEMA: Schema = {
+  anyOf: [RESPUESTA_IDENTIFICADA_SCHEMA, RESPUESTA_NO_IDENTIFICADA_SCHEMA],
+};
+
+/**
+ * MEDIA_RESOLUTION_LOW baja los tokens de imagen que procesa el modelo
+ * (~4x menos, medido en el spike de BACKLOG.md: ~1080 → ~260 tokens sobre
+ * fotos reales de comida) sin costo de latencia medido ni degradación
+ * visible en la descripción devuelta. Se adopta para no consumir más cuota
+ * del free tier (TPM) de la que la app necesita, no porque baje el p95.
+ */
 const GENERATION_CONFIG: GenerateContentConfig = {
   thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL },
   responseMimeType: "application/json",
   responseSchema: RESPUESTA_SCHEMA,
+  mediaResolution: MediaResolution.MEDIA_RESOLUTION_LOW,
 };
 
 export type AnalisisImagen =
@@ -190,6 +217,15 @@ function parsearRespuesta(texto: string): AnalisisImagen {
 
   if (!json.identificado) {
     return { identificado: false };
+  }
+
+  if (
+    typeof json.descripcion !== "string" ||
+    typeof json.calorias !== "number" ||
+    typeof json.confianza !== "number" ||
+    json.desglose == null
+  ) {
+    throw new Error("Respuesta identificada sin todos los campos obligatorios pese al schema");
   }
 
   return {

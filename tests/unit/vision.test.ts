@@ -7,6 +7,7 @@ vi.mock("@google/genai", () => ({
     Object.assign(this, { models: { generateContent: generateContentMock } });
   }),
   ThinkingLevel: { MINIMAL: "MINIMAL" },
+  MediaResolution: { MEDIA_RESOLUTION_LOW: "MEDIA_RESOLUTION_LOW" },
   Type: {
     OBJECT: "OBJECT",
     STRING: "STRING",
@@ -67,11 +68,37 @@ describe("analizarImagen", () => {
     await analizarImagen(Buffer.from("fake-image"), "image/jpeg");
 
     const paramsEnviados = generateContentMock.mock.calls[0][0] as {
-      config: { responseMimeType?: string; responseSchema?: { type?: string; required?: string[] } };
+      config: {
+        responseMimeType?: string;
+        responseSchema?: { anyOf?: Array<{ type?: string; required?: string[] }> };
+      };
     };
     expect(paramsEnviados.config.responseMimeType).toBe("application/json");
-    expect(paramsEnviados.config.responseSchema?.type).toBe("OBJECT");
-    expect(paramsEnviados.config.responseSchema?.required).toContain("identificado");
+    const [ramaIdentificada, ramaNoIdentificada] = paramsEnviados.config.responseSchema?.anyOf ?? [];
+    expect(ramaIdentificada?.type).toBe("OBJECT");
+    expect(ramaNoIdentificada?.type).toBe("OBJECT");
+    expect(ramaNoIdentificada?.required).toEqual(["identificado"]);
+  });
+
+  it("exige como obligatorios todos los campos que la app necesita, no sólo 'identificado' (regla de dominio)", async () => {
+    mockRespuesta({
+      identificado: true,
+      descripcion: "Ensalada",
+      calorias: 200,
+      desglose: { carbohidratos: 50, proteinas: 20, grasas: 20, otrosNutrientes: 10 },
+      confianza: 0.9,
+    });
+
+    const { analizarImagen } = await import("@/lib/ai/vision");
+    await analizarImagen(Buffer.from("fake-image"), "image/jpeg");
+
+    const paramsEnviados = generateContentMock.mock.calls[0][0] as {
+      config: { responseSchema?: { anyOf?: Array<{ required?: string[] }> } };
+    };
+    const ramaIdentificada = paramsEnviados.config.responseSchema?.anyOf?.[0];
+    expect(ramaIdentificada?.required).toEqual(
+      expect.arrayContaining(["identificado", "descripcion", "calorias", "desglose", "confianza"])
+    );
   });
 
   it("el schema exige desglose entero de 0 a 100 y confianza entre 0 y 1 (regla de dominio)", async () => {
@@ -89,22 +116,53 @@ describe("analizarImagen", () => {
     const paramsEnviados = generateContentMock.mock.calls[0][0] as {
       config: {
         responseSchema?: {
-          properties?: {
-            desglose?: { properties?: Record<string, { type?: string; minimum?: number; maximum?: number }> };
-            confianza?: { type?: string; minimum?: number; maximum?: number };
-          };
+          anyOf?: Array<{
+            properties?: {
+              desglose?: { properties?: Record<string, { type?: string; minimum?: number; maximum?: number }> };
+              confianza?: { type?: string; minimum?: number; maximum?: number };
+            };
+          }>;
         };
       };
     };
-    const desglose = paramsEnviados.config.responseSchema?.properties?.desglose?.properties;
+    const ramaIdentificada = paramsEnviados.config.responseSchema?.anyOf?.[0];
+    const desglose = ramaIdentificada?.properties?.desglose?.properties;
     for (const campo of ["carbohidratos", "proteinas", "grasas", "otrosNutrientes"]) {
       expect(desglose?.[campo]).toEqual({ type: "INTEGER", minimum: 0, maximum: 100 });
     }
-    expect(paramsEnviados.config.responseSchema?.properties?.confianza).toEqual({
+    expect(ramaIdentificada?.properties?.confianza).toEqual({
       type: "NUMBER",
       minimum: 0,
       maximum: 1,
     });
+  });
+
+  it("pide mediaResolution LOW para reducir el consumo de tokens de imagen (BACKLOG.md, sin costo de precisión medido)", async () => {
+    mockRespuesta({
+      identificado: true,
+      descripcion: "Ensalada",
+      calorias: 200,
+      desglose: { carbohidratos: 50, proteinas: 20, grasas: 20, otrosNutrientes: 10 },
+      confianza: 0.9,
+    });
+
+    const { analizarImagen } = await import("@/lib/ai/vision");
+    await analizarImagen(Buffer.from("fake-image"), "image/jpeg");
+
+    const paramsEnviados = generateContentMock.mock.calls[0][0] as { config: { mediaResolution?: string } };
+    expect(paramsEnviados.config.mediaResolution).toBe("MEDIA_RESOLUTION_LOW");
+  });
+
+  it("trata una respuesta identificado=true con campos obligatorios faltantes como inválida (pese al schema)", async () => {
+    generateContentMock.mockResolvedValue({
+      text: JSON.stringify({ identificado: true, descripcion: "Ensalada" }),
+    });
+
+    const { analizarImagen, RespuestaInvalidaError } = await import("@/lib/ai/vision");
+    await expect(analizarImagen(Buffer.from("fake-image"), "image/jpeg")).rejects.toBeInstanceOf(
+      RespuestaInvalidaError
+    );
+    expect(generateContentMock).toHaveBeenCalledTimes(2);
   });
 
   it("incluye en el prompt la instrucción de responder en Español LatAm (FR-036)", async () => {
