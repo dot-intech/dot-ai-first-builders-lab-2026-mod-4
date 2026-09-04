@@ -165,7 +165,7 @@ servidor local) tuvo 3 corridas con 503 de Gemini que por sí solas
 llevaban el p95 a ~30s; al excluirlas (15 corridas limpias, mismo
 criterio que arriba) el p95 bajó a **7.586s** — sugiere que el código
 ya cumple el umbral cuando Google no está congestionado. Cero casos de
-JSON malformado en las 19 corridas (ver ítem de abajo). **No reemplaza**
+JSON malformado en las 19 corridas. **No reemplaza**
 el benchmark formal bajo Fast 4G para confirmarlo con rigor — ver ítem
 de abajo. La alternativa de subir el umbral a 15s (evaluada
 previamente, nota más abajo) queda descartada por esta decisión — no
@@ -180,10 +180,23 @@ criterio que la redefinición de arriba). Corridas válidas (ms): 3341,
 (8.268s si se mide el ciclo completo vía el access log de Next.js,
 incluyendo el envío de la respuesta) — **por debajo del umbral de
 10s**. 0 fallos entre las 10 válidas. 0 casos de JSON malformado en las
-12 corridas totales de la sesión (ver ítem de abajo). Con esto,
-FR-022/SC-001/RNF-02 queda **cumplido** bajo la definición vigente
-(disponibilidad plena de Google AI Studio) — se da por cerrado el tema
-de p95, no queda ninguna palanca de código pendiente de probar.
+12 corridas totales de la sesión. Con esto, FR-022/SC-001/RNF-02 queda
+**cumplido** bajo la definición vigente (disponibilidad plena de Google
+AI Studio) — se da por cerrado el tema de p95, no queda ninguna palanca
+de código pendiente de probar.
+
+**JSON malformado descartado como riesgo activo (2026-09-04)** — 31
+corridas reales acumuladas contra la API real de Gemini (19 el
+2026-09-03 sin throttling + 12 el 2026-09-04 durante el benchmark
+formal, incluyendo corridas con 503/429 transitorio de Gemini) dieron
+**0 casos de JSON malformado**, tras el fix de campos obligatorios
+(`anyOf` en `RESPUESTA_SCHEMA`, commit `213da9a`) y el structured
+output (commit `e39c6ed`). No es tráfico de producción, así que no
+descarta por completo un caso raro bajo uso real — pero la muestra
+alcanza para no seguir tratándolo como riesgo abierto. El backstop ya
+implementado (`RespuestaInvalidaError` + reintento inmediato en
+`lib/ai/vision.ts`) sigue cubriendo el caso si igual llegara a
+ocurrir.
 
 **Evaluar elevar el umbral de FR-022/SC-001 de 10s a 15s — descartado,
 se optó por redefinir el alcance en vez de subir el número (ver nota de
@@ -195,29 +208,6 @@ este modelo en el tier gratuito. No re-proponer subir a 15s sin
 evidencia de que la redefinición de arriba no alcance (ej. si el
 benchmark formal del ítem de arriba sigue sin cumplir el umbral incluso
 excluyendo corridas con 503/429).
-
-- [ ] **Confirmar si además hay casos reales de JSON malformado** en la
-  respuesta de Gemini (hipótesis original de los 500 intermitentes,
-  sólo se confirmó la instancia puntual de 503 — ver nota de manejo de
-  errores arriba). El reintento con backoff no cubre este caso: sólo
-  reintenta fallos transitorios de la llamada (`ApiError` con status
-  503/429), no un `JSON.parse` que falla sobre una respuesta ya
-  recibida. **Instrumentación agregada (2026-09-02, commit `40527e8`)**
-  — `RespuestaInvalidaError` en `lib/ai/vision.ts` distingue este caso
-  con su propio log tanto ahí como en `route.ts`; sigue pendiente
-  revisar logs de uso real para saber si ocurre y con qué frecuencia
-  (no se puede confirmar sin tráfico real o un caso reproducido a
-  mano). **31 corridas reales monitoreadas en vivo (2026-09-03 y
-  2026-09-04, servidor dev local, tras el fix de campos obligatorios de
-  arriba)**: 19 corridas el 2026-09-03 (sin throttling) + 12 corridas el
-  2026-09-04 durante el benchmark formal bajo Fast 4G (10 válidas + 2
-  descartadas por 503, ver nota de arriba) — **0 casos de JSON
-  malformado** en las 31 (0 logs de "no es JSON válido" / "JSON
-  inválido pese al schema"). No es tráfico de producción — sigue sin
-  confirmarse la frecuencia bajo uso real — pero es la muestra más
-  grande hasta ahora sin ningún caso, con la app real (no mocks) contra
-  la API real de Gemini, incluyendo corridas con 503/429 transitorio de
-  Gemini (que no afectan el parseo, sólo la latencia).
 
 **Cuota del free tier confirmada (2026-09-03)** — límites reales del
 dashboard de Google AI Studio (`aistudio.google.com/rate-limit`) para
