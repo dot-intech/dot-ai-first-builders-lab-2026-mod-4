@@ -22,7 +22,7 @@ export default function AccionesTablero() {
   }
 
   return (
-    <nav style={{ display: "flex", gap: 12 }}>
+    <nav role="group">
       <button type="button" onClick={() => router.push("/nuevo")}>
         Nuevo
       </button>

@@ -135,7 +135,7 @@ export default function RevisionConsumo({ inicial, imagenUrl, onCancelar, onGuar
 
       {error && <p role="alert">{error}</p>}
 
-      <div style={{ display: "flex", gap: 8 }}>
+      <div role="group">
         <button type="button" onClick={guardar} disabled={!puedeGuardar}>
           Guardar
         </button>

@@ -19,10 +19,6 @@ sueltos en vez de los patrones de Pico, lo que da una sensación tosca.
 Partido en ítems atómicos, cada uno sin lógica nueva ni tests (son
 cambios puramente de markup/clases) — ver conversación 2026-09-04.
 
-- [ ] **Usar `role="group"` en filas de botones en vez de flex+gap manual.**
-  Aplica a `AccionesTablero.tsx:25` (nav) y a la fila
-  Guardar/Cancelar de `RevisionConsumo.tsx:138`.
-
 - [ ] **Agrupar contenido relacionado en `<article>` (card de Pico).**
   Aplica al formulario de `RevisionConsumo.tsx`, al resumen de
   `TableroResumen.tsx`/`DonaNutricional.tsx`, y a cada ítem de
