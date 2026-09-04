@@ -5,11 +5,13 @@ interface DonaNutricionalProps {
   desglose: DesgloseNutricional;
 }
 
+// Colores tomados de la paleta de Pico (pico.colors.css): pumpkin-300,
+// blue-500, red-450, jade-350.
 const CATEGORIAS: { clave: keyof DesgloseNutricional; label: string; color: string }[] = [
-  { clave: "carbohidratos", label: "Carbohidratos", color: "#f59e0b" },
-  { clave: "proteinas", label: "Proteínas", color: "#3b82f6" },
-  { clave: "grasas", label: "Grasas", color: "#ef4444" },
-  { clave: "otrosNutrientes", label: "Otros nutrientes", color: "#10b981" },
+  { clave: "carbohidratos", label: "Carbohidratos", color: "#ff9500" },
+  { clave: "proteinas", label: "Proteínas", color: "#3c71f7" },
+  { clave: "grasas", label: "Grasas", color: "#ee402e" },
+  { clave: "otrosNutrientes", label: "Otros nutrientes", color: "#00b478" },
 ];
 
 const RADIO = 70;
@@ -23,7 +25,7 @@ export default function DonaNutricional({ calorias, desglose }: DonaNutricionalP
     <figure style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
       <svg viewBox="0 0 180 180" width={180} height={180} role="img" aria-label={`Total ${calorias} calorías`}>
         <g transform="rotate(-90 90 90)">
-          <circle cx={90} cy={90} r={RADIO} fill="none" stroke="var(--dona-fondo, #e5e7eb)" strokeWidth={GROSOR} />
+          <circle cx={90} cy={90} r={RADIO} fill="none" stroke="var(--dona-fondo)" strokeWidth={GROSOR} />
           {CATEGORIAS.map(({ clave, color }) => {
             const porcentaje = desglose[clave];
             const largo = (porcentaje / 100) * CIRCUNFERENCIA;

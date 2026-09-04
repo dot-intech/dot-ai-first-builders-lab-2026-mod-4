@@ -4,6 +4,10 @@ body {
   overflow-x: hidden;
 }
 
+:root {
+  --dona-fondo: var(--pico-muted-border-color);
+}
+
 @keyframes girar {
   to {
     transform: rotate(360deg);

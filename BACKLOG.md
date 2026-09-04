@@ -19,12 +19,6 @@ sueltos en vez de los patrones de Pico, lo que da una sensación tosca.
 Partido en ítems atómicos, cada uno sin lógica nueva ni tests (son
 cambios puramente de markup/clases) — ver conversación 2026-09-04.
 
-- [ ] **Atar los colores de `DonaNutricional` a la paleta de Pico.**
-  `DonaNutricional.tsx:9-12` hardcodea hex (`#f59e0b`, etc.)
-  desconectados del tema; además `DonaNutricional.tsx:26` referencia
-  `var(--dona-fondo, #e5e7eb)` pero `--dona-fondo` nunca se define en
-  `globals.css` — siempre cae al fallback.
-
 - [ ] **Convertir las filas de `HistorialLista.tsx` a tabla o cards con separación.**
   `HistorialLista.tsx:96-109` — hoy son `<li>` con texto plano y
   `justify-content: space-between`, sin separadores ni tratamiento
