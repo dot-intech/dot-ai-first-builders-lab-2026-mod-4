@@ -19,11 +19,6 @@ sueltos en vez de los patrones de Pico, lo que da una sensación tosca.
 Partido en ítems atómicos, cada uno sin lógica nueva ni tests (son
 cambios puramente de markup/clases) — ver conversación 2026-09-04.
 
-- [ ] **Usar `class="grid"` de Pico para los 4 inputs de desglose nutricional.**
-  `RevisionConsumo.tsx:123-134` — hoy van uno por línea
-  (carbohidratos/proteínas/grasas/otrosNutrientes), en fila sería
-  mucho menos repetitivo.
-
 - [ ] **Atar los colores de `DonaNutricional` a la paleta de Pico.**
   `DonaNutricional.tsx:9-12` hardcodea hex (`#f59e0b`, etc.)
   desconectados del tema; además `DonaNutricional.tsx:26` referencia

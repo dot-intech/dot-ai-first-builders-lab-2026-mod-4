@@ -120,18 +120,20 @@ export default function RevisionConsumo({ inicial, imagenUrl, onCancelar, onGuar
         />
       </label>
 
-      {(Object.keys(desglose) as (keyof DesgloseNutricional)[]).map((clave) => (
-        <label key={clave}>
-          {clave}
-          <input
-            type="number"
-            min={0}
-            max={100}
-            value={desglose[clave]}
-            onChange={(e) => actualizarDesglose(clave, Number(e.target.value))}
-          />
-        </label>
-      ))}
+      <div className="grid">
+        {(Object.keys(desglose) as (keyof DesgloseNutricional)[]).map((clave) => (
+          <label key={clave}>
+            {clave}
+            <input
+              type="number"
+              min={0}
+              max={100}
+              value={desglose[clave]}
+              onChange={(e) => actualizarDesglose(clave, Number(e.target.value))}
+            />
+          </label>
+        ))}
+      </div>
 
       {error && <p role="alert">{error}</p>}
 
