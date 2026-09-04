@@ -150,29 +150,46 @@ mismo camino de `RespuestaInvalidaError` + reintento inmediato ya
 existente (ver nota de reintento inmediato abajo) en vez de guardar
 datos incompletos.
 
-- [ ] **Bajar el p95 de ~11.8s a menos de 10s.** Con la instrumentación
-  de arriba confirmando que casi el 100% del tiempo es la espera de la
-  respuesta de Gemini (no subida, no parseo), no queda margen de
-  optimización en el código de la app — la única palanca real es cambiar
-  de modelo/tier (ver ítems abajo) o, si eso no rinde, evaluar el ítem
-  de subir el umbral a 15s.
-- [ ] **Evaluar elevar el umbral de FR-022/SC-001 de 10s a 15s.** El TTFT
-  (tiempo al primer token) reportado para la familia de este modelo ronda
-  los 5s sólo de texto — sin contar subida de imagen bajo Fast 4G,
-  generación del resto de la respuesta, ni overhead de la app — así que
-  10s podría ser un umbral poco realista para este modelo en el tier
-  gratuito, más que un problema de implementación. No hay evidencia de
-  que el free tier en sí sea más lento que el pago (hay reportes del foro
-  oficial de casos donde el tier pago fue más lento por congestión), así
-  que no se plantea esto como fix de tier sino como posible ajuste de
-  expectativa. La compresión/redimensionado de imagen en cliente ya se
-  implementó (ver nota arriba) y la evidencia manual indica que **no**
-  bajó la variancia del p95 — el bloqueo que impedía evaluar este ítem ya
-  no aplica, pero sigue sin decidirse porque falta el benchmark formal de
-  15 corridas bajo Fast 4G con el cambio aplicado para tener un número
-  comparable al de arriba. Si se decide subir el umbral, es un cambio de
-  FR-022/SC-001 y pasa por el gate de PRD/spec (`AGENTS.md` § Backlog),
-  no un ajuste suelto de código.
+**FR-022/SC-001/RNF-02 redefinidos: el umbral de 10s pasa a asumir
+disponibilidad plena de Google AI Studio (2026-09-04)** — en vez de
+subir el umbral de 10s a 15s (alternativa evaluada y descartada, ver
+abajo), se optó por acotar el alcance del requisito: ya no aplica a
+corridas donde Gemini devolvió un error transitorio de sobrecarga
+(HTTP 503/429, `STATUS_TRANSITORIOS` en `lib/ai/vision.ts` — la misma
+definición que ya usa el reintento automático). Cambio propagado a
+`PRD.md` (RNF-02), `spec.md` (FR-022, SC-001) y `plan.md` (Performance
+Goals) — decisión y redacción exacta confirmadas por el usuario antes
+de aplicarse (gate de PRD/spec, `AGENTS.md` § Backlog). Motivo: una
+medición manual de 19 corridas (2026-09-03, sin throttling Fast 4G,
+servidor local) tuvo 3 corridas con 503 de Gemini que por sí solas
+llevaban el p95 a ~30s; al excluirlas (15 corridas limpias, mismo
+criterio que arriba) el p95 bajó a **7.586s** — sugiere que el código
+ya cumple el umbral cuando Google no está congestionado. Cero casos de
+JSON malformado en las 19 corridas (ver ítem de abajo). **No reemplaza**
+el benchmark formal bajo Fast 4G para confirmarlo con rigor — ver ítem
+de abajo. La alternativa de subir el umbral a 15s (evaluada
+previamente, nota más abajo) queda descartada por esta decisión — no
+se persigue en paralelo.
+
+- [ ] **Benchmark formal bajo Fast 4G con la nueva definición (10
+  corridas, descartando corridas con 503/429 transitorio de Gemini).**
+  Mismo protocolo que T059, pero aplicando ya el criterio de exclusión
+  de arriba en vez de contar esas corridas como fallo del umbral. Con
+  esto se da por cerrado el tema de p95 (FR-022/SC-001), sea cual sea
+  el resultado — no queda otra palanca de código conocida sin probar
+  (ver instrumentación arriba: casi el 100% del tiempo es la espera de
+  la respuesta de Gemini, no subida ni parseo).
+
+**Evaluar elevar el umbral de FR-022/SC-001 de 10s a 15s — descartado,
+se optó por redefinir el alcance en vez de subir el número (ver nota de
+arriba, 2026-09-04).** El TTFT (tiempo al primer token) reportado para
+la familia de este modelo ronda los 5s sólo de texto — sin contar
+subida de imagen bajo Fast 4G, generación del resto de la respuesta, ni
+overhead de la app — así que 10s podía ser un umbral poco realista para
+este modelo en el tier gratuito. No re-proponer subir a 15s sin
+evidencia de que la redefinición de arriba no alcance (ej. si el
+benchmark formal del ítem de arriba sigue sin cumplir el umbral incluso
+excluyendo corridas con 503/429).
 
 - [ ] **Confirmar si además hay casos reales de JSON malformado** en la
   respuesta de Gemini (hipótesis original de los 500 intermitentes,
@@ -185,7 +202,13 @@ datos incompletos.
   con su propio log tanto ahí como en `route.ts`; sigue pendiente
   revisar logs de uso real para saber si ocurre y con qué frecuencia
   (no se puede confirmar sin tráfico real o un caso reproducido a
-  mano).
+  mano). **19 corridas reales monitoreadas en vivo (2026-09-03, servidor
+  dev local, tras el fix de campos obligatorios de arriba)**: 0 casos de
+  JSON malformado (0 logs de "no es JSON válido" / "JSON inválido pese
+  al schema"). No es tráfico de producción — sigue sin confirmarse la
+  frecuencia bajo uso real — pero es la muestra más grande hasta ahora
+  sin ningún caso, con la app real (no mocks) contra la API real de
+  Gemini.
 
 **Cuota del free tier confirmada (2026-09-03)** — límites reales del
 dashboard de Google AI Studio (`aistudio.google.com/rate-limit`) para

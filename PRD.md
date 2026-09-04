@@ -49,7 +49,7 @@ Que la aplicación lleve un registro claro y ordenado de los alimentos consumido
 
 ## Requerimientos No Funcionales
 - RNF-01: La validez del link de acceso será de 15 minutos, luego de los cuales el mismo expirará y se deberá obtener un nuevo link de acceso para poder iniciar sesión.
-- RNF-02: El procesamiento de la imágen desde la carga hasta la visualización de los datos estimados debe concretarse en < 10 s (p95) en condiciones normales de una red 4G.
+- RNF-02: El procesamiento de la imágen desde la carga hasta la visualización de los datos estimados debe concretarse en < 10 s (p95) en condiciones normales de una red 4G, asumiendo disponibilidad plena del servicio de Google AI Studio — el sistema no puede garantizar este umbral si Gemini devuelve errores transitorios de sobrecarga (HTTP 503/429).
 - RNF-03: El nivel aceptable de confianza en la información estimada a partir de la imagen del consumo debe ser > 70%, caso contrario se clasifica la estimación como de baja confianza.
 - RNF-04: El tiempo máximo de procesamiento de la imágen debe ser <= 30s.
 - RNF-05: La interfaz gráfica debe ser responsiva para dispositivos móviles (iOS y Android) bajo resoluciones estándar de pantalla entre 240p y 4K, con un tiempo de carga inicial (First Contentful Paint) < 3 s (p95) en conexión 4G.

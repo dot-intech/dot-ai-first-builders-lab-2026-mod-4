@@ -366,7 +366,11 @@ no se contabiliza en el tablero del día correspondiente.
   mostrar un mensaje de error. (RF-20, RNF-04)
 - **FR-022**: El procesamiento completo de una imagen (desde la carga hasta
   mostrar los datos estimados) MUST completarse en menos de 10 segundos (p95)
-  bajo condiciones normales de red 4G. (RNF-02)
+  bajo condiciones normales de red 4G y de disponibilidad plena del servicio
+  de Google AI Studio. Este umbral no aplica a corridas en las que Gemini
+  devolvió al menos un error transitorio de sobrecarga (HTTP 503/429 — ver
+  `STATUS_TRANSITORIOS` en `lib/ai/vision.ts`, la misma definición que ya
+  usa el reintento automático). (RNF-02)
 - **FR-023**: Ante un error de procesamiento, el sistema MUST permitir al
   usuario hacer una carga manual de la descripción, cantidad de calorías y
   desglose nutricional del consumo; la descripción cargada manualmente
@@ -459,9 +463,11 @@ no se contabiliza en el tablero del día correspondiente.
 
 ### Measurable Outcomes
 
-- **SC-001**: Un usuario puede pasar de tomar la foto de su plato a ver el
-  consumo estimado en pantalla en menos de 10 segundos de interacción (p95)
-  bajo red 4G.
+- **SC-001**: Bajo disponibilidad plena del servicio de Google AI Studio (sin
+  errores transitorios de sobrecarga — HTTP 503/429 — de parte de Gemini
+  durante el análisis), un usuario puede pasar de tomar la foto de su plato
+  a ver el consumo estimado en pantalla en menos de 10 segundos de
+  interacción (p95) bajo red 4G.
 - **SC-002**: El 100% de las imágenes provistas por usuarios dejan de existir
   en el backend inmediatamente después de terminado su procesamiento, exitoso
   o no.
@@ -506,13 +512,19 @@ no se contabiliza en el tablero del día correspondiente.
   mediante el prompt enviado al modelo de visión, como responsabilidad del
   módulo de IA aislado; no existe un mecanismo de traducción de respaldo si
   el modelo no lo respetara.
-- **FR-022/SC-001 no se cumple actualmente**: la medición real de T059
+- **FR-022/SC-001, estado 2026-09-03**: la medición original de T059
   (`tasks.md`) dio un p95 de 31.56s bajo throttling 4G, muy por encima del
-  umbral de 10s, con imágenes livianas (≤500KB) — la causa raíz de la
-  latencia no está identificada (se descartó tamaño de imagen; se probó
-  deshabilitar el razonamiento extendido del modelo sin mejora
-  significativa, ver `research.md` §5). Queda como deuda técnica abierta
-  en `BACKLOG.md`, no como una revisión pendiente del requisito.
+  umbral de 10s, con imágenes livianas (≤500KB). Tras varias mejoras
+  (SDK/config del modelo, compresión de imagen — ver `research.md` §5 y
+  `BACKLOG.md`) el p95 bajó a ~11.8s en la re-verificación formal bajo
+  Fast 4G del 2026-09-01, y a **7.586s** en una medición informal del
+  2026-09-03 (sin throttling Fast 4G) que excluye corridas con errores
+  transitorios de Gemini (503/429) — bajo la definición vigente de FR-022/
+  SC-001 arriba (disponibilidad plena de Google AI Studio), esto sugiere
+  cumplimiento, pero **no reemplaza** el benchmark formal bajo Fast 4G
+  (protocolo de T059) para confirmarlo con rigor — pendiente en
+  `BACKLOG.md`. Sigue documentado ahí, no como una revisión pendiente del
+  requisito en sí (la redefinición del alcance ya se hizo).
 - No se exige cumplimiento formal de un estándar de accesibilidad (p. ej.
   WCAG) en esta versión; se espera HTML semántico razonable, pero sin
   auditoría de accesibilidad como criterio de aceptación.

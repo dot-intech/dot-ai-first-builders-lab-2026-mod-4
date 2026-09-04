@@ -37,7 +37,7 @@ decisión y sus alternativas descartadas.
 
 **Project Type**: Web — proyecto único Next.js fullstack (frontend + backend en el mismo codebase, sin directorios `backend/`/`frontend/` separados; ver AGENTS.md)
 
-**Performance Goals**: Análisis de imagen completo (carga → estimación mostrada) < 10s p95 bajo 4G (FR-022/SC-001); timeout duro de procesamiento a los 30s (FR-021)
+**Performance Goals**: Análisis de imagen completo (carga → estimación mostrada) < 10s p95 bajo 4G y disponibilidad plena de Google AI Studio — no aplica a corridas con errores transitorios de Gemini, 503/429 (FR-022/SC-001, ver research.md); timeout duro de procesamiento a los 30s (FR-021)
 
 **Constraints**: Cero persistencia de imágenes bajo ninguna circunstancia — disco, DB, logs (RNF-07/SC-002); desglose nutricional siempre en enteros que suman exactamente 100% (FR-010); ningún dato nutricional inventado fuera de la respuesta del modelo (Principio III)
 

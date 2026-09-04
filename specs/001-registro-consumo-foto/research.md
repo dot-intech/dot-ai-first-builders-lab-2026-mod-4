@@ -129,6 +129,21 @@ completo de cada cambio, su evidencia y los commits correspondientes
 vive en `BACKLOG.md` § Performance — no se duplica acá para no
 mantener dos historiales en paralelo.
 
+**Actualización 2026-09-04** (redefinición de FR-022/SC-001/RNF-02,
+decisión del usuario): el umbral de p95 < 10s pasa a asumir
+disponibilidad plena del servicio de Google AI Studio — no aplica a
+corridas donde Gemini devolvió un error transitorio de sobrecarga
+(HTTP 503/429, `STATUS_TRANSITORIOS` en `lib/ai/vision.ts`). Motivo:
+una medición manual de 19 corridas (2026-09-03, sin throttling Fast
+4G) tuvo 3 corridas con 503 de Gemini ("high demand") que por sí solas
+llevaban el p95 a ~30s — al excluirlas (15 corridas limpias), el p95
+bajó a **7.586s**, sugiriendo que el código en sí ya cumple el umbral
+cuando Google no está congestionado, y que la variabilidad restante es
+responsabilidad de la disponibilidad del proveedor, no de la app. Cero
+casos de JSON malformado en las 19 corridas (ver `BACKLOG.md`). Esta
+medición **no reemplaza** el benchmark formal bajo Fast 4G (protocolo
+de T059) — pendiente, ver `BACKLOG.md` § Performance.
+
 ## 6. Garantía de cero persistencia de imágenes (RNF-07)
 
 **Decision**: La imagen se recibe en el handler de
