@@ -139,7 +139,7 @@ export default function RevisionConsumo({ inicial, imagenUrl, onCancelar, onGuar
         <button type="button" onClick={guardar} disabled={!puedeGuardar}>
           Guardar
         </button>
-        <button type="button" onClick={onCancelar}>
+        <button type="button" className="secondary" onClick={onCancelar}>
           Cancelar
         </button>
       </div>

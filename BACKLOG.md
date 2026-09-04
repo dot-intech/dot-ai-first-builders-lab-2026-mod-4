@@ -19,14 +19,6 @@ sueltos en vez de los patrones de Pico, lo que da una sensación tosca.
 Partido en ítems atómicos, cada uno sin lógica nueva ni tests (son
 cambios puramente de markup/clases) — ver conversación 2026-09-04.
 
-- [ ] **Dar jerarquía visual a los botones con las clases de Pico.**
-  Hoy todos los botones se ven idénticos (color primario por default).
-  Acción principal se queda como está; secundarias (`Cancelar` en
-  `RevisionConsumo.tsx`/`app/nuevo/page.tsx`, `Historial` en
-  `AccionesTablero.tsx`) → `class="secondary"`; destructivas
-  (`Eliminar` en `HistorialLista.tsx`, `Cerrar sesión` en
-  `AccionesTablero.tsx`) → `class="contrast"` o `outline`.
-
 - [ ] **Usar `role="group"` en filas de botones en vez de flex+gap manual.**
   Aplica a `AccionesTablero.tsx:25` (nav) y a la fila
   Guardar/Cancelar de `RevisionConsumo.tsx:138`.

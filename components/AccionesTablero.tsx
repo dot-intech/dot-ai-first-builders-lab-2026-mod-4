@@ -26,10 +26,10 @@ export default function AccionesTablero() {
       <button type="button" onClick={() => router.push("/nuevo")}>
         Nuevo
       </button>
-      <button type="button" onClick={() => router.push("/historial")}>
+      <button type="button" className="secondary" onClick={() => router.push("/historial")}>
         Historial
       </button>
-      <button type="button" onClick={cerrarSesion} disabled={cerrandoSesion}>
+      <button type="button" className="contrast" onClick={cerrarSesion} disabled={cerrandoSesion}>
         Cerrar sesión
       </button>
     </nav>

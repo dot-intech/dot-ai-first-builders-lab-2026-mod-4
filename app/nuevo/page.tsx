@@ -54,7 +54,7 @@ export default function NuevoConsumoPage() {
               setPaso({ tipo: "manual", mensajeError: mensaje, imagenUrl });
             }}
           />
-          <button type="button" onClick={irAlTablero}>
+          <button type="button" className="secondary" onClick={irAlTablero}>
             Cancelar
           </button>
         </>

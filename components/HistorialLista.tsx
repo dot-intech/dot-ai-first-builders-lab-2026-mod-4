@@ -102,7 +102,7 @@ export default function HistorialLista({ consumosIniciales }: HistorialListaProp
                   {new Date(consumo.fechaHora).toLocaleString("es-AR")} — {consumo.descripcion} (
                   {consumo.calorias} kcal)
                 </span>
-                <button type="button" onClick={() => eliminar(consumo.id)}>
+                <button type="button" className="contrast" onClick={() => eliminar(consumo.id)}>
                   Eliminar
                 </button>
               </li>
