@@ -60,5 +60,9 @@ export default function TableroResumen() {
 
   const datos = resumen ?? CERO;
 
-  return <DonaNutricional calorias={datos.totalCalorias} desglose={datos.desglose} />;
+  return (
+    <article>
+      <DonaNutricional calorias={datos.totalCalorias} desglose={datos.desglose} />
+    </article>
+  );
 }

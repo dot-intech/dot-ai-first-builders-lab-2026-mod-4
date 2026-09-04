@@ -94,17 +94,16 @@ export default function HistorialLista({ consumosIniciales }: HistorialListaProp
           <h2>{grupo}</h2>
           <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
             {items.map((consumo) => (
-              <li
-                key={consumo.id}
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}
-              >
-                <span>
-                  {new Date(consumo.fechaHora).toLocaleString("es-AR")} — {consumo.descripcion} (
-                  {consumo.calorias} kcal)
-                </span>
-                <button type="button" className="contrast" onClick={() => eliminar(consumo.id)}>
-                  Eliminar
-                </button>
+              <li key={consumo.id}>
+                <article style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+                  <span>
+                    {new Date(consumo.fechaHora).toLocaleString("es-AR")} — {consumo.descripcion} (
+                    {consumo.calorias} kcal)
+                  </span>
+                  <button type="button" className="contrast" onClick={() => eliminar(consumo.id)}>
+                    Eliminar
+                  </button>
+                </article>
               </li>
             ))}
           </ul>

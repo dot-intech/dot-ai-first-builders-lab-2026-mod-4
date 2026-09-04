@@ -19,12 +19,6 @@ sueltos en vez de los patrones de Pico, lo que da una sensación tosca.
 Partido en ítems atómicos, cada uno sin lógica nueva ni tests (son
 cambios puramente de markup/clases) — ver conversación 2026-09-04.
 
-- [ ] **Agrupar contenido relacionado en `<article>` (card de Pico).**
-  Aplica al formulario de `RevisionConsumo.tsx`, al resumen de
-  `TableroResumen.tsx`/`DonaNutricional.tsx`, y a cada ítem de
-  `HistorialLista.tsx` — hoy son `div`/`li` sin borde ni separación
-  visual entre ellos.
-
 - [ ] **Usar `class="grid"` de Pico para los 4 inputs de desglose nutricional.**
   `RevisionConsumo.tsx:123-134` — hoy van uno por línea
   (carbohidratos/proteínas/grasas/otrosNutrientes), en fila sería

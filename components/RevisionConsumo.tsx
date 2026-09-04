@@ -71,7 +71,7 @@ export default function RevisionConsumo({ inicial, imagenUrl, onCancelar, onGuar
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12, width: 320 }}>
+    <article style={{ display: "flex", flexDirection: "column", gap: 12, width: 320 }}>
       <p>Esta estimación puede ser inexacta — revisala antes de guardar.</p>
 
       {imagenUrl && (
@@ -143,6 +143,6 @@ export default function RevisionConsumo({ inicial, imagenUrl, onCancelar, onGuar
           Cancelar
         </button>
       </div>
-    </div>
+    </article>
   );
 }
