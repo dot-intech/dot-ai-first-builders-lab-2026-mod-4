@@ -11,7 +11,53 @@ descartada (spike, intento fallido) queda como nota corta dentro del
 ítem abierto al que aplica, o en § Descartado si no hay ningún ítem
 abierto al que colgarla. Ver `AGENTS.md` § Backlog.
 
-No hay ítems abiertos actualmente.
+## UI (Pico.css)
+
+Pico ya está adoptado (`@picocss/pico/css/pico.min.css` en
+`app/layout.tsx`) pero casi todo el markup usa `<div style={{...}}>`
+sueltos en vez de los patrones de Pico, lo que da una sensación tosca.
+Partido en ítems atómicos, cada uno sin lógica nueva ni tests (son
+cambios puramente de markup/clases) — ver conversación 2026-09-04.
+
+- [ ] **Envolver el contenido de cada página en `<div className="container">`.**
+  Aplica a `app/login/page.tsx`, `app/tablero/page.tsx`,
+  `app/nuevo/page.tsx`, `app/historial/page.tsx` — hoy usan `<main
+  style={{...}}>` con flex a mano, sin el max-width/ritmo tipográfico
+  responsivo de Pico.
+
+- [ ] **Dar jerarquía visual a los botones con las clases de Pico.**
+  Hoy todos los botones se ven idénticos (color primario por default).
+  Acción principal se queda como está; secundarias (`Cancelar` en
+  `RevisionConsumo.tsx`/`app/nuevo/page.tsx`, `Historial` en
+  `AccionesTablero.tsx`) → `class="secondary"`; destructivas
+  (`Eliminar` en `HistorialLista.tsx`, `Cerrar sesión` en
+  `AccionesTablero.tsx`) → `class="contrast"` o `outline`.
+
+- [ ] **Usar `role="group"` en filas de botones en vez de flex+gap manual.**
+  Aplica a `AccionesTablero.tsx:25` (nav) y a la fila
+  Guardar/Cancelar de `RevisionConsumo.tsx:138`.
+
+- [ ] **Agrupar contenido relacionado en `<article>` (card de Pico).**
+  Aplica al formulario de `RevisionConsumo.tsx`, al resumen de
+  `TableroResumen.tsx`/`DonaNutricional.tsx`, y a cada ítem de
+  `HistorialLista.tsx` — hoy son `div`/`li` sin borde ni separación
+  visual entre ellos.
+
+- [ ] **Usar `class="grid"` de Pico para los 4 inputs de desglose nutricional.**
+  `RevisionConsumo.tsx:123-134` — hoy van uno por línea
+  (carbohidratos/proteínas/grasas/otrosNutrientes), en fila sería
+  mucho menos repetitivo.
+
+- [ ] **Atar los colores de `DonaNutricional` a la paleta de Pico.**
+  `DonaNutricional.tsx:9-12` hardcodea hex (`#f59e0b`, etc.)
+  desconectados del tema; además `DonaNutricional.tsx:26` referencia
+  `var(--dona-fondo, #e5e7eb)` pero `--dona-fondo` nunca se define en
+  `globals.css` — siempre cae al fallback.
+
+- [ ] **Convertir las filas de `HistorialLista.tsx` a tabla o cards con separación.**
+  `HistorialLista.tsx:96-109` — hoy son `<li>` con texto plano y
+  `justify-content: space-between`, sin separadores ni tratamiento
+  visual entre consumos.
 
 ## Descartado — no re-proponer sin evidencia nueva
 
