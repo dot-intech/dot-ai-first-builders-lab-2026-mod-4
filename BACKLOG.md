@@ -11,7 +11,39 @@ descartada (spike, intento fallido) queda como nota corta dentro del
 ítem abierto al que aplica, o en § Descartado si no hay ningún ítem
 abierto al que colgarla. Ver `AGENTS.md` § Backlog.
 
-No hay ítems abiertos actualmente.
+## UX
+
+- [ ] **Layout no responsivo en la pantalla de revisión de consumo
+  (RNF-05).** `RevisionConsumo.tsx:74` fija `width: 320` en el
+  `<article>` y `app/nuevo/page.tsx:42` fija `padding: 48` en el
+  `<main>` — ninguno de los dos escala con el viewport. Con esos anchos
+  fijos, el grid de 4 columnas del desglose nutricional
+  (`RevisionConsumo.tsx:123-136`) queda con columnas de ~70-80px,
+  insuficientes para etiquetas como "carbohidratos" u
+  "otrosNutrientes", que se parten letra por letra y tapan el valor del
+  input (el `value` en sí está bien seteado). RNF-05 exige responsive
+  entre 240p y 4K pero no fija un breakpoint en px concreto — no hay un
+  ancho a "sacar" del PRD. Fix: reemplazar los px fijos por unidades
+  fluidas (`width: 100%` + `max-width` razonable, padding en `rem`/el
+  `.container` de Pico), usando 320px como piso mínimo de viewport a
+  soportar — no como ancho fijo de componente, sino como estándar de
+  facto mobile-first (dispositivo real más angosto en uso) — y agregar
+  un breakpoint al grid del desglose para bajar a 2 columnas en
+  viewports angostos en vez de forzar 4 parejas siempre. De paso,
+  evaluar si el `rows={3}` fijo del textarea de descripción
+  (`RevisionConsumo.tsx:98`) amerita ajuste una vez resuelto el ancho —
+  hoy fuerza scroll interno que tapa contenido.
+
+- [ ] **Etiquetas del desglose nutricional sin formatear en
+  `RevisionConsumo.tsx`.** El grid de inputs (`RevisionConsumo.tsx:126`)
+  muestra la key cruda del objeto (`carbohidratos`, `proteinas`,
+  `grasas`, `otrosNutrientes` en camelCase sin espacio) en vez de una
+  etiqueta legible. `DonaNutricional.tsx:10-15` ya tiene el mapeo
+  humanizado (`"Carbohidratos"`, `"Otros nutrientes"`, etc.) para las
+  mismas claves — extraerlo a un lugar compartido (p.ej. un mapa de
+  labels en `lib/consumos/nutricion.ts`) y usarlo desde ambos
+  componentes en vez de tener las etiquetas crudas en uno y las lindas
+  en el otro.
 
 ## Descartado — no re-proponer sin evidencia nueva
 
