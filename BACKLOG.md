@@ -11,7 +11,7 @@ descartada (spike, intento fallido) queda como nota corta dentro del
 ítem abierto al que aplica, o en § Descartado si no hay ningún ítem
 abierto al que colgarla. Ver `AGENTS.md` § Backlog.
 
-## Performance — FR-022/SC-001 no se cumple (p95 real: 11.83s vs. umbral 10s)
+## Performance — FR-022/SC-001 cumplido (2026-09-04, p95=7.944s bajo Fast 4G; ver redefinición del umbral abajo)
 
 Medido originalmente en T059 (`specs/001-registro-consumo-foto/tasks.md`)
 con throttling Fast 4G real: 8/10 corridas violaron el umbral de 10s, 5/10
@@ -171,14 +171,19 @@ de abajo. La alternativa de subir el umbral a 15s (evaluada
 previamente, nota más abajo) queda descartada por esta decisión — no
 se persigue en paralelo.
 
-- [ ] **Benchmark formal bajo Fast 4G con la nueva definición (10
-  corridas, descartando corridas con 503/429 transitorio de Gemini).**
-  Mismo protocolo que T059, pero aplicando ya el criterio de exclusión
-  de arriba en vez de contar esas corridas como fallo del umbral. Con
-  esto se da por cerrado el tema de p95 (FR-022/SC-001), sea cual sea
-  el resultado — no queda otra palanca de código conocida sin probar
-  (ver instrumentación arriba: casi el 100% del tiempo es la espera de
-  la respuesta de Gemini, no subida ni parseo).
+**Benchmark formal bajo Fast 4G con la nueva definición — FR-022/SC-001
+se cumple (2026-09-04)** — 10 corridas válidas bajo throttling Fast 4G
+real (mismo protocolo que T059), descartando en vivo las corridas con
+503/429 transitorio de Gemini (2 descartadas de 12 totales, mismo
+criterio que la redefinición de arriba). Corridas válidas (ms): 3341,
+3832, 3996, 4744, 5095, 5470, 5641, 6512, 6730, 7944 → **p95 = 7.944s**
+(8.268s si se mide el ciclo completo vía el access log de Next.js,
+incluyendo el envío de la respuesta) — **por debajo del umbral de
+10s**. 0 fallos entre las 10 válidas. 0 casos de JSON malformado en las
+12 corridas totales de la sesión (ver ítem de abajo). Con esto,
+FR-022/SC-001/RNF-02 queda **cumplido** bajo la definición vigente
+(disponibilidad plena de Google AI Studio) — se da por cerrado el tema
+de p95, no queda ninguna palanca de código pendiente de probar.
 
 **Evaluar elevar el umbral de FR-022/SC-001 de 10s a 15s — descartado,
 se optó por redefinir el alcance en vez de subir el número (ver nota de
@@ -202,13 +207,17 @@ excluyendo corridas con 503/429).
   con su propio log tanto ahí como en `route.ts`; sigue pendiente
   revisar logs de uso real para saber si ocurre y con qué frecuencia
   (no se puede confirmar sin tráfico real o un caso reproducido a
-  mano). **19 corridas reales monitoreadas en vivo (2026-09-03, servidor
-  dev local, tras el fix de campos obligatorios de arriba)**: 0 casos de
-  JSON malformado (0 logs de "no es JSON válido" / "JSON inválido pese
-  al schema"). No es tráfico de producción — sigue sin confirmarse la
-  frecuencia bajo uso real — pero es la muestra más grande hasta ahora
-  sin ningún caso, con la app real (no mocks) contra la API real de
-  Gemini.
+  mano). **31 corridas reales monitoreadas en vivo (2026-09-03 y
+  2026-09-04, servidor dev local, tras el fix de campos obligatorios de
+  arriba)**: 19 corridas el 2026-09-03 (sin throttling) + 12 corridas el
+  2026-09-04 durante el benchmark formal bajo Fast 4G (10 válidas + 2
+  descartadas por 503, ver nota de arriba) — **0 casos de JSON
+  malformado** en las 31 (0 logs de "no es JSON válido" / "JSON
+  inválido pese al schema"). No es tráfico de producción — sigue sin
+  confirmarse la frecuencia bajo uso real — pero es la muestra más
+  grande hasta ahora sin ningún caso, con la app real (no mocks) contra
+  la API real de Gemini, incluyendo corridas con 503/429 transitorio de
+  Gemini (que no afectan el parseo, sólo la latencia).
 
 **Cuota del free tier confirmada (2026-09-03)** — límites reales del
 dashboard de Google AI Studio (`aistudio.google.com/rate-limit`) para

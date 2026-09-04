@@ -140,9 +140,15 @@ llevaban el p95 a ~30s — al excluirlas (15 corridas limpias), el p95
 bajó a **7.586s**, sugiriendo que el código en sí ya cumple el umbral
 cuando Google no está congestionado, y que la variabilidad restante es
 responsabilidad de la disponibilidad del proveedor, no de la app. Cero
-casos de JSON malformado en las 19 corridas (ver `BACKLOG.md`). Esta
-medición **no reemplaza** el benchmark formal bajo Fast 4G (protocolo
-de T059) — pendiente, ver `BACKLOG.md` § Performance.
+casos de JSON malformado en las 19 corridas (ver `BACKLOG.md`).
+
+**Confirmación formal (2026-09-04)** — benchmark bajo Fast 4G real
+(mismo protocolo que T059), 10 corridas válidas excluyendo 2 con
+503/429 transitorio de Gemini: **p95 = 7.944s**, 0 fallos, 0 JSON
+malformado. Confirma con rigor lo que sugería la medición informal de
+arriba — FR-022/SC-001/RNF-02 queda **cumplido** bajo la definición
+vigente. Detalle completo (las 10 corridas, criterio de exclusión) en
+`BACKLOG.md` § Performance.
 
 ## 6. Garantía de cero persistencia de imágenes (RNF-07)
 
