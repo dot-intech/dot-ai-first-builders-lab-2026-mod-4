@@ -16,7 +16,7 @@ export default async function TableroPage() {
   const email = rows[0]?.email ?? "";
 
   return (
-    <main style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, padding: 48 }}>
+    <main className="container" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, padding: 48 }}>
       <h1>¡Hola{email ? `, ${email}` : ""}!</h1>
       <TableroResumen />
       <AccionesTablero />

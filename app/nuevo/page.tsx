@@ -39,7 +39,7 @@ export default function NuevoConsumoPage() {
   }
 
   return (
-    <main style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, padding: 48 }}>
+    <main className="container" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, padding: 48 }}>
       <h1>Nuevo consumo</h1>
 
       {paso.tipo === "captura" && (

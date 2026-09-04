@@ -24,7 +24,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, padding: 48 }}>
+    <main className="container" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, padding: 48 }}>
       <h1>NutraShot</h1>
 
       {estado === "enviado" ? (

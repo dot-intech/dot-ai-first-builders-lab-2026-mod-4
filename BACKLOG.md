@@ -19,12 +19,6 @@ sueltos en vez de los patrones de Pico, lo que da una sensación tosca.
 Partido en ítems atómicos, cada uno sin lógica nueva ni tests (son
 cambios puramente de markup/clases) — ver conversación 2026-09-04.
 
-- [ ] **Envolver el contenido de cada página en `<div className="container">`.**
-  Aplica a `app/login/page.tsx`, `app/tablero/page.tsx`,
-  `app/nuevo/page.tsx`, `app/historial/page.tsx` — hoy usan `<main
-  style={{...}}>` con flex a mano, sin el max-width/ritmo tipográfico
-  responsivo de Pico.
-
 - [ ] **Dar jerarquía visual a los botones con las clases de Pico.**
   Hoy todos los botones se ven idénticos (color primario por default).
   Acción principal se queda como está; secundarias (`Cancelar` en
