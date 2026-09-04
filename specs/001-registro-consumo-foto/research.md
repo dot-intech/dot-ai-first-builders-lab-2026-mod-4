@@ -125,9 +125,8 @@ la actualización de arriba, `lib/ai/vision.ts` migró de SDK
 `identificado: true`, en vez de opcionales), reintento ante fallos
 transitorios de Gemini y ante JSON inválido, y `mediaResolution: LOW`
 (reduce tokens de imagen sin degradación de precisión medida). Detalle
-completo de cada cambio, su evidencia y los commits correspondientes
-vive en `BACKLOG.md` § Performance — no se duplica acá para no
-mantener dos historiales en paralelo.
+completo de cada cambio y su evidencia vive en los commits citados —
+no se duplica acá.
 
 **Actualización 2026-09-04** (redefinición de FR-022/SC-001/RNF-02,
 decisión del usuario): el umbral de p95 < 10s pasa a asumir
@@ -140,15 +139,14 @@ llevaban el p95 a ~30s — al excluirlas (15 corridas limpias), el p95
 bajó a **7.586s**, sugiriendo que el código en sí ya cumple el umbral
 cuando Google no está congestionado, y que la variabilidad restante es
 responsabilidad de la disponibilidad del proveedor, no de la app. Cero
-casos de JSON malformado en las 19 corridas (ver `BACKLOG.md`).
+casos de JSON malformado en las 19 corridas.
 
 **Confirmación formal (2026-09-04)** — benchmark bajo Fast 4G real
 (mismo protocolo que T059), 10 corridas válidas excluyendo 2 con
 503/429 transitorio de Gemini: **p95 = 7.944s**, 0 fallos, 0 JSON
 malformado. Confirma con rigor lo que sugería la medición informal de
 arriba — FR-022/SC-001/RNF-02 queda **cumplido** bajo la definición
-vigente. Detalle completo (las 10 corridas, criterio de exclusión) en
-`BACKLOG.md` § Performance.
+vigente.
 
 ## 6. Garantía de cero persistencia de imágenes (RNF-07)
 
