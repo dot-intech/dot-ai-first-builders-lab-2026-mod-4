@@ -19,15 +19,16 @@ PostgreSQL con acceso directo vía `pg` (sin ORM) y esquema limitado a
 `usuarios`/`consumos` por restricción de la constitución, sesión y magic
 link modelados como columnas de `usuarios` (sin tablas adicionales), un
 módulo `lib/ai/vision.ts` aislado para toda interacción con el modelo de
-visión, y Vitest para tests unitarios/integración/contrato siguiendo TDD
-estricto. Ver [research.md](./research.md) para el detalle de cada
-decisión y sus alternativas descartadas.
+visión, Pico.css como framework de estilos base, y Vitest para tests
+unitarios/integración/contrato siguiendo TDD estricto. Ver
+[research.md](./research.md) para el detalle de cada decisión y sus
+alternativas descartadas.
 
 ## Technical Context
 
 **Language/Version**: TypeScript 5.x sobre Next.js 15 (App Router), Node.js 20 LTS
 
-**Primary Dependencies**: Next.js 15, React 19, `pg` (node-postgres), `resend` (email transaccional), `@google/genai` (Google AI Studio / Gemini), Vitest
+**Primary Dependencies**: Next.js 15, React 19, `pg` (node-postgres), `resend` (email transaccional), `@google/genai` (Google AI Studio / Gemini), `@picocss/pico` (estilos), Vitest
 
 **Storage**: PostgreSQL (Docker Compose en desarrollo), esquema limitado a `usuarios` y `consumos` — ver [data-model.md](./data-model.md)
 

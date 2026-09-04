@@ -1,6 +1,33 @@
 <!--
 Sync Impact Report
 ==================
+Version change: 1.0.0 → 1.0.1
+Rationale: Pico.css ya estaba adoptado en el código (commit 381658f) sin
+haberse propagado al stack obligatorio documentado acá. PATCH: aclaración
+que refleja una dependencia ya en uso, no un principio nuevo ni un cambio
+de alcance.
+
+Modified principles: N/A
+Modified sections:
+  - Restricciones del Producto y Stack Técnico: agregado Pico.css al stack
+    obligatorio.
+Added sections: none
+Removed sections: none
+
+Templates requiring updates:
+  - .specify/templates/plan-template.md: ✅ no changes needed.
+  - .specify/templates/spec-template.md: ✅ no changes needed.
+  - .specify/templates/tasks-template.md: ✅ no changes needed.
+  - .specify/templates/checklist-template.md: ✅ no changes needed.
+  - AGENTS.md: ✅ actualizado en el mismo cambio (Pico.css agregado a § Stack).
+  - specs/001-registro-consumo-foto/plan.md: ✅ actualizado en el mismo
+    cambio (Enfoque técnico / Primary Dependencies).
+
+Follow-up TODOs: none.
+
+---
+Sync Impact Report (histórico)
+==================
 Version change: TEMPLATE (unratified) → 1.0.0
 Rationale: Initial ratification. All template placeholders replaced with concrete
 NutraShot principles derived from user-supplied constraints and AGENTS.md.
@@ -94,8 +121,8 @@ construido.
 
 - Stack obligatorio: Next.js 15 (App Router, fullstack en un solo proyecto),
   Node.js 20 LTS, npm, PostgreSQL (vía Docker Compose en desarrollo), Vitest
-  para tests, y Google AI Studio (modelo `gemini-3.1-flash-lite`) para el
-  análisis de imágenes.
+  para tests, Pico.css como framework de estilos base, y Google AI Studio
+  (modelo `gemini-3.1-flash-lite`) para el análisis de imágenes.
 - RNF-07 — Cero persistencia de imágenes: ninguna imagen provista por el
   usuario se persiste en el backend bajo ninguna circunstancia, por privacidad.
   Esto aplica a almacenamiento en disco, base de datos, logs, y cualquier cache
@@ -135,4 +162,4 @@ desviación de un principio debe justificarse explícitamente en la sección
 "Complexity Tracking" del plan correspondiente; si no puede justificarse, se
 simplifica el diseño en lugar de violar el principio.
 
-**Version**: 1.0.0 | **Ratified**: 2026-08-22 | **Last Amended**: 2026-08-22
+**Version**: 1.0.1 | **Ratified**: 2026-08-22 | **Last Amended**: 2026-09-04

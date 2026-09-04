@@ -9,6 +9,7 @@ NutraShot es una app web que permite registrar el consumo dietario diario a part
 - PostgreSQL, levantada vía Docker Compose en desarrollo (tablas: usuarios, consumos). `npm test` usa una segunda base Postgres separada (también en `docker-compose.yml`), nunca la de desarrollo.
 - Vitest para tests.
 - Google AI Studio, modelo `gemini-3.1-flash-lite`, para el análisis de imágenes.
+- Pico.css como framework de estilos base (classless/semántico, sin componentes JS).
 
 ## Cómo correr
 ```bash
