@@ -11,18 +11,7 @@ descartada (spike, intento fallido) queda como nota corta dentro del
 ítem abierto al que aplica, o en § Descartado si no hay ningún ítem
 abierto al que colgarla. Ver `AGENTS.md` § Backlog.
 
-## UI (Pico.css)
-
-Pico ya está adoptado (`@picocss/pico/css/pico.min.css` en
-`app/layout.tsx`) pero casi todo el markup usa `<div style={{...}}>`
-sueltos en vez de los patrones de Pico, lo que da una sensación tosca.
-Partido en ítems atómicos, cada uno sin lógica nueva ni tests (son
-cambios puramente de markup/clases) — ver conversación 2026-09-04.
-
-- [ ] **Convertir las filas de `HistorialLista.tsx` a tabla o cards con separación.**
-  `HistorialLista.tsx:96-109` — hoy son `<li>` con texto plano y
-  `justify-content: space-between`, sin separadores ni tratamiento
-  visual entre consumos.
+No hay ítems abiertos actualmente.
 
 ## Descartado — no re-proponer sin evidencia nueva
 
