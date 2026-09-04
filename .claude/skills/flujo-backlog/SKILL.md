@@ -75,10 +75,13 @@ sobre cualquier spec. Antes de escribir una línea de spec:
 tiempos para encontrar la causa de la latencia") quedan **fuera** de
 este flujo: se resuelven directo y el resultado — funcione o no — se
 documenta al cerrarse como nota corta en el ítem abierto de `BACKLOG.md`
-al que aplica (ver ejemplo del intento de `thinkingBudget=0` en §
-Performance), o en § Descartado si no hay ítem abierto al que colgarlo.
+al que aplica, o en § Descartado si no hay ítem abierto al que colgarlo
+(ver ejemplos ahí, ej. "mediaResolution: LOW como fix de latencia").
 Si un spike concluye en un cambio de comportamiento observable, ese
-cambio sí entra al flujo de arriba (paso 1).
+cambio sí entra al flujo de arriba (paso 1). Ojo: esta nota corta es
+sólo para el *resultado* del spike (funcionó / se descartó) — no para
+narrar la implementación ya commiteada de un ítem que sí se resolvió;
+ver el ejemplo ❌/✅ en `AGENTS.md` § Backlog.
 
 ## 4. Implementación
 Siempre TDD (rojo → verde), como en la feature 001. Ver también
@@ -88,3 +91,12 @@ commit, split diseño/implementación, confirmación explícita antes de
 `git commit`/`git push`) — esas dos secciones aplican a cualquier
 cambio de código, no sólo a los que pasan por este flujo, así que
 siguen en `AGENTS.md` en vez de acá.
+
+## 5. Antes de dar un ítem por cerrado
+Releer el párrafo que va a quedar (o no) en `BACKLOG.md` y confirmar:
+¿describe una tarea ya hecha, o una hipótesis que se probó y se
+descartó? Sólo el segundo caso se queda, y como nota corta (2-4
+líneas, no un párrafo largo) — ver el ejemplo ❌/✅ en `AGENTS.md` §
+Backlog. Si describe una tarea resuelta (aunque sea "para dejar
+contexto"), se saca del todo: su registro ya vive en el commit y en
+`tasks.md`, no se archiva aparte.

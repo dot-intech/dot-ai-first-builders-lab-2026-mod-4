@@ -31,13 +31,23 @@ desarrollo.
 Las mejoras identificadas fuera del alcance de una spec cerrada viven en
 `BACKLOG.md` — sólo ítems abiertos o parcialmente resueltos; una tarea
 resuelta se saca del todo (su registro ya vive en el commit y en
-`tasks.md`, no se archiva aparte). Una hipótesis probada y descartada
-queda como nota corta dentro del ítem abierto al que aplica, o en la
-sección "Descartado" de `BACKLOG.md` si no hay ítem abierto al que
-colgarla. El flujo completo para tomar y cerrar un ítem — gate de
-PRD/constitución, spec nuevo vs. modificar uno existente, qué comandos
-de Spec Kit correr según el caso, ítems de spike — vive en la skill
-`flujo-backlog`: invocarla al empezar a trabajar un ítem del backlog.
+`tasks.md`, no se archiva aparte — **ni siquiera como una "nota de
+cierre" que resume lo que se hizo**). Una hipótesis probada y
+descartada queda como nota corta dentro del ítem abierto al que
+aplica, o en la sección "Descartado" de `BACKLOG.md` si no hay ítem
+abierto al que colgarla. Ejemplo de la distinción:
+  - ❌ No dejar (es una tarea resuelta, no una hipótesis descartada):
+    "Se implementó X (commit `abc123`), se probó contra la API real y
+    funcionó bien."
+  - ✅ Sí dejar, y sólo como nota corta de 2-4 líneas — no un párrafo
+    largo (es una hipótesis que se probó y NO se adoptó): "X se probó
+    y se descartó — no mejoró Y (commit `abc123`). No re-proponer sin
+    evidencia nueva."
+El flujo completo para tomar y cerrar un ítem — gate de PRD/constitución,
+spec nuevo vs. modificar uno existente, qué comandos de Spec Kit correr
+según el caso, ítems de spike, el chequeo antes de cerrar — vive en la
+skill `flujo-backlog`: invocarla al empezar a trabajar un ítem del
+backlog.
 
 ## Principios de implementación
 Aplican a cualquier cambio de código (fix, feature, ítem de backlog), no
