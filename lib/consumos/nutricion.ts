@@ -5,6 +5,13 @@ export interface DesgloseNutricional {
   otrosNutrientes: number;
 }
 
+export const ETIQUETAS_DESGLOSE: Record<keyof DesgloseNutricional, string> = {
+  carbohidratos: "Carbohidratos",
+  proteinas: "Proteínas",
+  grasas: "Grasas",
+  otrosNutrientes: "Otros nutrientes",
+};
+
 export interface ConsumoInput {
   descripcion: string;
   calorias: number;

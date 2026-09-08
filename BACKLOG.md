@@ -13,22 +13,6 @@ abierto al que colgarla. Ver `AGENTS.md` § Backlog.
 
 ## UX
 
-- [ ] **Etiquetas del desglose nutricional sin formatear en
-  `RevisionConsumo.tsx`.** El grid de inputs (`RevisionConsumo.tsx:126`)
-  muestra la key cruda del objeto (`carbohidratos`, `proteinas`,
-  `grasas`, `otrosNutrientes` en camelCase sin espacio) en vez de una
-  etiqueta legible. `DonaNutricional.tsx:10-15` ya tiene el mapeo
-  humanizado (`"Carbohidratos"`, `"Otros nutrientes"`, etc.) para las
-  mismas claves — extraerlo a un lugar compartido (p.ej. un mapa de
-  labels en `lib/consumos/nutricion.ts`) y usarlo desde ambos
-  componentes en vez de tener las etiquetas crudas en uno y las lindas
-  en el otro. De paso, agrupar los 4 inputs en un
-  `<fieldset><legend>Desglose nutricional</legend>` — hoy no hay ningún
-  heading ni agrupamiento semántico que indique que son un solo bloque
-  relacionado (afecta también a lectores de pantalla) — e indicar la
-  unidad (%) en cada label, ya que hoy no hay ningún indicio visual de
-  que el valor sea un porcentaje y no gramos.
-
 - [ ] **Pulido visual de inputs, imagen y textarea en
   `RevisionConsumo.tsx`.** Tres detalles de estilado puntuales, sin
   cambio de estructura ni de lógica: (1) los inputs del desglose

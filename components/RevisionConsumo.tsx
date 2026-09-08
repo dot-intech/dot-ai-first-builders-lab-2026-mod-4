@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { DesgloseNutricional } from "@/lib/consumos/nutricion";
-import { validarConsumo } from "@/lib/consumos/nutricion";
+import { ETIQUETAS_DESGLOSE, validarConsumo, type DesgloseNutricional } from "@/lib/consumos/nutricion";
 
 export interface EstimacionInicial {
   descripcion: string;
@@ -120,20 +119,23 @@ export default function RevisionConsumo({ inicial, imagenUrl, onCancelar, onGuar
         />
       </label>
 
-      <div className="desglose-grid">
-        {(Object.keys(desglose) as (keyof DesgloseNutricional)[]).map((clave) => (
-          <label key={clave}>
-            {clave}
-            <input
-              type="number"
-              min={0}
-              max={100}
-              value={desglose[clave]}
-              onChange={(e) => actualizarDesglose(clave, Number(e.target.value))}
-            />
-          </label>
-        ))}
-      </div>
+      <fieldset>
+        <legend>Desglose nutricional</legend>
+        <div className="desglose-grid">
+          {(Object.keys(desglose) as (keyof DesgloseNutricional)[]).map((clave) => (
+            <label key={clave}>
+              {ETIQUETAS_DESGLOSE[clave]} (%)
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={desglose[clave]}
+                onChange={(e) => actualizarDesglose(clave, Number(e.target.value))}
+              />
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       {error && <p role="alert">{error}</p>}
 

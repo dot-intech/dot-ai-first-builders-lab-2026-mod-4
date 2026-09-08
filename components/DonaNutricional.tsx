@@ -1,4 +1,4 @@
-import type { DesgloseNutricional } from "@/lib/consumos/nutricion";
+import { ETIQUETAS_DESGLOSE, type DesgloseNutricional } from "@/lib/consumos/nutricion";
 
 interface DonaNutricionalProps {
   calorias: number;
@@ -7,11 +7,11 @@ interface DonaNutricionalProps {
 
 // Colores tomados de la paleta de Pico (pico.colors.css): pumpkin-300,
 // blue-500, red-450, jade-350.
-const CATEGORIAS: { clave: keyof DesgloseNutricional; label: string; color: string }[] = [
-  { clave: "carbohidratos", label: "Carbohidratos", color: "#ff9500" },
-  { clave: "proteinas", label: "Proteínas", color: "#3c71f7" },
-  { clave: "grasas", label: "Grasas", color: "#ee402e" },
-  { clave: "otrosNutrientes", label: "Otros nutrientes", color: "#00b478" },
+const CATEGORIAS: { clave: keyof DesgloseNutricional; color: string }[] = [
+  { clave: "carbohidratos", color: "#ff9500" },
+  { clave: "proteinas", color: "#3c71f7" },
+  { clave: "grasas", color: "#ee402e" },
+  { clave: "otrosNutrientes", color: "#00b478" },
 ];
 
 const RADIO = 70;
@@ -56,13 +56,13 @@ export default function DonaNutricional({ calorias, desglose }: DonaNutricionalP
       </svg>
       <figcaption>
         <ul style={{ listStyle: "none", display: "flex", flexWrap: "wrap", gap: "8px 16px", padding: 0, margin: 0 }}>
-          {CATEGORIAS.map(({ clave, label, color }) => (
+          {CATEGORIAS.map(({ clave, color }) => (
             <li key={clave} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 14 }}>
               <span
                 aria-hidden
                 style={{ width: 10, height: 10, borderRadius: "50%", background: color, display: "inline-block" }}
               />
-              {label}: {desglose[clave]}%
+              {ETIQUETAS_DESGLOSE[clave]}: {desglose[clave]}%
             </li>
           ))}
         </ul>

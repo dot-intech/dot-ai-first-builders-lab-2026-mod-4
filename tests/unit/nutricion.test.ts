@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { validarConsumo } from "@/lib/consumos/nutricion";
+import { ETIQUETAS_DESGLOSE, validarConsumo } from "@/lib/consumos/nutricion";
 
 const desgloseValido = {
   carbohidratos: 40,
@@ -79,5 +79,16 @@ describe("validarConsumo", () => {
       desglose: { carbohidratos: 40.5, proteinas: 29.5, grasas: 20, otrosNutrientes: 10 },
     });
     expect(errores).toContain("desglose_no_entero");
+  });
+});
+
+describe("ETIQUETAS_DESGLOSE", () => {
+  it("tiene una etiqueta legible para cada clave del desglose", () => {
+    expect(ETIQUETAS_DESGLOSE).toEqual({
+      carbohidratos: "Carbohidratos",
+      proteinas: "Proteínas",
+      grasas: "Grasas",
+      otrosNutrientes: "Otros nutrientes",
+    });
   });
 });
