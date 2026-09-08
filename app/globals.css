@@ -22,3 +22,19 @@ body {
   border-radius: 50%;
   animation: girar 0.8s linear infinite;
 }
+
+.desglose-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--pico-spacing);
+}
+
+.desglose-grid input {
+  min-height: 44px;
+}
+
+@media (min-width: 576px) {
+  .desglose-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

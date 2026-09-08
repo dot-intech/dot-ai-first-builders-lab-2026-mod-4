@@ -71,7 +71,7 @@ export default function RevisionConsumo({ inicial, imagenUrl, onCancelar, onGuar
   }
 
   return (
-    <article style={{ display: "flex", flexDirection: "column", gap: 12, width: 320 }}>
+    <article style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%", maxWidth: 640 }}>
       <p>Esta estimación puede ser inexacta — revisala antes de guardar.</p>
 
       {imagenUrl && (
@@ -120,7 +120,7 @@ export default function RevisionConsumo({ inicial, imagenUrl, onCancelar, onGuar
         />
       </label>
 
-      <div className="grid">
+      <div className="desglose-grid">
         {(Object.keys(desglose) as (keyof DesgloseNutricional)[]).map((clave) => (
           <label key={clave}>
             {clave}
