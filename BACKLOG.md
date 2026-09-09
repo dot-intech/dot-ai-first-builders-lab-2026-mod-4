@@ -13,15 +13,6 @@ abierto al que colgarla. Ver `AGENTS.md` § Backlog.
 
 ## UX
 
-- [ ] **Destacar visualmente el aviso de estimación inexacta.** El
-  párrafo "Esta estimación puede ser inexacta — revisala antes de
-  guardar." (`RevisionConsumo.tsx:75`) es el mensaje más importante de
-  toda la pantalla — le pide al usuario que revise antes de confiar en
-  los datos — pero hoy pesa visualmente igual que cualquier texto de
-  párrafo. Agregar un ícono (⚠️) y/o un fondo sutil que lo diferencie,
-  usando tokens de Pico ya disponibles (no un color nuevo fuera de
-  paleta).
-
 - [ ] **Preview en vivo de la dona nutricional en el formulario de
   revisión.** Hoy `RevisionConsumo.tsx` sólo muestra los 4 inputs de
   macro en crudo, sin ningún feedback visual de si suman 100% mientras

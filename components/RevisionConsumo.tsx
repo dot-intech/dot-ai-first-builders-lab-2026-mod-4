@@ -71,7 +71,9 @@ export default function RevisionConsumo({ inicial, imagenUrl, onCancelar, onGuar
 
   return (
     <article style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%", maxWidth: 640 }}>
-      <p>Esta estimación puede ser inexacta — revisala antes de guardar.</p>
+      <p>
+        <mark>⚠️ Esta estimación puede ser inexacta — revisala antes de guardar.</mark>
+      </p>
 
       {imagenUrl && (
         <img
