@@ -13,13 +13,6 @@ abierto al que colgarla. Ver `AGENTS.md` § Backlog.
 
 ## UX
 
-- [ ] **Preview en vivo de la dona nutricional en el formulario de
-  revisión.** Hoy `RevisionConsumo.tsx` sólo muestra los 4 inputs de
-  macro en crudo, sin ningún feedback visual de si suman 100% mientras
-  se editan. `DonaNutricional.tsx` ya existe y se usa en el tablero —
-  reusarlo acá (pasándole `calorias`/`desglose` del estado local) para
-  dar feedback inmediato en vez de construir un indicador nuevo.
-
 - [ ] **Salida accesible sin bajar hasta el final del formulario de
   revisión.** Hoy "Cancelar" está sólo al pie de `RevisionConsumo.tsx`
   (línea 144), después de foto + descripción + calorías + desglose. En

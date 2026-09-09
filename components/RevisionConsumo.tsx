@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ETIQUETAS_DESGLOSE, validarConsumo, type DesgloseNutricional } from "@/lib/consumos/nutricion";
+import DonaNutricional from "@/components/DonaNutricional";
 
 export interface EstimacionInicial {
   descripcion: string;
@@ -145,6 +146,8 @@ export default function RevisionConsumo({ inicial, imagenUrl, onCancelar, onGuar
           ))}
         </div>
       </fieldset>
+
+      <DonaNutricional calorias={calorias} desglose={desglose} />
 
       {error && <p role="alert">{error}</p>}
 
