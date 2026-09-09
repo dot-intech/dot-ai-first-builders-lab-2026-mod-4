@@ -13,13 +13,6 @@ abierto al que colgarla. Ver `AGENTS.md` § Backlog.
 
 ## UX
 
-- [ ] **Salida accesible sin bajar hasta el final del formulario de
-  revisión.** Hoy "Cancelar" está sólo al pie de `RevisionConsumo.tsx`
-  (línea 144), después de foto + descripción + calorías + desglose. En
-  mobile, con teclado abierto buena parte del tiempo, es una salida
-  incómoda. Agregar una forma de cancelar/salir también cerca del
-  `<h1>` de `app/nuevo/page.tsx`, no sólo al pie.
-
 - [ ] **Revisar el peso/tono tipográfico del `<h1>` de "Nuevo
   consumo".** Prioridad baja, es una cuestión de tono más que
   funcional: el peso/tamaño del `<h1>` (default de Pico + Geist en
