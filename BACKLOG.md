@@ -13,18 +13,6 @@ abierto al que colgarla. Ver `AGENTS.md` § Backlog.
 
 ## UX
 
-- [ ] **Pulido visual de inputs, imagen y textarea en
-  `RevisionConsumo.tsx`.** Tres detalles de estilado puntuales, sin
-  cambio de estructura ni de lógica: (1) los inputs del desglose
-  nutricional tienen un contraste de borde muy bajo contra el fondo
-  oscuro — casi no se distinguen como campos editables; (2) la
-  miniatura de la foto cargada (`RevisionConsumo.tsx:78-83`, 160×160)
-  no tiene `border-radius`/borde/sombra — queda flotando sin marco; (3)
-  el grip de resize nativo del `<textarea>` de descripción
-  (`RevisionConsumo.tsx:98-107`) contrasta visualmente con el resto de
-  los inputs Pico-styled — evaluar `resize: vertical` con más `rows`
-  por defecto, o sacar el resize y dejarlo crecer automático.
-
 - [ ] **Destacar visualmente el aviso de estimación inexacta.** El
   párrafo "Esta estimación puede ser inexacta — revisala antes de
   guardar." (`RevisionConsumo.tsx:75`) es el mensaje más importante de

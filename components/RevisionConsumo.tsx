@@ -77,7 +77,14 @@ export default function RevisionConsumo({ inicial, imagenUrl, onCancelar, onGuar
         <img
           src={imagenUrl}
           alt="Foto del consumo cargada"
-          style={{ width: 160, height: 160, objectFit: "cover" }}
+          style={{
+            width: 160,
+            height: 160,
+            objectFit: "cover",
+            borderRadius: "var(--pico-border-radius)",
+            border: "var(--pico-border-width) solid var(--pico-muted-border-color)",
+            boxShadow: "var(--pico-card-box-shadow)",
+          }}
         />
       )}
 
@@ -97,7 +104,7 @@ export default function RevisionConsumo({ inicial, imagenUrl, onCancelar, onGuar
         <textarea
           value={descripcion}
           maxLength={200}
-          rows={3}
+          rows={4}
           style={{ display: "block", width: "100%", boxSizing: "border-box" }}
           onChange={(e) => {
             setDescripcion(e.target.value);

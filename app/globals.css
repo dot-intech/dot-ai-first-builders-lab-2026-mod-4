@@ -31,6 +31,7 @@ body {
 
 .desglose-grid input {
   min-height: 44px;
+  --pico-form-element-border-color: var(--pico-muted-color);
 }
 
 @media (min-width: 576px) {
