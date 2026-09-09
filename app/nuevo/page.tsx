@@ -43,8 +43,14 @@ export default function NuevoConsumoPage() {
       <h1 style={{ fontWeight: 500 }}>Nuevo consumo</h1>
 
       {paso.tipo !== "captura" && (
-        <button type="button" className="secondary" onClick={irAlTablero}>
-          Cancelar
+        <button
+          type="button"
+          className="outline secondary"
+          onClick={irAlTablero}
+          aria-label="Cerrar y volver al tablero"
+          style={{ width: 40, height: 40, borderRadius: "50%", padding: 0, fontSize: "1.25rem", lineHeight: 1 }}
+        >
+          ✕
         </button>
       )}
 
