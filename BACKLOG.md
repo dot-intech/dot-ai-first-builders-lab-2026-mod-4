@@ -11,6 +11,39 @@ descartada (spike, intento fallido) queda como nota corta dentro del
 ítem abierto al que aplica, o en § Descartado si no hay ningún ítem
 abierto al que colgarla. Ver `AGENTS.md` § Backlog.
 
+## UX
+
+- [ ] **Convertir el "Cancelar" de arriba en un botón de cerrar (✕).**
+  `app/nuevo/page.tsx:46-48` — hoy es un segundo botón "Cancelar" con la
+  misma clase `secondary` que el de `RevisionConsumo.tsx:158-160`, y
+  ambos llaman a `irAlTablero`/`onCancelar`: visualmente redundante
+  cuando la pantalla entra completa sin scroll. Cambiarlo a un botón
+  compacto tipo "✕" (ícono, sin texto visible, con
+  `aria-label="Cerrar y volver al tablero"` para no perder
+  accesibilidad) posicionado cerca del `<h1>` — mantiene la salida
+  rápida en mobile con teclado abierto (motivo original, commit
+  `f4c0b64`) sin duplicar visualmente el "Cancelar" de abajo.
+
+- [ ] **Redimensionar la foto cargada según el ancho disponible.**
+  `RevisionConsumo.tsx:79-92` fija `width: 160, height: 160` sin
+  importar el viewport — en pantallas anchas queda chica y aislada con
+  mucho espacio libre alrededor; en mobile angosto ocupa
+  proporcionalmente más lugar del que debería. Reemplazar por un
+  tamaño fluido (p.ej. `width: 100%` con `max-width` razonable y
+  `aspect-ratio` para mantener el recorte cuadrado) para que escale con
+  el `<article>` (hoy `max-width: 640`, línea 74).
+
+- [ ] **Alinear los labels del desglose nutricional en el grid.**
+  `.desglose-grid` (`app/globals.css:26-41`) no fuerza que el texto de
+  cada `<label>` (`RevisionConsumo.tsx:136-145`) ocupe la misma
+  altura — como "Otros nutrientes (%)" wrappea a dos líneas y el resto
+  a una, los inputs de la fila quedan a distinta altura entre sí. Fix:
+  separar el texto del label del input en dos filas de grid explícitas
+  (subgrid o `display: contents` en el `<label>` + filas propias para
+  texto/input en `.desglose-grid`), o fijar una altura mínima común al
+  texto del label para que los 4 inputs arranquen siempre a la misma
+  altura.
+
 ## Descartado — no re-proponer sin evidencia nueva
 
 **`gemini-3.5-flash` como reemplazo de `gemini-3.1-flash-lite`** —
