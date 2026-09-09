@@ -11,16 +11,6 @@ descartada (spike, intento fallido) queda como nota corta dentro del
 ítem abierto al que aplica, o en § Descartado si no hay ningún ítem
 abierto al que colgarla. Ver `AGENTS.md` § Backlog.
 
-## UX
-
-- [ ] **Revisar el peso/tono tipográfico del `<h1>` de "Nuevo
-  consumo".** Prioridad baja, es una cuestión de tono más que
-  funcional: el peso/tamaño del `<h1>` (default de Pico + Geist en
-  `app/nuevo/page.tsx:43`) es muy asertivo/decorativo para un título de
-  formulario utilitario, contrasta con el tono clínico del resto de la
-  pantalla. Evaluar un peso menor o reservar el peso fuerte para datos
-  (como el número de calorías) en vez del título de página.
-
 ## Descartado — no re-proponer sin evidencia nueva
 
 **`gemini-3.5-flash` como reemplazo de `gemini-3.1-flash-lite`** —

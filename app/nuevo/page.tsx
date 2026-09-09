@@ -40,7 +40,7 @@ export default function NuevoConsumoPage() {
 
   return (
     <main className="container" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
-      <h1>Nuevo consumo</h1>
+      <h1 style={{ fontWeight: 500 }}>Nuevo consumo</h1>
 
       {paso.tipo !== "captura" && (
         <button type="button" className="secondary" onClick={irAlTablero}>
