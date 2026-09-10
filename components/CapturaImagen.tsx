@@ -56,7 +56,7 @@ export default function CapturaImagen({ onExito, onError }: CapturaImagenProps) 
 
   if (procesando) {
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "center" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "center", width: "100%", maxWidth: 320 }}>
         <p role="status">
           <span className="spinner" aria-hidden="true" aria-busy="true" style={{ display: "inline-block", verticalAlign: "middle", marginRight: 8 }} />
           Analizando tu foto…
@@ -65,7 +65,15 @@ export default function CapturaImagen({ onExito, onError }: CapturaImagenProps) 
           <img
             src={imagenUrl}
             alt="Foto cargada, en análisis"
-            style={{ width: 160, height: 160, objectFit: "cover" }}
+            style={{
+              width: "100%",
+              maxWidth: 320,
+              aspectRatio: "1 / 1",
+              objectFit: "cover",
+              borderRadius: "var(--pico-border-radius)",
+              border: "var(--pico-border-width) solid var(--pico-muted-border-color)",
+              boxShadow: "var(--pico-card-box-shadow)",
+            }}
           />
         )}
       </div>

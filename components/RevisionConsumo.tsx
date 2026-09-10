@@ -81,8 +81,10 @@ export default function RevisionConsumo({ inicial, imagenUrl, onCancelar, onGuar
           src={imagenUrl}
           alt="Foto del consumo cargada"
           style={{
+            display: "block",
             width: "100%",
             maxWidth: 320,
+            margin: "0 auto",
             aspectRatio: "1 / 1",
             objectFit: "cover",
             borderRadius: "var(--pico-border-radius)",
