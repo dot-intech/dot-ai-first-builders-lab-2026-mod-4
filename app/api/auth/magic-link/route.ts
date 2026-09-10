@@ -14,6 +14,12 @@ export async function POST(request: Request): Promise<Response> {
 
   const { token } = await emitirMagicLink(email);
   const link = new URL(`/api/auth/verify?token=${token}`, request.url).toString();
+
+  const qaBypassEmail = process.env.QA_BYPASS_EMAIL;
+  if (qaBypassEmail && email === qaBypassEmail && process.env.NODE_ENV !== "production") {
+    return NextResponse.json({ ok: true, redirectTo: link });
+  }
+
   await enviarMagicLink(email, link);
 
   return NextResponse.json({ ok: true });

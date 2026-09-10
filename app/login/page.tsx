@@ -17,7 +17,16 @@ export default function LoginPage() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      setEstado(response.ok ? "enviado" : "error");
+      if (!response.ok) {
+        setEstado("error");
+        return;
+      }
+      const body = await response.json();
+      if (typeof body.redirectTo === "string") {
+        window.location.href = body.redirectTo;
+        return;
+      }
+      setEstado("enviado");
     } catch {
       setEstado("error");
     }

@@ -611,6 +611,48 @@ siguen fijando el límite en 8 horas.
 
 ---
 
+## Phase 14: Convergence
+
+**Purpose**: Cerrar la brecha detectada por `/speckit-analyze` para FR-003b
+(bypass de acceso directo para una única dirección de email de QA en
+entornos no productivos) — documentado en spec.md/PRD.md/research.md §4a/
+contracts/api.md y en `BACKLOG.md` § "Auth — implementar bypass de QA para
+magic link", pero sin código ni tests todavía.
+
+- [X] T082 [US1] Agregar `QA_BYPASS_EMAIL=` (vacío) a `.env.local.example`
+      y `.env.test.example`, para soportar FR-003b (missing).
+- [X] T083 [US1] Agregar test en `tests/contract/auth-magic-link.test.ts`:
+      con `QA_BYPASS_EMAIL` seteada (`vi.stubEnv`) a un email y `NODE_ENV`
+      distinto de `production`, un POST a `/api/auth/magic-link` con ese
+      email devuelve `200` con `redirectTo` apuntando a
+      `/api/auth/verify?token=...` y `enviarMagicLinkMock` NO es llamado,
+      para pasar FR-003b/AC-03b (missing — TDD: test primero, fallará en
+      rojo con el código actual).
+- [X] T084 [US1] Agregar test complementario en el mismo archivo: con
+      `QA_BYPASS_EMAIL` seteada al mismo email pero `NODE_ENV=production`
+      (`vi.stubEnv`), la respuesta sigue siendo `{ ok: true }` sin
+      `redirectTo`, y `enviarMagicLinkMock` SÍ es llamado — mismo
+      comportamiento que sin bypass, para pasar FR-003b/AC-03c (missing;
+      caso negativo — ya pasa con el código actual por ausencia de
+      lógica, debe seguir en verde después de T085).
+- [X] T085 [US1] En `app/api/auth/magic-link/route.ts`: si
+      `email === process.env.QA_BYPASS_EMAIL` (variable no vacía) y
+      `process.env.NODE_ENV !== "production"`, generar el token vía
+      `emitirMagicLink` (ya existente, sin duplicar su lógica) pero
+      saltear la llamada a `enviarMagicLink`, devolviendo
+      `{ ok: true, redirectTo: <URL de GET /api/auth/verify?token=...> }`;
+      en cualquier otro caso mantener el flujo actual sin cambios, para
+      pasar FR-003b/AC-03b/AC-03c (missing).
+- [X] T086 [US1] Actualizar `app/login/page.tsx`: si la respuesta JSON de
+      `POST /api/auth/magic-link` trae `redirectTo`, navegar el browser
+      directo a esa URL en vez de pasar al estado `"enviado"`, para
+      completar FR-003b (missing).
+- [X] T087 [US1] Correr `npm test` (unit+integration+contract) y confirmar
+      que la suite completa está en verde tras T082-T086, para verificar
+      FR-003b/AC-03b/AC-03c (missing).
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

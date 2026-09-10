@@ -61,4 +61,44 @@ describe("POST /api/auth/magic-link", () => {
     const response = await POST(request);
     expect(response.status).toBe(400);
   });
+
+  it("200 con redirectTo y sin enviar email cuando el email coincide con QA_BYPASS_EMAIL fuera de producción (FR-003b/AC-03b)", async () => {
+    vi.stubEnv("QA_BYPASS_EMAIL", "qa@example.com");
+    vi.stubEnv("NODE_ENV", "test");
+    const { POST } = await import("@/app/api/auth/magic-link/route");
+    const request = new Request("http://localhost/api/auth/magic-link", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: "qa@example.com" }),
+    });
+
+    const response = await POST(request);
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.ok).toBe(true);
+    expect(typeof body.redirectTo).toBe("string");
+    expect(body.redirectTo).toContain("/api/auth/verify?token=");
+    expect(enviarMagicLinkMock).not.toHaveBeenCalled();
+
+    vi.unstubAllEnvs();
+  });
+
+  it("200 sin redirectTo y enviando el email normalmente cuando QA_BYPASS_EMAIL coincide pero NODE_ENV=production (FR-003b/AC-03c)", async () => {
+    vi.stubEnv("QA_BYPASS_EMAIL", "qa@example.com");
+    vi.stubEnv("NODE_ENV", "production");
+    const { POST } = await import("@/app/api/auth/magic-link/route");
+    const request = new Request("http://localhost/api/auth/magic-link", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: "qa@example.com" }),
+    });
+
+    const response = await POST(request);
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body).toEqual({ ok: true });
+    expect(enviarMagicLinkMock).toHaveBeenCalledTimes(1);
+
+    vi.unstubAllEnvs();
+  });
 });
