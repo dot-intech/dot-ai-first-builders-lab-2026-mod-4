@@ -82,6 +82,31 @@ gestionar credenciales SMTP y mayor superficie de configuración); SendGrid
 de implementación, no un requisito de negocio — se puede sustituir sin
 tocar el resto del sistema si el usuario prefiere otro proveedor.
 
+## 4a. Bypass de QA para magic link (no-prod)
+
+**Decision**: variable de entorno `QA_BYPASS_EMAIL` (una única dirección de
+email). En `POST /api/auth/magic-link`, si el email recibido coincide
+exactamente con `QA_BYPASS_EMAIL` **y** `process.env.NODE_ENV !==
+"production"`, se sigue llamando a `emitirMagicLink` (mismo camino que un
+login real: genera y persiste el token) pero se saltea `enviarMagicLink`;
+la respuesta incluye la URL de verificación (`redirectTo`) en vez de
+`{ ok: true }`, y el frontend navega directo ahí. `GET /api/auth/verify`
+no cambia: sigue siendo el único lugar que valida el token y crea la
+sesión (FR-003b).
+
+**Rationale**: reusa el mecanismo de token/expiración/uso único ya
+implementado para magic links reales — cero lógica de sesión duplicada.
+El gate contra producción vive en el código (`NODE_ENV !== "production"`),
+no sólo en la ausencia de la variable, siguiendo el mismo patrón ya usado
+en `lib/db/pool.ts`. Motivación: habilitar pruebas manuales de QA con
+emails distintos del propio sin depender de verificar un dominio en el
+proveedor de email transaccional (ver research.md §4 y BACKLOG.md).
+
+**Alternatives considered**: endpoint de login separado que crea la sesión
+directamente sin pasar por `emitirMagicLink`/`validarMagicLink` (rechazado:
+duplicaría la lógica de expiración/uso único que ya existe para el flujo
+real, más superficie de bugs).
+
 ## 5. Aislamiento de IA (Principio II)
 
 **Decision**: Único módulo `lib/ai/vision.ts`, que expone una función

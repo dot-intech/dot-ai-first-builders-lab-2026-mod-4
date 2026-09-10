@@ -16,6 +16,10 @@ Solicita un link de acceso (RF-03).
 - **200**: `{ "ok": true }` — no revela si el email ya existía (crea la
   cuenta automáticamente si no existía — FR-003a). Invalida cualquier
   link previo no usado de ese email (FR-004a) y envía el nuevo por email.
+  **Excepción (FR-003b)**: si `NODE_ENV` no es `production` y el email
+  coincide con `QA_BYPASS_EMAIL`, la respuesta es
+  `{ "ok": true, "redirectTo": string }` (URL de `GET /api/auth/verify`)
+  y no se envía ningún email. En producción esta excepción nunca aplica.
 - **400**: email ausente o con formato inválido.
 
 ### `GET /api/auth/verify?token=...`

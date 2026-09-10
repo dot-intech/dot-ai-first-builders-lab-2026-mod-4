@@ -90,7 +90,7 @@ sólo a los que pasan por el flujo de arriba.
 
 ## Qué NO hacer
 - No persistir imágenes provistas por el usuario en el backend bajo ninguna circunstancia (RNF-07: 0 persistencia de imágenes, por privacidad).
-- No implementar login/registro por contraseña: la autenticación es exclusivamente vía magic link enviado por email (RF-03).
+- No implementar login/registro por contraseña: la autenticación es exclusivamente vía magic link enviado por email (RF-03). **Única excepción**: bypass de acceso directo para una única dirección de email de QA configurada por variable de entorno, inhabilitado incondicionalmente cuando `NODE_ENV=production` (RF-03b).
 - No agregar funcionalidades fuera de alcance (RBAC, multi-tenant, pagos, metas de calorías, export/import, borrado de cuenta) sin confirmar antes con el usuario si corresponde actualizar el PRD (ver gate de documentos rectores en la skill `flujo-backlog`).
 
 <!-- BEGIN:nextjs-agent-rules -->

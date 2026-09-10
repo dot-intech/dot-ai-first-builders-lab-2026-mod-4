@@ -90,6 +90,12 @@ Sesión].
 9. **Given** un usuario autenticado sin ningún consumo cargado en el día
    actual, **When** el tablero carga, **Then** el gráfico de dona y el total
    de calorías se muestran en cero.
+10. **Given** un entorno no productivo con una dirección de email de QA
+    configurada por variable de entorno, **When** esa dirección solicita
+    "Obtener link de acceso", **Then** el sistema le otorga acceso directo
+    sin enviar ni exigir un magic link por email; **Given** ese mismo email
+    en un entorno con `NODE_ENV=production`, **When** solicita el acceso,
+    **Then** el sistema exige el flujo normal de magic link, sin excepción.
 
 ---
 
@@ -298,6 +304,12 @@ no se contabiliza en el tablero del día correspondiente.
 - **FR-003a**: Al solicitar un magic link con un email que no tiene cuenta
   asociada, el sistema MUST crear automáticamente una cuenta de usuario para
   ese email, sin exigir un paso de registro separado.
+- **FR-003b**: En entornos no productivos (`NODE_ENV` distinto de
+  `production`), el sistema MAY habilitar un mecanismo de acceso directo sin
+  envío de magic link para una única dirección de email de QA, configurada
+  por variable de entorno. Este mecanismo MUST estar inhabilitado
+  incondicionalmente cuando `NODE_ENV=production`, sin depender únicamente
+  de la ausencia de configuración de esa variable. (RF-03b)
 - **FR-004**: El link de acceso MUST ser de un solo uso: una vez utilizado, el
   sistema MUST invalidarlo y rechazar cualquier intento posterior. (RF-34)
 - **FR-004a**: Al emitir un nuevo link de acceso para un usuario, el sistema

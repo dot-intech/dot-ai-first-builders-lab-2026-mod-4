@@ -1,16 +1,21 @@
 <!--
 Sync Impact Report
 ==================
-Version change: 1.0.0 → 1.0.1
-Rationale: Pico.css ya estaba adoptado en el código (commit 381658f) sin
-haberse propagado al stack obligatorio documentado acá. PATCH: aclaración
-que refleja una dependencia ya en uso, no un principio nuevo ni un cambio
-de alcance.
+Version change: 1.0.1 → 1.1.0
+Rationale: Se documenta (sin implementar todavía — queda como tarea
+pendiente en BACKLOG.md) una única excepción explícita al principio de
+"autenticación exclusivamente vía magic link, sin excepción": un bypass
+de acceso directo restringido a una dirección de email de QA vía
+variable de entorno, inhabilitado incondicionalmente en producción
+(`NODE_ENV=production`). MINOR: expansión material de una restricción
+existente (no un principio nuevo, no elimina ni redefine el principio
+de forma incompatible — el login por contraseña sigue prohibido sin
+excepción).
 
 Modified principles: N/A
 Modified sections:
-  - Restricciones del Producto y Stack Técnico: agregado Pico.css al stack
-    obligatorio.
+  - Restricciones del Producto y Stack Técnico: RF-03 — agregada la
+    excepción de bypass de QA no-productivo.
 Added sections: none
 Removed sections: none
 
@@ -19,11 +24,17 @@ Templates requiring updates:
   - .specify/templates/spec-template.md: ✅ no changes needed.
   - .specify/templates/tasks-template.md: ✅ no changes needed.
   - .specify/templates/checklist-template.md: ✅ no changes needed.
-  - AGENTS.md: ✅ actualizado en el mismo cambio (Pico.css agregado a § Stack).
-  - specs/001-registro-consumo-foto/plan.md: ✅ actualizado en el mismo
-    cambio (Enfoque técnico / Primary Dependencies).
+  - AGENTS.md: ✅ actualizado en el mismo cambio (misma excepción en §
+    Qué NO hacer).
+  - PRD.md: ✅ actualizado en el mismo cambio (RF-03b, AC-03b, AC-03c).
+  - specs/001-registro-consumo-foto/spec.md: ✅ actualizado en el mismo
+    cambio (FR-003b, Acceptance Scenario 10).
+  - specs/001-registro-consumo-foto/plan.md, research.md,
+    contracts/api.md, quickstart.md: ✅ actualizados en el mismo cambio.
 
-Follow-up TODOs: none.
+Follow-up TODOs:
+  - Implementación pendiente en BACKLOG.md (código, tests) — no forma
+    parte de este cambio de documentación.
 
 ---
 Sync Impact Report (histórico)
@@ -129,6 +140,10 @@ construido.
   intermedio.
 - RF-03 — Autenticación exclusivamente vía magic link enviado por email. No se
   implementa login ni registro por contraseña bajo ninguna circunstancia.
+  **Única excepción admitida**: un mecanismo de acceso directo sin envío de
+  magic link, habilitado exclusivamente para una única dirección de email de
+  QA configurada por variable de entorno, inhabilitado incondicionalmente
+  cuando `NODE_ENV=production` (RF-03b).
 - Las tablas de PostgreSQL en alcance son `usuarios` y `consumos`; cualquier
   esquema adicional requiere que el PRD lo contemple primero.
 
@@ -162,4 +177,4 @@ desviación de un principio debe justificarse explícitamente en la sección
 "Complexity Tracking" del plan correspondiente; si no puede justificarse, se
 simplifica el diseño en lugar de violar el principio.
 
-**Version**: 1.0.1 | **Ratified**: 2026-08-22 | **Last Amended**: 2026-09-04
+**Version**: 1.1.0 | **Ratified**: 2026-08-22 | **Last Amended**: 2026-09-10

@@ -57,7 +57,7 @@ alternativas descartadas.
 | V. Disciplina de Alcance (PRD-Bound) | PASS | Sin RBAC, multi-tenant, pagos, metas de calorías, export/import ni borrado de cuenta; esquema limitado a `usuarios`/`consumos`. |
 | Restricción de esquema (constitución) | PASS | Sesión y magic link se modelan como columnas de `usuarios`, no como tablas nuevas (research.md §2, data-model.md). |
 | RNF-07 — Cero persistencia de imágenes | PASS | La imagen vive sólo en memoria durante el request de análisis; ninguna columna de `consumos` puede almacenarla (research.md §6). |
-| RF-03 — Sin login por contraseña | PASS | Única vía de entrada: magic link por email (contracts/api.md). |
+| RF-03 — Sin login por contraseña | PASS | Única vía de entrada en producción: magic link por email; excepción de bypass de QA no-productivo gateada por `NODE_ENV=production`, ver FR-003b (contracts/api.md, research.md §4a). |
 
 Sin violaciones — no aplica la sección "Complexity Tracking".
 
@@ -103,7 +103,7 @@ app/
 │   └── page.tsx                   # US4: listado jerárquico + eliminar (US5)
 └── api/
     ├── auth/
-    │   ├── magic-link/route.ts    # POST — solicitar link (RF-03, FR-003a, FR-004a)
+    │   ├── magic-link/route.ts    # POST — solicitar link (RF-03, FR-003a, FR-003b, FR-004a)
     │   ├── verify/route.ts        # GET — validar token y crear sesión (FR-004, FR-005)
     │   └── logout/route.ts        # POST — cerrar sesión (FR-007)
     ├── resumen-dia/route.ts       # GET — agregados del tablero (FR-009)
@@ -142,7 +142,7 @@ tests/
 └── contract/                      # valida request/response de cada ruta contra contracts/api.md
 
 docker-compose.yml                  # PostgreSQL de desarrollo + PostgreSQL de test (bases separadas)
-.env.local.example                  # placeholders de las variables de research.md §4 y AGENTS.md
+.env.local.example                  # placeholders de las variables de research.md §4/§4a y AGENTS.md (incl. QA_BYPASS_EMAIL, opcional)
 .env.test.example                   # placeholder de DATABASE_URL para `npm test` (base separada)
 ```
 

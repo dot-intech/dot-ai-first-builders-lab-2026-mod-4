@@ -11,6 +11,36 @@ descartada (spike, intento fallido) queda como nota corta dentro del
 ítem abierto al que aplica, o en § Descartado si no hay ningún ítem
 abierto al que colgarla. Ver `AGENTS.md` § Backlog.
 
+## Auth — implementar bypass de QA para magic link (no-prod)
+
+RF-03b/AC-03b/AC-03c (`PRD.md`), FR-003b y Acceptance Scenario 10
+(`spec.md`), y research.md §4a ya documentan el diseño: una única
+dirección de email de QA, configurada por variable de entorno, obtiene
+acceso directo a la aplicación sin recibir un magic link real — sólo
+cuando `NODE_ENV` no es `production`. Motivación: hoy cualquier prueba
+manual de login con un email distinto al propio falla, porque
+`EMAIL_FROM` usa el dominio sandbox de Resend (`resend.dev`), que sólo
+entrega a la dirección con la que se creó la cuenta de Resend.
+
+- [ ] Agregar `QA_BYPASS_EMAIL` a `.env.local.example` y
+  `.env.test.example` (vacío por default).
+- [ ] En `POST /api/auth/magic-link`
+  (`app/api/auth/magic-link/route.ts`): si `email === process.env.QA_BYPASS_EMAIL`
+  y `process.env.NODE_ENV !== "production"`, generar el token vía
+  `emitirMagicLink` (sin duplicar esa lógica) pero saltear
+  `enviarMagicLink`; devolver `{ ok: true, redirectTo: <link> }` en vez
+  de `{ ok: true }` (contrato ya actualizado en `contracts/api.md`).
+- [ ] En `app/login/page.tsx`: si la respuesta trae `redirectTo`,
+  navegar directo ahí en vez de mostrar "revisá tu bandeja de entrada".
+- [ ] Tests (TDD, rojo→verde) sobre `POST /api/auth/magic-link`: (a) con
+  `QA_BYPASS_EMAIL` seteada y `NODE_ENV` no productivo, la respuesta
+  trae `redirectTo` y no se invoca `enviarMagicLink`; (b) con
+  `NODE_ENV=production`, el mismo email sigue el flujo normal de envío
+  de email, incluso con la variable seteada.
+- [ ] Actualizar `tasks.md` de `001-registro-consumo-foto` (vía
+  `/speckit-converge`, no a mano) con las tareas resultantes antes de
+  implementar.
+
 ## Descartado — no re-proponer sin evidencia nueva
 
 **`gemini-3.5-flash` como reemplazo de `gemini-3.1-flash-lite`** —
