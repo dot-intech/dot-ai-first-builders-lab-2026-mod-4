@@ -13,15 +13,6 @@ abierto al que colgarla. Ver `AGENTS.md` § Backlog.
 
 ## UX
 
-- [ ] **Redimensionar la foto cargada según el ancho disponible.**
-  `RevisionConsumo.tsx:79-92` fija `width: 160, height: 160` sin
-  importar el viewport — en pantallas anchas queda chica y aislada con
-  mucho espacio libre alrededor; en mobile angosto ocupa
-  proporcionalmente más lugar del que debería. Reemplazar por un
-  tamaño fluido (p.ej. `width: 100%` con `max-width` razonable y
-  `aspect-ratio` para mantener el recorte cuadrado) para que escale con
-  el `<article>` (hoy `max-width: 640`, línea 74).
-
 - [ ] **Alinear los labels del desglose nutricional en el grid.**
   `.desglose-grid` (`app/globals.css:26-41`) no fuerza que el texto de
   cada `<label>` (`RevisionConsumo.tsx:136-145`) ocupe la misma
