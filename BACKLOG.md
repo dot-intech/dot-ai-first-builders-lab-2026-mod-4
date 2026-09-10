@@ -11,19 +11,6 @@ descartada (spike, intento fallido) queda como nota corta dentro del
 ítem abierto al que aplica, o en § Descartado si no hay ningún ítem
 abierto al que colgarla. Ver `AGENTS.md` § Backlog.
 
-## UX
-
-- [ ] **Alinear los labels del desglose nutricional en el grid.**
-  `.desglose-grid` (`app/globals.css:26-41`) no fuerza que el texto de
-  cada `<label>` (`RevisionConsumo.tsx:136-145`) ocupe la misma
-  altura — como "Otros nutrientes (%)" wrappea a dos líneas y el resto
-  a una, los inputs de la fila quedan a distinta altura entre sí. Fix:
-  separar el texto del label del input en dos filas de grid explícitas
-  (subgrid o `display: contents` en el `<label>` + filas propias para
-  texto/input en `.desglose-grid`), o fijar una altura mínima común al
-  texto del label para que los 4 inputs arranquen siempre a la misma
-  altura.
-
 ## Descartado — no re-proponer sin evidencia nueva
 
 **`gemini-3.5-flash` como reemplazo de `gemini-3.1-flash-lite`** —

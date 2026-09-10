@@ -34,6 +34,11 @@ body {
   --pico-form-element-border-color: var(--pico-muted-color);
 }
 
+.desglose-grid-etiqueta {
+  display: block;
+  min-height: 2.4em;
+}
+
 @media (min-width: 576px) {
   .desglose-grid {
     grid-template-columns: repeat(4, 1fr);

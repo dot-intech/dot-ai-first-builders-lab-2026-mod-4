@@ -135,7 +135,7 @@ export default function RevisionConsumo({ inicial, imagenUrl, onCancelar, onGuar
         <div className="desglose-grid">
           {(Object.keys(desglose) as (keyof DesgloseNutricional)[]).map((clave) => (
             <label key={clave}>
-              {ETIQUETAS_DESGLOSE[clave]} (%)
+              <span className="desglose-grid-etiqueta">{ETIQUETAS_DESGLOSE[clave]} (%)</span>
               <input
                 type="number"
                 min={0}
