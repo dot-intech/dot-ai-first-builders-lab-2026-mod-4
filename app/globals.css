@@ -31,12 +31,19 @@ body {
 
 .desglose-grid input {
   min-height: 44px;
+  min-width: 0;
   --pico-form-element-border-color: var(--pico-muted-color);
 }
 
 .desglose-grid-etiqueta {
   display: block;
   min-height: 2.4em;
+}
+
+.desglose-grid-input {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--pico-spacing) / 4);
 }
 
 @media (min-width: 576px) {
